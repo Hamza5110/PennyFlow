@@ -39,6 +39,8 @@ import '../../modules/reports/views/reports_view.dart';
 import '../../modules/recurring/bindings/recurring_binding.dart';
 import '../../modules/recurring/views/recurring_form_view.dart';
 import '../../modules/recurring/views/recurring_list_view.dart';
+import '../../modules/backup/bindings/backup_binding.dart';
+import '../../modules/backup/views/backup_view.dart';
 import '../../modules/reminders/bindings/reminders_binding.dart';
 import '../../modules/reminders/views/reminder_form_view.dart';
 import '../../modules/reminders/views/reminders_list_view.dart';
@@ -223,6 +225,12 @@ abstract final class AppPages {
       name: AppRoutes.reminderForm,
       page: ReminderFormView.new,
       binding: RemindersBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.backup,
+      page: BackupView.new,
+      binding: BackupBinding(),
       transition: Transition.rightToLeft,
     ),
   ];

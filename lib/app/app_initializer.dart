@@ -27,6 +27,11 @@ import '../services/image/image_service.dart';
 import '../services/income/income_service.dart';
 import '../services/notification/notification_service.dart';
 import '../services/payment_account/payment_account_service.dart';
+import '../services/backup/backup_bundle_builder.dart';
+import '../services/backup/backup_bundle_restorer.dart';
+import '../services/backup/backup_service.dart';
+import '../services/backup/backup_snapshot_codec.dart';
+import '../services/backup/google_drive_backup_client.dart';
 import '../services/auth/auth_session_store.dart';
 import '../services/auth/google_sign_in_client.dart';
 import '../services/lifecycle/app_lifecycle_service.dart';
@@ -63,6 +68,8 @@ abstract final class AppInitializer {
       () async => SecureStorageService().init(),
       permanent: true,
     );
+
+    Get.put<GoogleSignInClient>(GoogleSignInClient(), permanent: true);
 
     await Get.putAsync<IsarDatabase>(
       () async => IsarDatabase().init(),
@@ -240,11 +247,51 @@ abstract final class AppInitializer {
 
     await Get.putAsync<AuthService>(
       () async => AuthService(
-        GoogleSignInClient(),
+        Get.find<GoogleSignInClient>(),
         AuthSessionStore(Get.find<SecureStorageService>()),
         Get.find<ProfileService>(),
         settings,
       ).init(),
+      permanent: true,
+    );
+
+    Get.put<GoogleDriveBackupClient>(
+      GoogleDriveBackupClient(Get.find<GoogleSignInClient>()),
+      permanent: true,
+    );
+    Get.put<BackupSnapshotCodec>(
+      BackupSnapshotCodec(isar),
+      permanent: true,
+    );
+    Get.put<BackupBundleBuilder>(
+      BackupBundleBuilder(
+        Get.find<BackupSnapshotCodec>(),
+        settings,
+        localStorage,
+      ),
+      permanent: true,
+    );
+    Get.put<BackupBundleRestorer>(
+        BackupBundleRestorer(
+          Get.find<BackupSnapshotCodec>(),
+          settings,
+          localStorage,
+          Get.find<ImageService>(),
+        ),
+      permanent: true,
+    );
+    Get.put<BackupService>(
+      BackupService(
+        Get.find<AuthService>(),
+        settings,
+        localStorage,
+        Get.find<ImageService>(),
+        Get.find<ReminderService>(),
+        Get.find<GoogleDriveBackupClient>(),
+        Get.find<BackupBundleBuilder>(),
+        Get.find<BackupBundleRestorer>(),
+        Get.find<BackupSnapshotCodec>(),
+      ),
       permanent: true,
     );
 
@@ -263,6 +310,7 @@ abstract final class AppInitializer {
         Get.find<StartupService>(),
         Get.find<RecurringService>(),
         Get.find<ReminderService>(),
+        Get.find<BackupService>(),
       ).init(),
       permanent: true,
     );
