@@ -33,6 +33,8 @@ abstract final class AppRoutes {
   static const String budgets = '/budgets';
   static const String budgetForm = '/budgets/form';
   static const String reports = '/reports';
+  static const String recurring = '/recurring';
+  static const String recurringForm = '/recurring/form';
   static const String settings = '/settings';
   static const String backup = '/backup';
   static const String update = '/update';

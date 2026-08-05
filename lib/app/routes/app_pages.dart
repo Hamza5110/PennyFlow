@@ -36,6 +36,9 @@ import '../../modules/budgets/views/budget_form_view.dart';
 import '../../modules/budgets/views/budgets_list_view.dart';
 import '../../modules/reports/bindings/reports_binding.dart';
 import '../../modules/reports/views/reports_view.dart';
+import '../../modules/recurring/bindings/recurring_binding.dart';
+import '../../modules/recurring/views/recurring_form_view.dart';
+import '../../modules/recurring/views/recurring_list_view.dart';
 import '../../modules/search/bindings/search_binding.dart';
 import '../../modules/search/views/search_view.dart';
 import 'app_routes.dart';
@@ -193,6 +196,18 @@ abstract final class AppPages {
       name: AppRoutes.reports,
       page: ReportsView.new,
       binding: ReportsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.recurring,
+      page: RecurringListView.new,
+      binding: RecurringBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.recurringForm,
+      page: RecurringFormView.new,
+      binding: RecurringBinding(),
       transition: Transition.rightToLeft,
     ),
   ];

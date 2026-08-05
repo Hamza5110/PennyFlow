@@ -9,8 +9,10 @@ class NotificationService extends GetxService with BaseService {
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
-  static const String _channelId = 'penny_flow_budget_alerts';
-  static const String _channelName = 'Budget Alerts';
+  static const String _budgetChannelId = 'penny_flow_budget_alerts';
+  static const String _budgetChannelName = 'Budget Alerts';
+  static const String _recurringChannelId = 'penny_flow_recurring';
+  static const String _recurringChannelName = 'Recurring Transactions';
 
   Future<NotificationService> init() async {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -24,8 +26,8 @@ class NotificationService extends GetxService with BaseService {
     await _plugin.initialize(initSettings);
 
     const channel = AndroidNotificationChannel(
-      _channelId,
-      _channelName,
+      _budgetChannelId,
+      _budgetChannelName,
       description: 'Budget warning and exceeded alerts',
       importance: Importance.high,
     );
@@ -33,6 +35,17 @@ class NotificationService extends GetxService with BaseService {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
+
+    const recurringChannel = AndroidNotificationChannel(
+      _recurringChannelId,
+      _recurringChannelName,
+      description: 'Recurring transaction auto-generation alerts',
+      importance: Importance.defaultImportance,
+    );
+    await _plugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(recurringChannel);
 
     return this;
   }
@@ -75,12 +88,14 @@ class NotificationService extends GetxService with BaseService {
     required int id,
     required String title,
     required String body,
+    String channelId = _budgetChannelId,
+    String channelName = _budgetChannelName,
   }) async {
     try {
-      const details = NotificationDetails(
+      final details = NotificationDetails(
         android: AndroidNotificationDetails(
-          _channelId,
-          _channelName,
+          channelId,
+          channelName,
           importance: Importance.high,
           priority: Priority.high,
         ),
@@ -94,5 +109,15 @@ class NotificationService extends GetxService with BaseService {
         stackTrace: stackTrace,
       );
     }
+  }
+
+  Future<void> showRecurringGenerated({required int count}) async {
+    await _show(
+      id: 9000 + count,
+      title: 'recurring_alert_title'.tr,
+      body: 'recurring_alert_body'.trParams({'count': count.toString()}),
+      channelId: _recurringChannelId,
+      channelName: _recurringChannelName,
+    );
   }
 }

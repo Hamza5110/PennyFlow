@@ -104,6 +104,16 @@ class MoreTabView extends GetView<MainShellController> {
         const SizedBox(height: 16),
         Card(
           child: ListTile(
+            leading: const Icon(Icons.autorenew_rounded),
+            title: Text('recurring_title'.tr),
+            subtitle: Text('more_recurring_subtitle'.tr),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: controller.openRecurring,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Card(
+          child: ListTile(
             leading: const Icon(Icons.category_outlined),
             title: Text('categories_title'.tr),
             subtitle: Text('more_categories_subtitle'.tr),

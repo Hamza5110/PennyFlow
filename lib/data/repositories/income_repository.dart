@@ -79,4 +79,21 @@ class IncomeRepository extends IsarBaseRepository<Income> {
           await collection.put(income);
         }
       });
+  Future<bool> existsForTemplateOnDate({
+    required int profileId,
+    required int templateId,
+    required DateTime date,
+  }) =>
+      runRead(() async {
+        final start = DateTime(date.year, date.month, date.day);
+        final end = DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
+        final count = await collection
+            .filter()
+            .profileIdEqualTo(profileId)
+            .recurringTemplateIdEqualTo(templateId)
+            .isDeletedEqualTo(false)
+            .dateBetween(start, end)
+            .count();
+        return count > 0;
+      });
 }

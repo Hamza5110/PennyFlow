@@ -8,7 +8,7 @@ abstract final class AppConstants {
   static const String packageName = 'com.pennyflow.app';
 
   /// Schema version persisted in [AppMeta] for migrations.
-  static const int databaseSchemaVersion = 7;
+  static const int databaseSchemaVersion = 8;
 
   /// Default profile currency (ISO 4217). Presentation only — amounts stored raw.
   static const String defaultCurrencyCode = 'PKR';

@@ -73,6 +73,8 @@ class MainShellController extends BaseController {
 
   void openReports() => Get.toNamed<void>(AppRoutes.reports);
 
+  void openRecurring() => Get.toNamed<void>(AppRoutes.recurring);
+
   Future<void> onQuickAdd() async {
     final saved = await Get.toNamed<dynamic>(AppRoutes.expenseForm);
     if (saved == true) {
