@@ -34,6 +34,8 @@ import '../../modules/splash/views/splash_view.dart';
 import '../../modules/budgets/bindings/budgets_binding.dart';
 import '../../modules/budgets/views/budget_form_view.dart';
 import '../../modules/budgets/views/budgets_list_view.dart';
+import '../../modules/reports/bindings/reports_binding.dart';
+import '../../modules/reports/views/reports_view.dart';
 import '../../modules/search/bindings/search_binding.dart';
 import '../../modules/search/views/search_view.dart';
 import 'app_routes.dart';
@@ -185,6 +187,12 @@ abstract final class AppPages {
       name: AppRoutes.budgetForm,
       page: BudgetFormView.new,
       binding: BudgetsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.reports,
+      page: ReportsView.new,
+      binding: ReportsBinding(),
       transition: Transition.rightToLeft,
     ),
   ];

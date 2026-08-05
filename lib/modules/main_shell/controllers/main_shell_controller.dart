@@ -71,6 +71,8 @@ class MainShellController extends BaseController {
 
   void openSearch() => Get.toNamed<void>(AppRoutes.search);
 
+  void openReports() => Get.toNamed<void>(AppRoutes.reports);
+
   Future<void> onQuickAdd() async {
     final saved = await Get.toNamed<dynamic>(AppRoutes.expenseForm);
     if (saved == true) {
