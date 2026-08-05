@@ -89,6 +89,27 @@ class ExpenseRepository extends IsarBaseRepository<Expense> {
         },
       );
 
+  Future<double> sumActiveByCategoryInMonth({
+    required int profileId,
+    required int categoryId,
+    required int year,
+    required int month,
+  }) =>
+      runRead(() async {
+        final start = DateTime(year, month);
+        final end = DateTime(year, month + 1).subtract(
+          const Duration(milliseconds: 1),
+        );
+        final expenses = await collection
+            .filter()
+            .profileIdEqualTo(profileId)
+            .categoryIdEqualTo(categoryId)
+            .isDeletedEqualTo(false)
+            .dateBetween(start, end)
+            .findAll();
+        return expenses.fold<double>(0, (sum, e) => sum + e.amount);
+      });
+
   Future<void> reassignAccount({
     required int fromAccountId,
     required int toAccountId,

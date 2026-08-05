@@ -30,6 +30,8 @@ abstract final class AppRoutes {
   static const String repaymentForm = '/friends/repayments/form';
   static const String friendTrash = '/friends/trash';
   static const String search = '/search';
+  static const String budgets = '/budgets';
+  static const String budgetForm = '/budgets/form';
   static const String settings = '/settings';
   static const String backup = '/backup';
   static const String update = '/update';

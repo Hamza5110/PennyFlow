@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../core/errors/error_handler.dart';
 import '../core/logging/app_logger.dart';
 import '../data/local/database/isar_database.dart';
+import '../data/repositories/budget_repository.dart';
 import '../data/repositories/category_repository.dart';
 import '../data/repositories/dashboard_repository.dart';
 import '../data/repositories/expense_repository.dart';
@@ -15,12 +16,14 @@ import '../data/repositories/payment_account_repository.dart';
 import '../data/repositories/profile_repository.dart';
 import '../data/repositories/repayment_repository.dart';
 import '../services/auth/auth_service.dart';
+import '../services/budget/budget_service.dart';
 import '../services/category/category_service.dart';
 import '../services/dashboard/dashboard_service.dart';
 import '../services/expense/expense_service.dart';
 import '../services/friend/friend_service.dart';
 import '../services/image/image_service.dart';
 import '../services/income/income_service.dart';
+import '../services/notification/notification_service.dart';
 import '../services/payment_account/payment_account_service.dart';
 import '../services/auth/auth_session_store.dart';
 import '../services/auth/google_sign_in_client.dart';
@@ -87,6 +90,7 @@ abstract final class AppInitializer {
       permanent: true,
     );
     Get.put<RepaymentRepository>(RepaymentRepository(isar), permanent: true);
+    Get.put<BudgetRepository>(BudgetRepository(isar), permanent: true);
     Get.put<ImageService>(ImageService(), permanent: true);
     Get.put<FilterSessionService>(FilterSessionService(), permanent: true);
 
@@ -106,6 +110,22 @@ abstract final class AppInitializer {
         Get.find<IncomeRepository>(),
         settings,
       ).init(),
+      permanent: true,
+    );
+
+    await Get.putAsync<NotificationService>(
+      () async => NotificationService().init(),
+      permanent: true,
+    );
+
+    Get.put<BudgetService>(
+      BudgetService(
+        Get.find<BudgetRepository>(),
+        Get.find<ExpenseRepository>(),
+        Get.find<CategoryRepository>(),
+        Get.find<NotificationService>(),
+        settings,
+      ),
       permanent: true,
     );
 
@@ -158,6 +178,7 @@ abstract final class AppInitializer {
         Get.find<CategoryRepository>(),
         Get.find<PaymentAccountRepository>(),
         Get.find<FriendService>(),
+        Get.find<BudgetService>(),
       ),
       permanent: true,
     );

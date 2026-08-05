@@ -31,6 +31,9 @@ import '../../modules/profile_setup/bindings/profile_setup_binding.dart';
 import '../../modules/profile_setup/views/profile_setup_view.dart';
 import '../../modules/splash/bindings/splash_binding.dart';
 import '../../modules/splash/views/splash_view.dart';
+import '../../modules/budgets/bindings/budgets_binding.dart';
+import '../../modules/budgets/views/budget_form_view.dart';
+import '../../modules/budgets/views/budgets_list_view.dart';
 import '../../modules/search/bindings/search_binding.dart';
 import '../../modules/search/views/search_view.dart';
 import 'app_routes.dart';
@@ -170,6 +173,18 @@ abstract final class AppPages {
       name: AppRoutes.search,
       page: SearchView.new,
       binding: SearchBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.budgets,
+      page: BudgetsListView.new,
+      binding: BudgetsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.budgetForm,
+      page: BudgetFormView.new,
+      binding: BudgetsBinding(),
       transition: Transition.rightToLeft,
     ),
   ];

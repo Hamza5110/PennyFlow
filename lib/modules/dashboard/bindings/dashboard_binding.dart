@@ -5,6 +5,7 @@ import '../../../data/repositories/dashboard_repository.dart';
 import '../../../data/repositories/expense_repository.dart';
 import '../../../data/repositories/income_repository.dart';
 import '../../../data/repositories/payment_account_repository.dart';
+import '../../../services/budget/budget_service.dart';
 import '../../../services/dashboard/dashboard_service.dart';
 import '../../../services/friend/friend_service.dart';
 import '../../../services/settings/settings_service.dart';
@@ -21,6 +22,7 @@ class DashboardBinding extends Bindings {
           Get.find<CategoryRepository>(),
           Get.find<PaymentAccountRepository>(),
           Get.find<FriendService>(),
+          Get.find<BudgetService>(),
         ),
         permanent: true,
       );

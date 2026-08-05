@@ -5,7 +5,7 @@ import '../../core/constants/income_sources.dart';
 import '../../data/models/dashboard/dashboard_period.dart';
 import '../../data/models/dashboard/dashboard_summary.dart';
 import '../../data/models/dashboard/dashboard_transaction.dart';
-import '../../data/models/dashboard/mock_budget_progress.dart';
+import '../../data/models/dashboard/budget_progress.dart';
 import '../../data/models/dashboard/monthly_spending_point.dart';
 import '../../data/repositories/dashboard_repository.dart';
 import '../settings/settings_service.dart';
@@ -48,7 +48,8 @@ class DashboardService extends GetxService with BaseService {
     return _repository.getMonthlySpending(profileId, months: months);
   }
 
-  List<MockBudgetProgress> getBudgetProgress() => _repository.getBudgetProgress();
+  Future<List<BudgetProgress>> getBudgetProgress() =>
+      _repository.getBudgetProgress();
 
   DashboardTransaction _localizeTransaction(DashboardTransaction item) {
     if (item.kind != DashboardTransactionKind.income) return item;

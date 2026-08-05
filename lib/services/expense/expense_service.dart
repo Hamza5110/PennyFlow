@@ -12,6 +12,7 @@ import '../../data/models/expense/expense_filter.dart';
 import '../../data/models/expense/expense_input.dart';
 import '../../data/models/expense/expense_list_item.dart';
 import '../../data/repositories/expense_repository.dart';
+import '../budget/budget_service.dart';
 import '../category/category_service.dart';
 import '../image/image_service.dart';
 import '../payment_account/payment_account_service.dart';
@@ -56,6 +57,7 @@ class ExpenseService extends GetxService with BaseService {
 
       final id = await _expenses.put(expense);
       expense.id = id;
+      await _notifyBudgetChange(expense.categoryId, expense.date);
       return expense;
     });
   }
@@ -66,6 +68,8 @@ class ExpenseService extends GetxService with BaseService {
       final profileId = _requireProfileId();
       final existing = await _getOwnedExpense(id, profileId);
       await _validateRelations(input, profileId);
+      final previousCategoryId = existing.categoryId;
+      final previousDate = existing.date;
 
       existing
         ..amount = input.amount
@@ -80,6 +84,12 @@ class ExpenseService extends GetxService with BaseService {
         ..updatedAt = DateTime.now();
 
       await _expenses.put(existing);
+      await _notifyBudgetChange(existing.categoryId, existing.date);
+      if (previousCategoryId != existing.categoryId ||
+          previousDate.year != existing.date.year ||
+          previousDate.month != existing.date.month) {
+        await _notifyBudgetChange(previousCategoryId, previousDate);
+      }
       return existing;
     });
   }
@@ -124,6 +134,7 @@ class ExpenseService extends GetxService with BaseService {
         ..deletedAt = DateTime.now()
         ..updatedAt = DateTime.now();
       await _expenses.put(expense);
+      await _notifyBudgetChange(expense.categoryId, expense.date);
     });
   }
 
@@ -139,6 +150,7 @@ class ExpenseService extends GetxService with BaseService {
         ..deletedAt = null
         ..updatedAt = DateTime.now();
       await _expenses.put(expense);
+      await _notifyBudgetChange(expense.categoryId, expense.date);
     });
   }
 
@@ -149,8 +161,11 @@ class ExpenseService extends GetxService with BaseService {
       if (expense.profileId != profileId || !expense.isDeleted) {
         throw const NotFoundException(message: 'Expense not in trash');
       }
+      final categoryId = expense.categoryId;
+      final date = expense.date;
       await _images.deleteImages(expense.receiptImagePaths);
       await _expenses.deleteById(id);
+      await _notifyBudgetChange(categoryId, date);
     });
   }
 
@@ -331,5 +346,10 @@ class ExpenseService extends GetxService with BaseService {
       throw const NotFoundException(message: 'Expense not found');
     }
     return expense;
+  }
+
+  Future<void> _notifyBudgetChange(int categoryId, DateTime date) async {
+    if (!Get.isRegistered<BudgetService>()) return;
+    await Get.find<BudgetService>().onExpenseChanged(categoryId, date);
   }
 }

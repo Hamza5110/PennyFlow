@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../../../app/routes/app_routes.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../data/models/dashboard/mock_budget_progress.dart';
+import '../../../data/models/dashboard/budget_progress.dart';
 
 class BudgetProgressSection extends StatelessWidget {
   const BudgetProgressSection({
@@ -12,7 +13,7 @@ class BudgetProgressSection extends StatelessWidget {
     required this.currencyCode,
   });
 
-  final List<MockBudgetProgress> budgets;
+  final List<BudgetProgress> budgets;
   final String currencyCode;
 
   Color _parseColor(String hex) {
@@ -31,9 +32,19 @@ class BudgetProgressSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'dashboard_budgets'.tr,
-              style: theme.textTheme.titleSmall,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'dashboard_budgets'.tr,
+                    style: theme.textTheme.titleSmall,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Get.toNamed<void>(AppRoutes.budgets),
+                  child: Text('budgets_manage'.tr),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             for (final budget in budgets) ...[
@@ -58,7 +69,7 @@ class _BudgetRow extends StatelessWidget {
     required this.accent,
   });
 
-  final MockBudgetProgress budget;
+  final BudgetProgress budget;
   final String currencyCode;
   final Color accent;
 

@@ -7,8 +7,9 @@ import '../../core/utils/app_date_utils.dart';
 import '../models/dashboard/dashboard_period.dart';
 import '../models/dashboard/dashboard_summary.dart';
 import '../models/dashboard/dashboard_transaction.dart';
-import '../models/dashboard/mock_budget_progress.dart';
+import '../models/dashboard/budget_progress.dart';
 import '../models/dashboard/monthly_spending_point.dart';
+import '../../services/budget/budget_service.dart';
 import '../../services/friend/friend_service.dart';
 import 'category_repository.dart';
 import 'expense_repository.dart';
@@ -23,6 +24,7 @@ class DashboardRepository extends BaseRepository {
     this._categories,
     this._accounts,
     this._friends,
+    this._budgets,
   );
 
   final ExpenseRepository _expenses;
@@ -30,6 +32,7 @@ class DashboardRepository extends BaseRepository {
   final CategoryRepository _categories;
   final PaymentAccountRepository _accounts;
   final FriendService _friends;
+  final BudgetService _budgets;
 
   Future<DashboardSummary> getSummary(
     int profileId,
@@ -155,26 +158,6 @@ class DashboardRepository extends BaseRepository {
     return points;
   }
 
-  /// Budget progress remains mock until Phase 10.
-  List<MockBudgetProgress> getBudgetProgress() => const [
-        MockBudgetProgress(
-          categoryName: 'Food',
-          colorHex: '#F97316',
-          spent: 8200,
-          target: 12000,
-        ),
-        MockBudgetProgress(
-          categoryName: 'Grocery',
-          colorHex: '#22C55E',
-          spent: 10500,
-          target: 10000,
-        ),
-        MockBudgetProgress(
-          categoryName: 'Fuel',
-          colorHex: '#EAB308',
-          spent: 4500,
-          target: 8000,
-        ),
-      ];
+  Future<List<BudgetProgress>> getBudgetProgress() => _budgets.getDashboardProgress();
 
 }

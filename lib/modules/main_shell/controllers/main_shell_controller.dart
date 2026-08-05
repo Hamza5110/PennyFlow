@@ -63,6 +63,8 @@ class MainShellController extends BaseController {
 
   void openAccounts() => Get.toNamed<void>(AppRoutes.accounts);
 
+  void openBudgets() => Get.toNamed<void>(AppRoutes.budgets);
+
   void openSearch() => Get.toNamed<void>(AppRoutes.search);
 
   Future<void> onQuickAdd() async {
