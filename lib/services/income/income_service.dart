@@ -62,6 +62,7 @@ class IncomeService extends GetxService with BaseService {
       final profileId = _requireProfileId();
       final existing = await _getOwnedIncome(id, profileId);
       await _validateAccount(input.accountId, profileId);
+      final previousPaths = List<String>.from(existing.imagePaths);
 
       existing
         ..amount = input.amount
@@ -72,6 +73,10 @@ class IncomeService extends GetxService with BaseService {
         ..imagePaths = List.of(input.imagePaths)
         ..updatedAt = DateTime.now();
 
+      await _images.deleteRemovedPaths(
+        previous: previousPaths,
+        current: input.imagePaths,
+      );
       await _incomes.put(existing);
       return existing;
     });

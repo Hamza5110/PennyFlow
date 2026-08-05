@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/base/base_controller.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/income_sources.dart';
 import '../../../core/errors/error_handler.dart';
 import '../../../data/models/income.dart';
@@ -122,19 +123,23 @@ class IncomeFormController extends BaseController {
   }
 
   Future<void> addFromGallery() async {
-    final remaining = 5 - imagePaths.length;
+    final remaining = AppConstants.maxImagesPerTransaction - imagePaths.length;
     if (remaining <= 0) return;
     final paths = await _images.pickFromGallery(maxImages: remaining);
     imagePaths.addAll(paths);
   }
 
   Future<void> addFromCamera() async {
-    if (imagePaths.length >= 5) return;
+    if (imagePaths.length >= AppConstants.maxImagesPerTransaction) return;
     final path = await _images.pickFromCamera();
     if (path != null) imagePaths.add(path);
   }
 
-  void removeImage(int index) => imagePaths.removeAt(index);
+  Future<void> removeImage(int index) async {
+    if (index < 0 || index >= imagePaths.length) return;
+    final path = imagePaths.removeAt(index);
+    await _images.deleteImage(path);
+  }
 
   void onSourceChanged(String? key) {
     if (key == null) return;

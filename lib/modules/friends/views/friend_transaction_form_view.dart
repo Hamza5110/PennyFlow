@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -7,6 +5,7 @@ import '../../../core/constants/friend_constants.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/app_text_field.dart';
+import '../../../core/widgets/receipt_image_picker_section.dart';
 import '../controllers/friend_transaction_form_controller.dart';
 
 class FriendTransactionFormView extends GetView<FriendTransactionFormController> {
@@ -111,50 +110,15 @@ class FriendTransactionFormView extends GetView<FriendTransactionFormController>
               maxLines: 3,
             ),
             const SizedBox(height: 16),
-            Text('friends_receipts'.tr, style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 8),
             Obx(
-              () => Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (var i = 0; i < controller.imagePaths.length; i++)
-                    Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            File(controller.imagePaths[i]),
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: IconButton(
-                            icon: const Icon(Icons.close, size: 18),
-                            onPressed: () => controller.removeImage(i),
-                          ),
-                        ),
-                      ],
-                    ),
-                  if (controller.imagePaths.length < 5)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          onPressed: controller.addFromGallery,
-                          icon: const Icon(Icons.photo_library_outlined),
-                        ),
-                        IconButton(
-                          onPressed: controller.addFromCamera,
-                          icon: const Icon(Icons.photo_camera_outlined),
-                        ),
-                      ],
-                    ),
-                ],
+              () => ReceiptImagePickerSection(
+                title: 'friends_receipts'.tr,
+                imagePaths: controller.imagePaths.toList(),
+                onAddGallery: controller.addFromGallery,
+                onAddCamera: controller.addFromCamera,
+                onRemove: (index) => controller.removeImage(index),
+                galleryLabel: 'expense_gallery'.tr,
+                cameraLabel: 'expense_camera'.tr,
               ),
             ),
             const SizedBox(height: 24),

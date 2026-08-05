@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../../core/base/base_service.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/constants/friend_constants.dart';
 import '../../core/constants/validation_constants.dart';
 import '../../core/errors/app_exception.dart';
@@ -247,6 +248,7 @@ class FriendService extends GetxService with BaseService {
       _validateTransactionInput(input);
       final existing = await _getOwnedTransaction(id, profileId);
       await _getOwnedFriend(input.friendId, profileId);
+      final previousPaths = List<String>.from(existing.imagePaths);
 
       existing
         ..friendId = input.friendId
@@ -259,6 +261,10 @@ class FriendService extends GetxService with BaseService {
         ..updatedAt = DateTime.now();
 
       await _refreshStatus(existing);
+      await _images.deleteRemovedPaths(
+        previous: previousPaths,
+        current: input.imagePaths,
+      );
       await _transactions.put(existing);
       await _syncReminder(existing);
       return existing;
@@ -469,7 +475,7 @@ class FriendService extends GetxService with BaseService {
         field: 'notes',
       );
     }
-    if (input.imagePaths.length > 5) {
+    if (input.imagePaths.length > AppConstants.maxImagesPerTransaction) {
       throw const ValidationException(
         message: 'Maximum 5 images allowed',
         field: 'images',
@@ -493,7 +499,7 @@ class FriendService extends GetxService with BaseService {
         field: 'note',
       );
     }
-    if (input.imagePaths.length > 5) {
+    if (input.imagePaths.length > AppConstants.maxImagesPerTransaction) {
       throw const ValidationException(
         message: 'Maximum 5 images allowed',
         field: 'images',

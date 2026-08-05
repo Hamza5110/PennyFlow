@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,6 +7,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../services/settings/settings_service.dart';
+import '../../../core/widgets/receipt_image_picker_section.dart';
 import '../controllers/friend_transaction_detail_controller.dart';
 
 class FriendTransactionDetailView
@@ -72,22 +71,7 @@ class FriendTransactionDetailView
               const SizedBox(height: 16),
               Text('friends_receipts'.tr, style: theme.textTheme.titleSmall),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: txn.imagePaths
-                    .map(
-                      (path) => ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.file(
-                          File(path),
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
+              ReceiptThumbnailGrid(imagePaths: txn.imagePaths),
             ],
             const SizedBox(height: 24),
             Text(

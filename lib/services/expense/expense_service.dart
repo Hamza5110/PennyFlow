@@ -71,6 +71,8 @@ class ExpenseService extends GetxService with BaseService {
       final previousCategoryId = existing.categoryId;
       final previousDate = existing.date;
 
+      final previousPaths = List<String>.from(existing.receiptImagePaths);
+
       existing
         ..amount = input.amount
         ..categoryId = input.categoryId
@@ -83,6 +85,10 @@ class ExpenseService extends GetxService with BaseService {
         ..receiptImagePaths = List.of(input.receiptImagePaths)
         ..updatedAt = DateTime.now();
 
+      await _images.deleteRemovedPaths(
+        previous: previousPaths,
+        current: input.receiptImagePaths,
+      );
       await _expenses.put(existing);
       await _notifyBudgetChange(existing.categoryId, existing.date);
       if (previousCategoryId != existing.categoryId ||

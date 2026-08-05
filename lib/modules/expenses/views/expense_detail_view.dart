@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,6 +6,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../services/settings/settings_service.dart';
+import '../../../core/widgets/receipt_image_picker_section.dart';
 import '../controllers/expense_detail_controller.dart';
 
 class ExpenseDetailView extends GetView<ExpenseDetailController> {
@@ -61,22 +60,7 @@ class ExpenseDetailView extends GetView<ExpenseDetailController> {
               const SizedBox(height: 16),
               Text('expense_receipts'.tr, style: theme.textTheme.titleSmall),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: expense.receiptImagePaths
-                    .map(
-                      (path) => ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.file(
-                          File(path),
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
+              ReceiptThumbnailGrid(imagePaths: expense.receiptImagePaths),
             ],
             const SizedBox(height: 24),
             AppButton(label: 'common_edit'.tr, onPressed: controller.edit),
