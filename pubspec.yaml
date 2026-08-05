@@ -1,0 +1,90 @@
+name: penny_flow
+description: "PennyFlow – Track every penny, manage every moment."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+# Keep Isar Community packages on the same version.
+isar_version: &isar_version 3.3.2
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # UI
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.2.1
+  fl_chart: ^0.70.2
+
+  # State management / DI / Navigation
+  get: ^4.7.2
+
+  # Local database (community-maintained Isar fork — API-compatible)
+  isar_community:
+    version: *isar_version
+  isar_community_flutter_libs:
+    version: *isar_version
+  path_provider: ^2.1.5
+
+  # Lightweight & secure settings storage
+  shared_preferences: ^2.5.3
+  flutter_secure_storage: ^9.2.4
+
+  # Auth & Google Drive backup (wired in later features)
+  google_sign_in: ^6.2.2
+  googleapis: ^14.0.0
+  extension_google_sign_in_as_googleapis_auth: ^2.0.12
+  http: ^1.3.0
+
+  # Notifications
+  flutter_local_notifications: ^19.0.0
+  timezone: ^0.10.0
+
+  # Images (receipts — wired in later features)
+  image_picker: ^1.1.2
+  flutter_image_compress: ^2.4.0
+
+  # Reports (wired in later features)
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  excel: ^4.0.6
+  csv: ^6.0.0
+
+  # App info / permissions / updates
+  package_info_plus: ^8.3.0
+  permission_handler: ^11.4.0
+  connectivity_plus: ^6.1.4
+  intl: ^0.20.2
+  logger: ^2.5.0
+  uuid: ^4.5.1
+  crypto: ^3.0.6
+  archive: ^3.6.1
+  path: ^1.9.1
+  collection: ^1.19.1
+  equatable: ^2.0.7
+
+  # Biometrics (app lock — wired later)
+  local_auth: ^2.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.15
+  isar_community_generator:
+    version: *isar_version
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  # Custom fonts can be added under assets/fonts/ and registered here.
+  # Until then, google_fonts provides Plus Jakarta Sans / JetBrains Mono at runtime.
