@@ -7,6 +7,7 @@ import '../../core/base/base_service.dart';
 import '../../core/constants/storage_keys.dart';
 import '../settings/settings_service.dart';
 import '../recurring/recurring_service.dart';
+import '../reminder/reminder_service.dart';
 import '../startup/startup_service.dart';
 import '../storage/local_storage_service.dart';
 
@@ -18,12 +19,14 @@ class AppLifecycleService extends GetxService
     this._storage,
     this._startup,
     this._recurring,
+    this._reminders,
   );
 
   final SettingsService _settings;
   final LocalStorageService _storage;
   final StartupService _startup;
   final RecurringService _recurring;
+  final ReminderService _reminders;
 
   final Rx<AppLifecycleState> lifecycleState =
       AppLifecycleState.resumed.obs;
@@ -72,6 +75,7 @@ class AppLifecycleService extends GetxService
     try {
       if (_settings.activeProfileId != null) {
         await _recurring.processDueTemplates();
+        await _reminders.rescheduleAll();
       }
 
       if (!_settings.isAppLockEnabled) return;

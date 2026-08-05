@@ -1,11 +1,15 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:timezone/data/latest.dart' as tz_data;
+import 'package:timezone/timezone.dart' as tz;
 
 import '../../core/base/base_service.dart';
 import '../../core/logging/app_logger.dart';
 
-/// Local notifications for budget alerts (FR-081, FR-082).
+/// Local notifications for budgets, recurring, and reminders (FR-134).
 class NotificationService extends GetxService with BaseService {
+  NotificationService();
+
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
@@ -13,8 +17,14 @@ class NotificationService extends GetxService with BaseService {
   static const String _budgetChannelName = 'Budget Alerts';
   static const String _recurringChannelId = 'penny_flow_recurring';
   static const String _recurringChannelName = 'Recurring Transactions';
+  static const String _reminderChannelId = 'penny_flow_reminders';
+  static const String _reminderChannelName = 'Reminders';
+
+  static int _reminderNotificationId(int reminderId) => 10000 + reminderId;
 
   Future<NotificationService> init() async {
+    tz_data.initializeTimeZones();
+
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
     const darwin = DarwinInitializationSettings();
     const initSettings = InitializationSettings(
@@ -25,29 +35,108 @@ class NotificationService extends GetxService with BaseService {
 
     await _plugin.initialize(initSettings);
 
-    const channel = AndroidNotificationChannel(
+    await _createChannel(
       _budgetChannelId,
       _budgetChannelName,
-      description: 'Budget warning and exceeded alerts',
-      importance: Importance.high,
+      'Budget warning and exceeded alerts',
+      Importance.high,
+    );
+    await _createChannel(
+      _recurringChannelId,
+      _recurringChannelName,
+      'Recurring transaction auto-generation alerts',
+      Importance.defaultImportance,
+    );
+    await _createChannel(
+      _reminderChannelId,
+      _reminderChannelName,
+      'Bill, subscription, and payment reminders',
+      Importance.high,
+    );
+
+    return this;
+  }
+
+  Future<void> _createChannel(
+    String id,
+    String name,
+    String description,
+    Importance importance,
+  ) async {
+    final channel = AndroidNotificationChannel(
+      id,
+      name,
+      description: description,
+      importance: importance,
     );
     await _plugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
+  }
 
-    const recurringChannel = AndroidNotificationChannel(
-      _recurringChannelId,
-      _recurringChannelName,
-      description: 'Recurring transaction auto-generation alerts',
-      importance: Importance.defaultImportance,
+  Future<void> scheduleReminder({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledAt,
+  }) async {
+    final notificationId = _reminderNotificationId(id);
+    await cancelReminder(id);
+
+    try {
+      final tzScheduled = tz.TZDateTime.from(scheduledAt, tz.local);
+      final details = NotificationDetails(
+        android: AndroidNotificationDetails(
+          _reminderChannelId,
+          _reminderChannelName,
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: const DarwinNotificationDetails(),
+      );
+
+      await _plugin.zonedSchedule(
+        notificationId,
+        title,
+        body,
+        tzScheduled,
+        details,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      );
+    } catch (error, stackTrace) {
+      AppLogger.instance.w(
+        'Reminder schedule failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> cancelReminder(int id) async {
+    try {
+      await _plugin.cancel(_reminderNotificationId(id));
+    } catch (error, stackTrace) {
+      AppLogger.instance.w(
+        'Reminder cancel failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> showReminderNow({
+    required int id,
+    required String title,
+    required String body,
+  }) async {
+    await _show(
+      id: _reminderNotificationId(id),
+      title: title,
+      body: body,
+      channelId: _reminderChannelId,
+      channelName: _reminderChannelName,
     );
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(recurringChannel);
-
-    return this;
   }
 
   Future<void> showBudgetWarning({
@@ -84,6 +173,16 @@ class NotificationService extends GetxService with BaseService {
     );
   }
 
+  Future<void> showRecurringGenerated({required int count}) async {
+    await _show(
+      id: 9000 + count,
+      title: 'recurring_alert_title'.tr,
+      body: 'recurring_alert_body'.trParams({'count': count.toString()}),
+      channelId: _recurringChannelId,
+      channelName: _recurringChannelName,
+    );
+  }
+
   Future<void> _show({
     required int id,
     required String title,
@@ -99,25 +198,15 @@ class NotificationService extends GetxService with BaseService {
           importance: Importance.high,
           priority: Priority.high,
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: const DarwinNotificationDetails(),
       );
       await _plugin.show(id, title, body, details);
     } catch (error, stackTrace) {
       AppLogger.instance.w(
-        'Budget notification failed',
+        'Notification failed',
         error: error,
         stackTrace: stackTrace,
       );
     }
-  }
-
-  Future<void> showRecurringGenerated({required int count}) async {
-    await _show(
-      id: 9000 + count,
-      title: 'recurring_alert_title'.tr,
-      body: 'recurring_alert_body'.trParams({'count': count.toString()}),
-      channelId: _recurringChannelId,
-      channelName: _recurringChannelName,
-    );
   }
 }

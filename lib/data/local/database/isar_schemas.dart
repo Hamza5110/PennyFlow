@@ -10,6 +10,7 @@ import '../../models/income.dart';
 import '../../models/payment_account.dart';
 import '../../models/profile.dart';
 import '../../models/recurring_template.dart';
+import '../../models/reminder.dart';
 import '../../models/repayment.dart';
 
 abstract final class IsarSchemas {
@@ -25,5 +26,6 @@ abstract final class IsarSchemas {
         RepaymentSchema,
         BudgetSchema,
         RecurringTemplateSchema,
+        ReminderSchema,
       ];
 }

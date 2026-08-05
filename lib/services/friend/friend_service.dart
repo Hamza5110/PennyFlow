@@ -19,6 +19,7 @@ import '../../data/repositories/friend_repository.dart';
 import '../../data/repositories/friend_transaction_repository.dart';
 import '../../data/repositories/repayment_repository.dart';
 import '../image/image_service.dart';
+import '../reminder/reminder_service.dart';
 import '../settings/settings_service.dart';
 
 class FriendService extends GetxService with BaseService {
@@ -232,6 +233,7 @@ class FriendService extends GetxService with BaseService {
 
       final id = await _transactions.put(txn);
       txn.id = id;
+      await _syncReminder(txn);
       return txn;
     });
   }
@@ -258,6 +260,7 @@ class FriendService extends GetxService with BaseService {
 
       await _refreshStatus(existing);
       await _transactions.put(existing);
+      await _syncReminder(existing);
       return existing;
     });
   }
@@ -292,6 +295,7 @@ class FriendService extends GetxService with BaseService {
 
       await _refreshStatus(txn);
       await _transactions.put(txn);
+      await _syncReminder(txn);
       return repayment;
     });
   }
@@ -305,6 +309,7 @@ class FriendService extends GetxService with BaseService {
         ..deletedAt = DateTime.now()
         ..updatedAt = DateTime.now();
       await _transactions.put(txn);
+      await _syncReminder(txn);
     });
   }
 
@@ -320,6 +325,7 @@ class FriendService extends GetxService with BaseService {
         ..deletedAt = null
         ..updatedAt = DateTime.now();
       await _transactions.put(txn);
+      await _syncReminder(txn);
     });
   }
 
@@ -338,6 +344,11 @@ class FriendService extends GetxService with BaseService {
       await _repayments.deleteByTransaction(id);
       await _transactions.deleteById(id);
     });
+  }
+
+  Future<void> _syncReminder(FriendTransaction txn) async {
+    if (!Get.isRegistered<ReminderService>()) return;
+    await Get.find<ReminderService>().syncFriendTransaction(txn);
   }
 
   Future<void> _refreshStatus(FriendTransaction txn) async {

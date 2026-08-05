@@ -16,6 +16,7 @@ import '../data/repositories/payment_account_repository.dart';
 import '../data/repositories/profile_repository.dart';
 import '../data/repositories/repayment_repository.dart';
 import '../data/repositories/recurring_template_repository.dart';
+import '../data/repositories/reminder_repository.dart';
 import '../services/auth/auth_service.dart';
 import '../services/budget/budget_service.dart';
 import '../services/category/category_service.dart';
@@ -31,6 +32,7 @@ import '../services/auth/google_sign_in_client.dart';
 import '../services/lifecycle/app_lifecycle_service.dart';
 import '../services/profile/profile_service.dart';
 import '../services/recurring/recurring_service.dart';
+import '../services/reminder/reminder_service.dart';
 import '../services/search/filter_session_service.dart';
 import '../services/search/search_service.dart';
 import '../services/settings/settings_service.dart';
@@ -95,6 +97,10 @@ abstract final class AppInitializer {
     Get.put<BudgetRepository>(BudgetRepository(isar), permanent: true);
     Get.put<RecurringTemplateRepository>(
       RecurringTemplateRepository(isar),
+      permanent: true,
+    );
+    Get.put<ReminderRepository>(
+      ReminderRepository(isar),
       permanent: true,
     );
     Get.put<ImageService>(ImageService(), permanent: true);
@@ -165,6 +171,16 @@ abstract final class AppInitializer {
         Get.find<IncomeRepository>(),
         Get.find<CategoryRepository>(),
         Get.find<PaymentAccountRepository>(),
+        Get.find<NotificationService>(),
+        settings,
+      ),
+      permanent: true,
+    );
+
+    Get.put<ReminderService>(
+      ReminderService(
+        Get.find<ReminderRepository>(),
+        Get.find<FriendRepository>(),
         Get.find<NotificationService>(),
         settings,
       ),
@@ -246,12 +262,14 @@ abstract final class AppInitializer {
         localStorage,
         Get.find<StartupService>(),
         Get.find<RecurringService>(),
+        Get.find<ReminderService>(),
       ).init(),
       permanent: true,
     );
 
     if (settings.activeProfileId != null) {
       await Get.find<RecurringService>().processDueTemplates();
+      await Get.find<ReminderService>().rescheduleAll();
     }
 
     if (kDebugMode) {
