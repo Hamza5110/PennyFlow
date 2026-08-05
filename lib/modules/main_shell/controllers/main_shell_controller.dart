@@ -9,6 +9,7 @@ import '../../expenses/controllers/expenses_list_controller.dart';
 import '../../friends/controllers/friend_transactions_list_controller.dart';
 import '../../friends/controllers/friends_list_controller.dart';
 import '../../income/controllers/incomes_list_controller.dart';
+import '../../statistics/controllers/statistics_controller.dart';
 
 class MainShellController extends BaseController {
   MainShellController(this._profiles, this._auth);
@@ -46,6 +47,9 @@ class MainShellController extends BaseController {
     }
     if (index == 0 && Get.isRegistered<DashboardController>()) {
       Get.find<DashboardController>().loadDashboard();
+    }
+    if (index == 2 && Get.isRegistered<StatisticsController>()) {
+      Get.find<StatisticsController>().loadStatistics();
     }
     if (index == 3) {
       if (Get.isRegistered<FriendsListController>()) {

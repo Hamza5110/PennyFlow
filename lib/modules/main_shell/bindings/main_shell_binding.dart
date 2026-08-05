@@ -6,6 +6,7 @@ import '../../dashboard/bindings/dashboard_binding.dart';
 import '../../expenses/bindings/expenses_binding.dart';
 import '../../friends/bindings/friends_binding.dart';
 import '../../income/bindings/income_binding.dart';
+import '../../statistics/bindings/statistics_binding.dart';
 import '../controllers/main_shell_controller.dart';
 
 class MainShellBinding extends Bindings {
@@ -15,6 +16,7 @@ class MainShellBinding extends Bindings {
     ExpensesBinding().dependencies();
     IncomeBinding().dependencies();
     FriendsBinding().dependencies();
+    StatisticsBinding().dependencies();
     Get.lazyPut<MainShellController>(
       () => MainShellController(
         Get.find<ProfileService>(),

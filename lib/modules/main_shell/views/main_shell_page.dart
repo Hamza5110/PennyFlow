@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../dashboard/views/dashboard_view.dart';
 import '../../transactions/views/transactions_tab_view.dart';
 import '../../friends/views/friends_tab_view.dart';
+import '../../statistics/views/statistics_tab_view.dart';
 import '../controllers/main_shell_controller.dart';
 import '../views/main_shell_view.dart';
 
@@ -49,11 +50,7 @@ class MainShellPage extends GetView<MainShellController> {
           children: [
             DashboardView(),
             TransactionsTabView(),
-            PlaceholderTabView(
-              titleKey: 'nav_statistics',
-              messageKey: 'placeholder_statistics',
-              icon: Icons.bar_chart_outlined,
-            ),
+            const StatisticsTabView(),
             const FriendsTabView(),
             MoreTabView(),
           ],
