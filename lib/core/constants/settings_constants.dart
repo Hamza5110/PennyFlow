@@ -1,0 +1,25 @@
+import 'package:flutter/material.dart';
+
+/// User-configurable settings options (SRS §13.19).
+abstract final class SettingsConstants {
+  static const List<String> supportedCurrencyCodes = [
+    'PKR',
+    'USD',
+    'EUR',
+    'GBP',
+    'INR',
+    'AED',
+    'SAR',
+  ];
+
+  static const List<({String code, String labelKey})> supportedLocales = [
+    (code: 'en', labelKey: 'settings_language_en'),
+    (code: 'ur', labelKey: 'settings_language_ur'),
+  ];
+
+  static const List<({ThemeMode mode, String labelKey})> themeOptions = [
+    (mode: ThemeMode.system, labelKey: 'settings_theme_system'),
+    (mode: ThemeMode.light, labelKey: 'settings_theme_light'),
+    (mode: ThemeMode.dark, labelKey: 'settings_theme_dark'),
+  ];
+}

@@ -98,7 +98,8 @@ class SettingsService extends GetxService with BaseService {
   Future<void> setLocaleCode(String code) async {
     localeCode.value = code;
     await _storage.setString(StorageKeys.localeCode, code);
-    await Get.updateLocale(Locale(code));
+    final locale = code == 'ur' ? const Locale('ur', 'PK') : Locale(code);
+    await Get.updateLocale(locale);
   }
 
   Future<void> setCurrencyCode(String code) async {

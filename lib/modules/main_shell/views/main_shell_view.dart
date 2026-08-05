@@ -144,19 +144,11 @@ class MoreTabView extends GetView<MainShellController> {
         const SizedBox(height: 16),
         Card(
           child: ListTile(
-            leading: const Icon(Icons.cloud_sync_outlined),
-            title: Text('backup_title'.tr),
-            subtitle: Text('more_backup_subtitle'.tr),
+            leading: const Icon(Icons.settings_outlined),
+            title: Text('settings_title'.tr),
+            subtitle: Text('more_settings_subtitle'.tr),
             trailing: const Icon(Icons.chevron_right_rounded),
-            onTap: controller.openBackup,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Card(
-          child: ListTile(
-            leading: const Icon(Icons.info_outline_rounded),
-            title: Text('more_about'.tr),
-            subtitle: const Text('PennyFlow v1.0.0'),
+            onTap: controller.openSettings,
           ),
         ),
       ],

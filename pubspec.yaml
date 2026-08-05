@@ -68,6 +68,7 @@ dependencies:
   collection: ^1.19.1
   equatable: ^2.0.7
   share_plus: ^10.1.4
+  file_picker: ^8.1.7
 
   # Biometrics (app lock — wired later)
   local_auth: ^2.3.0

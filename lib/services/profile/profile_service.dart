@@ -103,6 +103,13 @@ class ProfileService extends GetxService with BaseService {
     });
   }
 
+  Future<void> updateActiveProfileCurrency(String code) async {
+    final profile = await getActiveProfile();
+    if (profile == null) return;
+    profile.currencyCode = code.toUpperCase();
+    await _repository.put(profile);
+  }
+
   Future<void> _ensureActiveProfile() async {
     if (_settings.activeProfileId != null) return;
 

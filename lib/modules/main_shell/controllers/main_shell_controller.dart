@@ -79,6 +79,8 @@ class MainShellController extends BaseController {
 
   void openBackup() => Get.toNamed<void>(AppRoutes.backup);
 
+  void openSettings() => Get.toNamed<void>(AppRoutes.settings);
+
   Future<void> onQuickAdd() async {
     final saved = await Get.toNamed<dynamic>(AppRoutes.expenseForm);
     if (saved == true) {

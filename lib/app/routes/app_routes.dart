@@ -38,6 +38,8 @@ abstract final class AppRoutes {
   static const String reminders = '/reminders';
   static const String reminderForm = '/reminders/form';
   static const String settings = '/settings';
+  static const String about = '/settings/about';
+  static const String privacy = '/settings/privacy';
   static const String backup = '/backup';
   static const String update = '/update';
 }
