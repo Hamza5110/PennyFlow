@@ -40,6 +40,7 @@ abstract final class AppRoutes {
   static const String settings = '/settings';
   static const String about = '/settings/about';
   static const String privacy = '/settings/privacy';
+  static const String licenses = '/settings/licenses';
   static const String backup = '/backup';
   static const String update = '/update';
   static const String updateHistory = '/update/history';

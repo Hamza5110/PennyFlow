@@ -1,4 +1,4 @@
-package com.example.penny_flow
+package com.pennyflow.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

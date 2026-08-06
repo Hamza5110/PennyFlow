@@ -197,6 +197,8 @@ class SettingsController extends BaseController {
 
   void openPrivacy() => Get.toNamed<void>(AppRoutes.privacy);
 
+  void openLicenses() => Get.toNamed<void>(AppRoutes.licenses);
+
   void openUpdate() => Get.toNamed<void>(AppRoutes.update);
 
   void openUpdateHistory() => Get.toNamed<void>(AppRoutes.updateHistory);

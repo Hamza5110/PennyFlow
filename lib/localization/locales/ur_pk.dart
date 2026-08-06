@@ -564,5 +564,7 @@ const Map<String, String> urPk = {
   'settings_privacy': 'رازداری کی پالیسی',
   'settings_privacy_title': 'آپ کی رازداری اہم ہے',
   'settings_privacy_body':
-      'PennyFlow آپ کا مالی ڈیٹا اس ڈیوائس پر مقامی طور پر محفوظ کرتا ہے۔ Google Sign-In صرف اختیاری کلاؤڈ بیک اپ کے لیے استعمال ہوتا ہے۔ ہمارا کوئی سرور نہیں اور ہم آپ کا ڈیٹا نہیں بیچتے۔',
+      'PennyFlow آپ کے مالی ڈیٹا کو اس ڈیوائس پر مقامی طور پر محفوظ رکھتا ہے۔ Google Sign-In صرف آپ کے Google Drive AppData فولڈر میں اختیاری کلاؤڈ بیک اپ کے لیے استعمال ہوتا ہے۔ ہمارا کوئی بیک اینڈ سرور نہیں اور ہم آپ کا ڈیٹا نہیں بیچتے۔',
+  'settings_licenses': 'اوپن سورس لائسنسز',
+  'settings_licenses_legalese': '© 2026 PennyFlow. جملہ حقوق محفوظ ہیں۔',
 };

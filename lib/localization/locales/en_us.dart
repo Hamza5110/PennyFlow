@@ -563,4 +563,6 @@ const Map<String, String> enUs = {
   'settings_privacy_title': 'Your privacy matters',
   'settings_privacy_body':
       'PennyFlow stores your financial data locally on this device. Google Sign-In is used only for optional cloud backup to your own Google Drive AppData folder. We do not operate a backend server and do not sell your data.',
+  'settings_licenses': 'Open-source licenses',
+  'settings_licenses_legalese': '© 2026 PennyFlow. All rights reserved.',
 };

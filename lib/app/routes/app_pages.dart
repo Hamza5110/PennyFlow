@@ -43,6 +43,7 @@ import '../../modules/backup/bindings/backup_binding.dart';
 import '../../modules/backup/views/backup_view.dart';
 import '../../modules/settings/bindings/settings_binding.dart';
 import '../../modules/settings/views/about_view.dart';
+import '../../modules/settings/views/licenses_view.dart';
 import '../../modules/settings/views/privacy_view.dart';
 import '../../modules/settings/views/settings_view.dart';
 import '../../modules/update/bindings/update_binding.dart';
@@ -255,6 +256,12 @@ abstract final class AppPages {
     GetPage(
       name: AppRoutes.privacy,
       page: PrivacyView.new,
+      binding: SettingsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.licenses,
+      page: LicensesView.new,
       binding: SettingsBinding(),
       transition: Transition.rightToLeft,
     ),

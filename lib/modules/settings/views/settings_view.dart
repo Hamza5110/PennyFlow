@@ -268,6 +268,13 @@ class SettingsView extends GetView<SettingsController> {
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: controller.openPrivacy,
                 ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.gavel_outlined),
+                  title: Text('settings_licenses'.tr),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: controller.openLicenses,
+                ),
               ],
             ),
           ),

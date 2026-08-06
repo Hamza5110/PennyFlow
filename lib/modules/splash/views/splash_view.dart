@@ -44,10 +44,12 @@ class SplashView extends GetView<SplashController> {
                         color: Colors.white.withValues(alpha: 0.28),
                       ),
                     ),
-                    child: const Icon(
-                      Icons.account_balance_wallet_rounded,
-                      size: 44,
-                      color: Colors.white,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(22),
+                      child: Image.asset(
+                        'assets/icons/app_icon.png',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 28),

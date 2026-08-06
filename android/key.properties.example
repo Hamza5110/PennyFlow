@@ -1,0 +1,7 @@
+# Copy to android/key.properties and fill in your release keystore values.
+# Never commit key.properties or your .jks file to version control.
+
+storePassword=your-store-password
+keyPassword=your-key-password
+keyAlias=pennyflow
+storeFile=../keystore/pennyflow-release.jks

@@ -2,43 +2,77 @@
 
 **Track every penny, manage every moment.**
 
-Offline-first personal finance app for Android (Flutter). See the product specification and architecture before writing features:
+Offline-first personal finance app for Android, built with Flutter. PennyFlow keeps your expenses, income, budgets, and friend ledger on-device with optional Google Drive backup and GitHub-based in-app updates.
 
-- [`docs/Expense_Tracker_SRS.md`](docs/Expense_Tracker_SRS.md) — requirements
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — project foundation & coding rules
+## Features
 
-## Stack
+- Expense and income tracking with categories, accounts, receipts, and trash
+- Dashboard, statistics, budgets, recurring transactions, and reminders
+- Friends ledger with repayments and balance tracking
+- Reports (PDF, CSV, Excel) and global search
+- Google Drive AppData backup and restore
+- PIN / biometric app lock
+- In-app APK updates via GitHub Releases
+- English and Urdu localization, light/dark themes
 
-- Flutter (stable) + Material 3
-- GetX (state, routing, DI)
-- Isar Community (local DB)
-- Google Sign-In + Drive AppData (backup — not implemented yet)
-- `flutter_local_notifications`
+## Documentation
 
-## Status
+| Document | Purpose |
+|----------|---------|
+| [`docs/Expense_Tracker_SRS.md`](docs/Expense_Tracker_SRS.md) | Product requirements |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Code structure and conventions |
+| [`docs/RELEASE.md`](docs/RELEASE.md) | Signed APK build and release checklist |
+| [`CHANGELOG.md`](CHANGELOG.md) | Version history |
 
-**Foundation only.** Core structure, theme, DI, database bootstrap, settings, and splash are in place. Business modules (expenses, budgets, friends, …) are intentionally not implemented yet.
+## Requirements
+
+- Flutter stable (Dart SDK ^3.12)
+- Android SDK for APK builds
+- Google Cloud OAuth Web client ID (optional, for Drive backup)
 
 ## Getting started
 
 ```bash
 flutter pub get
-dart run build_runner build   # after changing @collection models
+dart run build_runner build --delete-conflicting-outputs   # after @collection model changes
+dart run flutter_launcher_icons                            # regenerate launcher icons
+dart run flutter_native_splash:create                      # regenerate native splash
+
 flutter run --dart-define=ENV=development \
   --dart-define=GOOGLE_SERVER_CLIENT_ID=your-web-client-id.apps.googleusercontent.com
 ```
 
-Google Sign-In requires an OAuth 2.0 Web client ID (`GOOGLE_SERVER_CLIENT_ID`) configured in [Google Cloud Console](https://console.cloud.google.com/) with the Drive AppData scope.
+## Testing
 
-## Project layout (summary)
+```bash
+flutter test -j 1
+flutter analyze
+```
+
+Isar integration tests download the native core on first run (`test/support/isar_test_helper.dart`).
+
+## Release APK
+
+See [`docs/RELEASE.md`](docs/RELEASE.md) for keystore setup and the full checklist.
+
+```bash
+chmod +x scripts/build_release_apk.sh
+GOOGLE_SERVER_CLIENT_ID=your-id.apps.googleusercontent.com ./scripts/build_release_apk.sh
+```
+
+**Version:** `1.0.0+1` · **Application ID:** `com.pennyflow.app`
+
+## Project layout
 
 ```
-lib/app/        # App shell, theme, routes, config, bootstrap
-lib/core/       # Base classes, errors, logging, utils, shared widgets
-lib/data/       # Isar, models, repositories
-lib/services/   # Business & infrastructure services
-lib/modules/    # Feature UI (splash only for now)
+lib/app/        # App shell, theme, routes, config
+lib/core/       # Base classes, errors, logging, shared widgets
+lib/data/       # Isar models and repositories
+lib/services/   # Business and infrastructure services
+lib/modules/    # Feature UI (GetX modules)
 lib/localization/
 ```
 
-Follow [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for every new feature.
+## License
+
+PennyFlow is released under the [MIT License](LICENSE). Third-party package licenses are available in **Settings → Open-source licenses**.

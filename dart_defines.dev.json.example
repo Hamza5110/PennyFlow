@@ -1,0 +1,6 @@
+{
+  "ENV": "development",
+  "GOOGLE_SERVER_CLIENT_ID": "your-web-client-id.apps.googleusercontent.com",
+  "GITHUB_OWNER": "Hamza5110",
+  "GITHUB_REPO": "PennyFlow"
+}
