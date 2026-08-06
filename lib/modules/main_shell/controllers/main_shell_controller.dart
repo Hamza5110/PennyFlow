@@ -5,6 +5,7 @@ import '../../../core/base/base_controller.dart';
 import '../../../services/auth/auth_service.dart';
 import '../../../services/profile/profile_service.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
+import '../../update/widgets/update_prompt_dialog.dart';
 import '../../expenses/controllers/expenses_list_controller.dart';
 import '../../friends/controllers/friend_transactions_list_controller.dart';
 import '../../friends/controllers/friends_list_controller.dart';
@@ -28,6 +29,11 @@ class MainShellController extends BaseController {
   void onInit() {
     super.onInit();
     _loadProfileName();
+    _maybePromptForUpdate();
+  }
+
+  Future<void> _maybePromptForUpdate() async {
+    await UpdatePromptDialog.showIfNeeded();
   }
 
   Future<void> _loadProfileName() async {

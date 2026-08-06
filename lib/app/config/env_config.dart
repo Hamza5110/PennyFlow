@@ -39,11 +39,11 @@ class EnvConfig {
     const envName = String.fromEnvironment('ENV', defaultValue: 'development');
     const githubOwner = String.fromEnvironment(
       'GITHUB_OWNER',
-      defaultValue: 'pennyflow',
+      defaultValue: 'Hamza5110',
     );
     const githubRepo = String.fromEnvironment(
       'GITHUB_REPO',
-      defaultValue: 'penny_flow',
+      defaultValue: 'PennyFlow',
     );
     const googleServerClientId = String.fromEnvironment(
       'GOOGLE_SERVER_CLIENT_ID',

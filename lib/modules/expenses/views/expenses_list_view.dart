@@ -94,6 +94,7 @@ class ExpensesListView extends GetView<ExpensesListController> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: null,
         onPressed: controller.openAdd,
         child: const Icon(Icons.add_rounded),
       ),

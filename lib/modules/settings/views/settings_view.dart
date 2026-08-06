@@ -144,14 +144,37 @@ class SettingsView extends GetView<SettingsController> {
           const SizedBox(height: 16),
           _SectionHeader(title: 'settings_updates_section'.tr),
           Card(
-            child: Obx(
-              () => SwitchListTile(
-                secondary: const Icon(Icons.system_update_outlined),
-                title: Text('settings_auto_update_check'.tr),
-                subtitle: Text('settings_auto_update_check_subtitle'.tr),
-                value: controller.autoUpdateCheckEnabled.value,
-                onChanged: controller.setAutoUpdateCheck,
-              ),
+            child: Column(
+              children: [
+                Obx(
+                  () => SwitchListTile(
+                    secondary: const Icon(Icons.system_update_outlined),
+                    title: Text('settings_auto_update_check'.tr),
+                    subtitle: Text('settings_auto_update_check_subtitle'.tr),
+                    value: controller.autoUpdateCheckEnabled.value,
+                    onChanged: controller.setAutoUpdateCheck,
+                  ),
+                ),
+                const Divider(height: 1),
+                Obx(
+                  () => ListTile(
+                    leading: const Icon(Icons.download_for_offline_outlined),
+                    title: Text('settings_check_updates'.tr),
+                    subtitle: Text('settings_check_updates_subtitle'.tr),
+                    onTap: controller.isLoading.value
+                        ? null
+                        : controller.checkForUpdates,
+                  ),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.history_rounded),
+                  title: Text('update_history_title'.tr),
+                  subtitle: Text('settings_update_history_subtitle'.tr),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: controller.openUpdateHistory,
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 16),

@@ -132,6 +132,25 @@ class SettingsService extends GetxService with BaseService {
     await _storage.setBool(StorageKeys.reminderAlertsEnabled, enabled);
   }
 
+  int get updateCheckFrequencyHours =>
+      _storage.getIntOr(StorageKeys.updateCheckFrequencyHours, 24);
+
+  DateTime? get lastUpdateCheckAt {
+    final raw = _storage.getString(StorageKeys.lastUpdateCheckAt);
+    return raw == null ? null : DateTime.tryParse(raw);
+  }
+
+  bool get isUpdateCheckDue {
+    final last = lastUpdateCheckAt;
+    if (last == null) return true;
+    return DateTime.now().difference(last) >=
+        Duration(hours: updateCheckFrequencyHours);
+  }
+
+  Future<void> recordUpdateCheck({required DateTime at}) async {
+    await _storage.setString(StorageKeys.lastUpdateCheckAt, at.toIso8601String());
+  }
+
   Future<void> recordBackupMeta({
     required DateTime at,
     required int sizeBytes,

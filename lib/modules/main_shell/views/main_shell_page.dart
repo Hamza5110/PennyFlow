@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/widgets/app_bottom_nav_bar.dart';
 import '../../dashboard/views/dashboard_view.dart';
-import '../../transactions/views/transactions_tab_view.dart';
 import '../../friends/views/friends_tab_view.dart';
 import '../../statistics/views/statistics_tab_view.dart';
+import '../../transactions/views/transactions_tab_view.dart';
 import '../controllers/main_shell_controller.dart';
-import '../views/main_shell_view.dart';
+import 'main_shell_view.dart';
 
 class MainShellPage extends GetView<MainShellController> {
   const MainShellPage({super.key});
@@ -43,34 +44,89 @@ class MainShellPage extends GetView<MainShellController> {
   Widget build(BuildContext context) {
     return Obx(() {
       final index = controller.selectedIndex.value;
+      final tab = _tabs[index];
+      final theme = Theme.of(context);
 
       return Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          surfaceTintColor: Colors.transparent,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(tab.labelKey.tr),
+              if (index == 0)
+                Obx(
+                  () => Text(
+                    controller.profileName.value,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                ),
+              if (index == 4)
+                Obx(
+                  () => Text(
+                    'more_greeting'.trParams({
+                      'name': controller.profileName.value,
+                    }),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          actions: [
+            if (index == 0)
+              IconButton(
+                icon: const Icon(Icons.settings_outlined),
+                tooltip: 'settings_title'.tr,
+                onPressed: controller.openSettings,
+              ),
+            if (index == 4)
+              IconButton(
+                icon: const Icon(Icons.search_rounded),
+                tooltip: 'search_title'.tr,
+                onPressed: controller.openSearch,
+              ),
+          ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Divider(
+              height: 1,
+              thickness: 1,
+              color: theme.colorScheme.outline.withValues(alpha: 0.2),
+            ),
+          ),
+        ),
         body: IndexedStack(
           index: index,
-          children: [
+          children: const [
             DashboardView(),
             TransactionsTabView(),
-            const StatisticsTabView(),
-            const FriendsTabView(),
+            StatisticsTabView(),
+            FriendsTabView(),
             MoreTabView(),
           ],
         ),
         floatingActionButton: controller.showQuickAddFab
             ? FloatingActionButton.extended(
+                heroTag: 'main_shell_quick_add',
                 onPressed: controller.onQuickAdd,
                 icon: const Icon(Icons.add_rounded),
                 label: Text('dashboard_quick_add'.tr),
               )
             : null,
-        bottomNavigationBar: NavigationBar(
+        bottomNavigationBar: AppBottomNavBar(
           selectedIndex: index,
-          onDestinationSelected: controller.onTabSelected,
-          destinations: [
-            for (final tab in _tabs)
-              NavigationDestination(
-                icon: Icon(tab.icon),
-                selectedIcon: Icon(tab.selectedIcon),
-                label: tab.labelKey.tr,
+          onSelected: controller.onTabSelected,
+          items: [
+            for (final t in _tabs)
+              AppBottomNavItem(
+                label: t.labelKey.tr,
+                icon: t.icon,
+                selectedIcon: t.selectedIcon,
               ),
           ],
         ),

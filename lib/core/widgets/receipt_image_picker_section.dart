@@ -146,16 +146,20 @@ class ReceiptImagePickerSection extends StatelessWidget {
         if (canAddMore)
           Row(
             children: [
-              OutlinedButton.icon(
-                onPressed: onAddGallery,
-                icon: const Icon(Icons.photo_library_outlined),
-                label: Text(galleryLabel ?? 'expense_gallery'.tr),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onAddGallery,
+                  icon: const Icon(Icons.photo_library_outlined),
+                  label: Text(galleryLabel ?? 'expense_gallery'.tr),
+                ),
               ),
               const SizedBox(width: 8),
-              OutlinedButton.icon(
-                onPressed: onAddCamera,
-                icon: const Icon(Icons.photo_camera_outlined),
-                label: Text(cameraLabel ?? 'expense_camera'.tr),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onAddCamera,
+                  icon: const Icon(Icons.photo_camera_outlined),
+                  label: Text(cameraLabel ?? 'expense_camera'.tr),
+                ),
               ),
             ],
           ),

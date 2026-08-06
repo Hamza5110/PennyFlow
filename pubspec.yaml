@@ -56,7 +56,7 @@ dependencies:
   csv: ^6.0.0
 
   # App info / permissions / updates
-  package_info_plus: ^8.3.0
+  package_info_plus: ^8.3.1
   permission_handler: ^11.4.0
   connectivity_plus: ^6.1.4
   intl: ^0.20.2
@@ -68,7 +68,8 @@ dependencies:
   collection: ^1.19.1
   equatable: ^2.0.7
   share_plus: ^10.1.4
-  file_picker: ^8.1.7
+  file_picker: ^8.3.7
+  open_filex: ^4.7.0
 
   # Biometrics (app lock — wired later)
   local_auth: ^2.3.0

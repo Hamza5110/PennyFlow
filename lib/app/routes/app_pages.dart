@@ -45,6 +45,9 @@ import '../../modules/settings/bindings/settings_binding.dart';
 import '../../modules/settings/views/about_view.dart';
 import '../../modules/settings/views/privacy_view.dart';
 import '../../modules/settings/views/settings_view.dart';
+import '../../modules/update/bindings/update_binding.dart';
+import '../../modules/update/views/update_history_view.dart';
+import '../../modules/update/views/update_view.dart';
 import '../../modules/reminders/bindings/reminders_binding.dart';
 import '../../modules/reminders/views/reminder_form_view.dart';
 import '../../modules/reminders/views/reminders_list_view.dart';
@@ -253,6 +256,18 @@ abstract final class AppPages {
       name: AppRoutes.privacy,
       page: PrivacyView.new,
       binding: SettingsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.update,
+      page: UpdateView.new,
+      binding: UpdateBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.updateHistory,
+      page: UpdateHistoryView.new,
+      binding: UpdateBinding(),
       transition: Transition.rightToLeft,
     ),
   ];

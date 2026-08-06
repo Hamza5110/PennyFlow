@@ -20,15 +20,10 @@ class FriendsListView extends GetView<FriendsListController> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(
-                  child: Text(
-                    'friends_title'.tr,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
                 IconButton(
                   icon: const Icon(Icons.person_add_outlined),
                   onPressed: controller.openAddFriend,
@@ -76,6 +71,7 @@ class FriendsListView extends GetView<FriendsListController> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
         onPressed: controller.openAddTransaction,
         icon: const Icon(Icons.add_rounded),
         label: Text('friends_add_transaction'.tr),

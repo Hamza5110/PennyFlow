@@ -44,6 +44,10 @@ import '../services/settings/settings_service.dart';
 import '../services/startup/startup_service.dart';
 import '../services/storage/local_storage_service.dart';
 import '../services/storage/secure_storage_service.dart';
+import '../data/repositories/update_repository.dart';
+import '../services/update/apk_download_manager.dart';
+import '../services/update/github_release_client.dart';
+import '../services/update/update_service.dart';
 import 'config/env_config.dart';
 
 /// Ordered cold-start bootstrap before [runApp].
@@ -292,6 +296,19 @@ abstract final class AppInitializer {
         Get.find<BackupBundleRestorer>(),
         Get.find<BackupSnapshotCodec>(),
       ),
+      permanent: true,
+    );
+
+    Get.put<UpdateRepository>(UpdateRepository(localStorage), permanent: true);
+    Get.put<GitHubReleaseClient>(GitHubReleaseClient(), permanent: true);
+    Get.put<ApkDownloadManager>(ApkDownloadManager(), permanent: true);
+    await Get.putAsync<UpdateService>(
+      () async => UpdateService(
+        settings,
+        Get.find<GitHubReleaseClient>(),
+        Get.find<ApkDownloadManager>(),
+        Get.find<UpdateRepository>(),
+      ).init(),
       permanent: true,
     );
 

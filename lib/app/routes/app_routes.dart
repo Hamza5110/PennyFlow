@@ -42,4 +42,5 @@ abstract final class AppRoutes {
   static const String privacy = '/settings/privacy';
   static const String backup = '/backup';
   static const String update = '/update';
+  static const String updateHistory = '/update/history';
 }

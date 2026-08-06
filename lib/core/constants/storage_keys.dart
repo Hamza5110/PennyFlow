@@ -22,6 +22,7 @@ abstract final class StorageKeys {
   static const String autoUpdateCheckEnabled = 'auto_update_check_enabled';
   static const String lastUpdateCheckAt = 'last_update_check_at';
   static const String updateCheckFrequencyHours = 'update_check_frequency_hours';
+  static const String updateHistory = 'update_history';
 
   // ── Notifications ───────────────────────────────────────────────────────
   static const String notificationsEnabled = 'notifications_enabled';

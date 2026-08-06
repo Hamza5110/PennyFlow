@@ -9,17 +9,20 @@ import '../../../core/errors/error_handler.dart';
 import '../../../services/profile/profile_service.dart';
 import '../../../services/settings/data_transfer_service.dart';
 import '../../../services/settings/settings_service.dart';
+import '../../../services/update/update_service.dart';
 
 class SettingsController extends BaseController {
   SettingsController(
     this._settings,
     this._profiles,
     this._dataTransfer,
+    this._update,
   );
 
   final SettingsService _settings;
   final ProfileService _profiles;
   final DataTransferService _dataTransfer;
+  final UpdateService _update;
 
   final RxString appVersion = ''.obs;
   final RxString buildNumber = ''.obs;
@@ -74,6 +77,27 @@ class SettingsController extends BaseController {
   void openAbout() => Get.toNamed<void>(AppRoutes.about);
 
   void openPrivacy() => Get.toNamed<void>(AppRoutes.privacy);
+
+  void openUpdate() => Get.toNamed<void>(AppRoutes.update);
+
+  void openUpdateHistory() => Get.toNamed<void>(AppRoutes.updateHistory);
+
+  Future<void> checkForUpdates() async {
+    await runGuarded(() async {
+      final result = await _update.checkForUpdate(manual: true);
+      if (!result.success) {
+        if (result.userMessage != null) {
+          ErrorHandler.showError(result.userMessage!);
+        }
+        return;
+      }
+      if (result.data == null) {
+        ErrorHandler.showSuccess('update_up_to_date'.tr);
+        return;
+      }
+      openUpdate();
+    });
+  }
 
   Future<void> exportData() async {
     await runGuarded(() async {

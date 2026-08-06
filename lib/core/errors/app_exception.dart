@@ -82,6 +82,15 @@ final class BackupException extends AppException {
   });
 }
 
+final class UpdateException extends AppException {
+  const UpdateException({
+    required super.message,
+    super.code = 'UPDATE_ERROR',
+    super.cause,
+    super.stackTrace,
+  });
+}
+
 final class NotFoundException extends AppException {
   const NotFoundException({
     required super.message,

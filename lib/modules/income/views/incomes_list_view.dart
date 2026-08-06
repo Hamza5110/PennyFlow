@@ -102,6 +102,7 @@ class IncomesListView extends GetView<IncomesListController> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: null,
         onPressed: controller.openAdd,
         child: const Icon(Icons.add_rounded),
       ),

@@ -14,22 +14,15 @@ class MoreTabView extends GetView<MainShellController> {
     final theme = Theme.of(context);
 
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
       children: [
-        Obx(
-          () => Text(
-            'more_greeting'.trParams({'name': controller.profileName.value}),
-            style: theme.textTheme.headlineSmall,
-          ),
-        ),
-        const SizedBox(height: 8),
         Text(
           AppConstants.appTagline,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
