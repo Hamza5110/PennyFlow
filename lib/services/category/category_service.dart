@@ -11,6 +11,7 @@ import '../../data/models/category/category_input.dart';
 import '../../data/repositories/category_repository.dart';
 import '../../data/repositories/expense_repository.dart';
 import '../settings/settings_service.dart';
+import '../cache/profile_lookup_cache_service.dart';
 
 /// Default expense categories (FR-063).
 abstract final class CategoryDefaults {
@@ -105,6 +106,7 @@ class CategoryService extends GetxService with BaseService {
 
       final id = await _repository.put(category);
       category.id = id;
+      _invalidateLookupCache();
       return category;
     });
   }
@@ -122,6 +124,7 @@ class CategoryService extends GetxService with BaseService {
         ..iconKey = input.iconKey;
 
       await _repository.put(existing);
+      _invalidateLookupCache();
       return existing;
     });
   }
@@ -173,7 +176,14 @@ class CategoryService extends GetxService with BaseService {
       }
 
       await _repository.deleteById(id);
+      _invalidateLookupCache();
     });
+  }
+
+  void _invalidateLookupCache() {
+    if (Get.isRegistered<ProfileLookupCacheService>()) {
+      Get.find<ProfileLookupCacheService>().invalidate();
+    }
   }
 
   void _validateInput(CategoryInput input) {

@@ -12,10 +12,8 @@ import '../../core/errors/service_result.dart';
 import '../../data/models/backup/backup_manifest.dart';
 import '../../data/models/enums/app_enums.dart';
 import '../auth/auth_service.dart';
-import '../image/image_service.dart';
 import '../reminder/reminder_service.dart';
 import '../settings/settings_service.dart';
-import '../storage/local_storage_service.dart';
 import 'backup_bundle_builder.dart';
 import 'backup_bundle_restorer.dart';
 import 'backup_snapshot_codec.dart';
@@ -26,8 +24,6 @@ class BackupService extends GetxService with BaseService {
   BackupService(
     this._auth,
     this._settings,
-    this._storage,
-    this._images,
     this._reminders,
     this._drive,
     this._builder,
@@ -37,8 +33,6 @@ class BackupService extends GetxService with BaseService {
 
   final AuthService _auth;
   final SettingsService _settings;
-  final LocalStorageService _storage;
-  final ImageService _images;
   final ReminderService _reminders;
   final GoogleDriveBackupClient _drive;
   final BackupBundleBuilder _builder;

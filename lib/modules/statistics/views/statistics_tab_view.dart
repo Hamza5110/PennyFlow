@@ -39,6 +39,16 @@ class StatisticsTabView extends GetView<StatisticsController> {
                 const SizedBox(height: 8),
                 TabBar(
                   isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  padding: EdgeInsets.zero,
+                  indicatorColor: Theme.of(context).colorScheme.primary,
+                  indicatorWeight: 2,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelColor: Theme.of(context).colorScheme.primary,
+                  unselectedLabelColor: Theme.of(context).colorScheme.onSurface,
+                  labelStyle: Theme.of(context).textTheme.titleMedium,
+                  unselectedLabelStyle: Theme.of(context).textTheme.titleMedium,
+                  dividerColor: Colors.transparent,
                   tabs: [
                     Tab(text: 'statistics_tab_overview'.tr),
                     Tab(text: 'statistics_tab_daily'.tr),
@@ -52,7 +62,8 @@ class StatisticsTabView extends GetView<StatisticsController> {
           ),
           Expanded(
             child: Obx(() {
-              if (controller.isLoading.value && controller.summary.value == null) {
+              if (controller.isLoading.value &&
+                  controller.summary.value == null) {
                 return AppLoadingIndicator(message: 'common_loading'.tr);
               }
 

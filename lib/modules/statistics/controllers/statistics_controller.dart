@@ -25,6 +25,8 @@ class StatisticsController extends BaseController {
   final RxList<StatisticsChartPoint> trendPoints = <StatisticsChartPoint>[].obs;
   final RxList<CategoryStatistic> categories = <CategoryStatistic>[].obs;
 
+  final RxSet<int> _loadedTabs = <int>{0}.obs;
+
   String get currencyCode => Get.find<SettingsService>().currencyCode.value;
 
   @override
@@ -35,16 +37,26 @@ class StatisticsController extends BaseController {
 
   Future<void> loadStatistics() async {
     await runGuarded(() async {
-      final selected = period.value;
-      summary.value = await _statistics.getSummary(selected);
-      dailyPoints.assignAll(await _statistics.getDailyExpenses(selected));
-      weeklyPoints.assignAll(await _statistics.getWeeklyExpenses(selected));
-      monthlyPoints.assignAll(await _statistics.getMonthlyExpenses());
-      incomeVsExpense.assignAll(await _statistics.getIncomeVsExpense(selected));
-      trendPoints.assignAll(await _statistics.getSpendingTrend(selected));
-      categories.assignAll(await _statistics.getCategoryBreakdown(selected));
+      _loadedTabs
+        ..clear()
+        ..add(0);
+      final bundle = await _statistics.loadBundle(period.value);
+      summary.value = bundle.summary;
+      dailyPoints.assignAll(bundle.dailyPoints);
+      weeklyPoints.assignAll(bundle.weeklyPoints);
+      monthlyPoints.assignAll(bundle.monthlyPoints);
+      incomeVsExpense.assignAll(bundle.incomeVsExpense);
+      trendPoints.assignAll(bundle.trendPoints);
+      categories.assignAll(bundle.categories);
+      _loadedTabs
+        ..add(1)
+        ..add(2)
+        ..add(3)
+        ..add(4);
     }, showErrorSnackbar: false);
   }
+
+  bool isTabLoaded(int index) => _loadedTabs.contains(index);
 
   Future<void> changePeriod(StatisticsPeriod value) async {
     period.value = value;

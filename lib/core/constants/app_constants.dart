@@ -47,4 +47,11 @@ abstract final class AppConstants {
 
   /// Splash minimum display so branding is visible on fast devices.
   static const Duration splashMinDuration = Duration(milliseconds: 1200);
+
+  /// Paginated list page size (Phase 20).
+  static const int listPageSize = 50;
+
+  /// Receipt thumbnail decode / generation size.
+  static const int thumbnailMaxDimension = 256;
+  static const int thumbnailQuality = 60;
 }

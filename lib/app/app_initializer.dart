@@ -38,6 +38,7 @@ import '../services/lifecycle/app_lifecycle_service.dart';
 import '../services/profile/profile_service.dart';
 import '../services/recurring/recurring_service.dart';
 import '../services/reminder/reminder_service.dart';
+import '../services/cache/profile_lookup_cache_service.dart';
 import '../services/security/app_lock_service.dart';
 import '../services/search/filter_session_service.dart';
 import '../services/search/search_service.dart';
@@ -289,8 +290,6 @@ abstract final class AppInitializer {
       BackupService(
         Get.find<AuthService>(),
         settings,
-        localStorage,
-        Get.find<ImageService>(),
         Get.find<ReminderService>(),
         Get.find<GoogleDriveBackupClient>(),
         Get.find<BackupBundleBuilder>(),
@@ -319,6 +318,11 @@ abstract final class AppInitializer {
         Get.find<SecureStorageService>(),
         Get.find<ProfileRepository>(),
       ),
+      permanent: true,
+    );
+
+    Get.put<ProfileLookupCacheService>(
+      ProfileLookupCacheService(settings),
       permanent: true,
     );
 

@@ -85,8 +85,16 @@ class IncomesListView extends GetView<IncomesListController> {
               return RefreshIndicator(
                 onRefresh: controller.loadIncomes,
                 child: ListView.builder(
-                  itemCount: controller.items.length,
+                  controller: controller.scrollController,
+                  itemCount: controller.items.length +
+                      (controller.isLoadingMore.value ? 1 : 0),
                   itemBuilder: (context, index) {
+                    if (index >= controller.items.length) {
+                      return const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
                     final item = controller.items[index];
                     return IncomeListTile(
                       item: item,

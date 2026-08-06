@@ -46,16 +46,16 @@ class BudgetService extends GetxService with BaseService {
     final budgets = await _budgets.findByProfileAndMonth(profileId, y, m);
     final categories = await _categories.findByProfile(profileId);
     final categoryMap = {for (final c in categories) c.id: c};
+    final spentByCategory = await _expenses.sumActiveByCategoryInMonthBatch(
+      profileId: profileId,
+      year: y,
+      month: m,
+    );
 
     final items = <BudgetListItem>[];
     for (final budget in budgets) {
       final category = categoryMap[budget.categoryId];
-      final spent = await _expenses.sumActiveByCategoryInMonth(
-        profileId: profileId,
-        categoryId: budget.categoryId,
-        year: y,
-        month: m,
-      );
+      final spent = spentByCategory[budget.categoryId] ?? 0;
       items.add(
         BudgetListItem(
           budget: budget,

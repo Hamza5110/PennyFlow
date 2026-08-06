@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../core/base/base_service.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/constants/income_sources.dart';
 import '../../core/constants/validation_constants.dart';
 import '../../core/errors/app_exception.dart';
@@ -159,16 +160,53 @@ class IncomeService extends GetxService with BaseService {
   }
 
   Future<List<IncomeListItem>> listActive({IncomeFilter filter = IncomeFilter.empty}) async {
+    final page = await listActivePaged(filter: filter);
+    return page.items;
+  }
+
+  Future<({List<IncomeListItem> items, bool hasMore})> listActivePaged({
+    IncomeFilter filter = IncomeFilter.empty,
+    int offset = 0,
+    int limit = AppConstants.listPageSize,
+  }) async {
     final profileId = _profileId;
-    if (profileId == null) return [];
+    if (profileId == null) return (items: <IncomeListItem>[], hasMore: false);
 
     final accounts = await _accounts.getActiveAccounts();
     final accountMap = {for (final a in accounts) a.id: a};
 
-    var records = await _incomes.findActiveByProfile(profileId);
-    records = _applyFilter(records, filter, accountMap);
+    final hasTextFilter = filter.searchQuery.trim().isNotEmpty;
 
-    return records.map((income) => _toListItem(income, accountMap)).toList();
+    if (hasTextFilter) {
+      var records = await _incomes.findActiveByProfile(profileId);
+      records = _applyFilter(records, filter, accountMap);
+      final slice = records.skip(offset).take(limit).toList();
+      return (
+        items: slice.map((income) => _toListItem(income, accountMap)).toList(),
+        hasMore: offset + limit < records.length,
+      );
+    }
+
+    final range = AppDateUtils.resolveFilterRange(
+      period: filter.datePeriod,
+      customRange: filter.customRange,
+    );
+
+    final records = await _incomes.findActiveByProfilePaged(
+      profileId,
+      offset: offset,
+      limit: limit + 1,
+      start: range?.start,
+      end: range?.end,
+      accountId: filter.accountId,
+    );
+    final hasMore = records.length > limit;
+    final page = hasMore ? records.sublist(0, limit) : records;
+
+    return (
+      items: page.map((income) => _toListItem(income, accountMap)).toList(),
+      hasMore: hasMore,
+    );
   }
 
   Future<List<IncomeListItem>> listTrash() async {

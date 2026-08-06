@@ -57,6 +57,18 @@ class ImageService extends GetxService with BaseService {
     return saved;
   }
 
+  String thumbnailPath(String fullPath) {
+    final dir = p.dirname(fullPath);
+    final name = p.basenameWithoutExtension(fullPath);
+    return p.join(dir, '${name}_thumb.jpg');
+  }
+
+  Future<String?> resolveThumbnailPath(String fullPath) async {
+    final thumb = thumbnailPath(fullPath);
+    if (await File(thumb).exists()) return thumb;
+    return fullPath;
+  }
+
   Future<String?> _compressToTarget(String sourcePath, Directory dir) async {
     var quality = ImageCompressionUtils.initialQuality;
     String? currentPath;
@@ -80,6 +92,7 @@ class ImageService extends GetxService with BaseService {
       currentPath = result.path;
       final size = await File(result.path).length();
       if (!ImageCompressionUtils.exceedsMaxSize(size)) {
+        await _createThumbnail(currentPath!);
         return currentPath;
       }
 
@@ -87,6 +100,17 @@ class ImageService extends GetxService with BaseService {
     }
 
     return currentPath;
+  }
+
+  Future<void> _createThumbnail(String fullPath) async {
+    final thumbPath = thumbnailPath(fullPath);
+    await FlutterImageCompress.compressAndGetFile(
+      fullPath,
+      thumbPath,
+      quality: AppConstants.thumbnailQuality,
+      minWidth: AppConstants.thumbnailMaxDimension,
+      minHeight: AppConstants.thumbnailMaxDimension,
+    );
   }
 
   Future<Directory> receiptsDir() async {
@@ -104,6 +128,10 @@ class ImageService extends GetxService with BaseService {
     final file = File(path);
     if (await file.exists()) {
       await file.delete();
+    }
+    final thumb = File(thumbnailPath(path));
+    if (await thumb.exists()) {
+      await thumb.delete();
     }
   }
 

@@ -45,11 +45,25 @@ class FriendService extends GetxService with BaseService {
     if (profileId == null) return [];
 
     final friends = await _friends.findByProfile(profileId);
-    final items = <FriendListItem>[];
-    for (final friend in friends) {
-      items.add(await _toFriendListItem(friend, profileId));
+    final transactions = await _transactions.findActiveByProfile(profileId);
+    final repaymentTotals = await _repayments.sumByTransactionIds(
+      transactions.map((txn) => txn.id).toList(),
+    );
+
+    final txnsByFriend = <int, List<FriendTransaction>>{};
+    for (final txn in transactions) {
+      txnsByFriend.putIfAbsent(txn.friendId, () => []).add(txn);
     }
-    return items;
+
+    return friends
+        .map(
+          (friend) => _toFriendListItem(
+            friend,
+            txnsByFriend[friend.id] ?? const [],
+            repaymentTotals,
+          ),
+        )
+        .toList();
   }
 
   Future<FriendLedgerSummary> getLedgerSummary() async {
@@ -64,13 +78,18 @@ class FriendService extends GetxService with BaseService {
     }
 
     final transactions = await _transactions.findActiveByProfile(profileId);
+    final repaymentTotals = await _repayments.sumByTransactionIds(
+      transactions.map((txn) => txn.id).toList(),
+    );
+
     var moneyLent = 0.0;
     var moneyBorrowed = 0.0;
     var pendingReceive = 0.0;
     var pendingPay = 0.0;
 
     for (final txn in transactions) {
-      final remaining = await remainingBalance(txn.id);
+      final repaid = repaymentTotals[txn.id] ?? 0;
+      final remaining = (txn.amount - repaid).clamp(0, txn.amount);
       if (txn.type == FriendTransactionTypes.given) {
         moneyLent += txn.amount;
         pendingReceive += remaining;
@@ -157,40 +176,54 @@ class FriendService extends GetxService with BaseService {
         : await _transactions.findActiveByFriend(friendId);
 
     transactions = await _applyTransactionFilter(transactions, filter, profileId);
-    final items = <FriendTransactionListItem>[];
-    for (final txn in transactions) {
-      final friend = await _friends.findById(txn.friendId);
-      final repaid = await _repayments.sumByTransaction(txn.id);
-      items.add(
-        FriendTransactionListItem(
-          transaction: txn,
-          friendName: friend?.name ?? 'Unknown',
-          remainingBalance: (txn.amount - repaid).clamp(0, txn.amount),
-          repaymentTotal: repaid,
-        ),
-      );
-    }
-    return items;
+    final friendMap = {
+      for (final friend in await _friends.findByProfile(profileId))
+        friend.id: friend,
+    };
+    final repaymentTotals = await _repayments.sumByTransactionIds(
+      transactions.map((txn) => txn.id).toList(),
+    );
+
+    return transactions
+        .map(
+          (txn) {
+            final repaid = repaymentTotals[txn.id] ?? 0;
+            return FriendTransactionListItem(
+              transaction: txn,
+              friendName: friendMap[txn.friendId]?.name ?? 'Unknown',
+              remainingBalance: (txn.amount - repaid).clamp(0, txn.amount),
+              repaymentTotal: repaid,
+            );
+          },
+        )
+        .toList();
   }
 
   Future<List<FriendTransactionListItem>> listTrash() async {
     final profileId = _profileId;
     if (profileId == null) return [];
     final transactions = await _transactions.findDeletedByProfile(profileId);
-    final items = <FriendTransactionListItem>[];
-    for (final txn in transactions) {
-      final friend = await _friends.findById(txn.friendId);
-      final repaid = await _repayments.sumByTransaction(txn.id);
-      items.add(
-        FriendTransactionListItem(
-          transaction: txn,
-          friendName: friend?.name ?? 'Unknown',
-          remainingBalance: (txn.amount - repaid).clamp(0, txn.amount),
-          repaymentTotal: repaid,
-        ),
-      );
-    }
-    return items;
+    final friendMap = {
+      for (final friend in await _friends.findByProfile(profileId))
+        friend.id: friend,
+    };
+    final repaymentTotals = await _repayments.sumByTransactionIds(
+      transactions.map((txn) => txn.id).toList(),
+    );
+
+    return transactions
+        .map(
+          (txn) {
+            final repaid = repaymentTotals[txn.id] ?? 0;
+            return FriendTransactionListItem(
+              transaction: txn,
+              friendName: friendMap[txn.friendId]?.name ?? 'Unknown',
+              remainingBalance: (txn.amount - repaid).clamp(0, txn.amount),
+              repaymentTotal: repaid,
+            );
+          },
+        )
+        .toList();
   }
 
   Future<FriendTransaction?> getTransactionById(int id) async {
@@ -368,12 +401,16 @@ class FriendService extends GetxService with BaseService {
     }
   }
 
-  Future<FriendListItem> _toFriendListItem(Friend friend, int profileId) async {
-    final txns = await _transactions.findActiveByFriend(friend.id);
+  FriendListItem _toFriendListItem(
+    Friend friend,
+    List<FriendTransaction> txns,
+    Map<int, double> repaymentTotals,
+  ) {
     var pendingReceive = 0.0;
     var pendingPay = 0.0;
     for (final txn in txns) {
-      final remaining = await remainingBalance(txn.id);
+      final repaid = repaymentTotals[txn.id] ?? 0;
+      final remaining = (txn.amount - repaid).clamp(0, txn.amount);
       if (txn.type == FriendTransactionTypes.given) {
         pendingReceive += remaining;
       } else {

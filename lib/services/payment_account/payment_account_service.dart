@@ -13,6 +13,7 @@ import '../../data/repositories/expense_repository.dart';
 import '../../data/repositories/income_repository.dart';
 import '../../data/repositories/payment_account_repository.dart';
 import '../settings/settings_service.dart';
+import '../cache/profile_lookup_cache_service.dart';
 
 /// Default payment accounts (FR-071).
 abstract final class PaymentAccountDefaults {
@@ -143,6 +144,7 @@ class PaymentAccountService extends GetxService with BaseService {
 
       final id = await _repository.put(account);
       account.id = id;
+      _invalidateLookupCache();
       return account;
     });
   }
@@ -163,6 +165,7 @@ class PaymentAccountService extends GetxService with BaseService {
         ..openingBalance = input.openingBalance;
 
       await _repository.put(existing);
+      _invalidateLookupCache();
       return existing;
     });
   }
@@ -173,6 +176,7 @@ class PaymentAccountService extends GetxService with BaseService {
       final account = await _getOwnedAccount(id, profileId);
       account.isArchived = true;
       await _repository.put(account);
+      _invalidateLookupCache();
     });
   }
 
@@ -182,6 +186,7 @@ class PaymentAccountService extends GetxService with BaseService {
       final account = await _getOwnedAccount(id, profileId);
       account.isArchived = false;
       await _repository.put(account);
+      _invalidateLookupCache();
     });
   }
 
@@ -209,7 +214,14 @@ class PaymentAccountService extends GetxService with BaseService {
       }
 
       await _repository.deleteById(id);
+      _invalidateLookupCache();
     });
+  }
+
+  void _invalidateLookupCache() {
+    if (Get.isRegistered<ProfileLookupCacheService>()) {
+      Get.find<ProfileLookupCacheService>().invalidate();
+    }
   }
 
   Future<List<PaymentAccountListItem>> _mapWithBalances(

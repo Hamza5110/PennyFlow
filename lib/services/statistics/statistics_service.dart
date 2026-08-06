@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../core/base/base_service.dart';
 import '../../data/models/statistics/category_statistic.dart';
+import '../../data/models/statistics/statistics_bundle.dart';
 import '../../data/models/statistics/statistics_chart_point.dart';
 import '../../data/models/statistics/statistics_period.dart';
 import '../../data/models/statistics/statistics_summary.dart';
@@ -64,6 +65,12 @@ class StatisticsService extends GetxService with BaseService {
     final profileId = _settings.activeProfileId;
     if (profileId == null) return [];
     return _repository.getCategoryBreakdown(profileId, period);
+  }
+
+  Future<StatisticsBundle> loadBundle(StatisticsPeriod period) async {
+    final profileId = _settings.activeProfileId;
+    if (profileId == null) return StatisticsBundle.empty;
+    return _repository.loadBundle(profileId, period);
   }
 
   static const _emptySummary = StatisticsSummary(

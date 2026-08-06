@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../core/base/base_service.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/constants/validation_constants.dart';
 import '../../core/errors/app_exception.dart';
 import '../../core/errors/service_result.dart';
@@ -13,6 +14,7 @@ import '../../data/models/expense/expense_input.dart';
 import '../../data/models/expense/expense_list_item.dart';
 import '../../data/repositories/expense_repository.dart';
 import '../budget/budget_service.dart';
+import '../cache/profile_lookup_cache_service.dart';
 import '../category/category_service.dart';
 import '../image/image_service.dart';
 import '../payment_account/payment_account_service.dart';
@@ -184,37 +186,93 @@ class ExpenseService extends GetxService with BaseService {
   }
 
   Future<List<ExpenseListItem>> listActive({ExpenseFilter filter = ExpenseFilter.empty}) async {
-    final profileId = _profileId;
-    if (profileId == null) return [];
-
-    final categories = await _categories.getCategories();
-    final accounts = await _accounts.getActiveAccounts();
-    final categoryMap = {for (final c in categories) c.id: c};
-    final accountMap = {for (final a in accounts) a.id: a};
-
-    var expenses = await _expenses.findActiveByProfile(profileId);
-    expenses = _applyFilter(expenses, filter, categoryMap, accountMap);
-
-    return expenses.map((expense) {
-      final category = categoryMap[expense.categoryId];
-      final account = accountMap[expense.accountId];
-      return ExpenseListItem(
-        expense: expense,
-        categoryName: category?.name ?? 'Unknown',
-        categoryColorHex: category?.colorHex ?? '#64748B',
-        accountName: account?.name ?? 'Unknown',
-      );
-    }).toList();
+    final page = await listActivePaged(filter: filter);
+    return page.items;
   }
+
+  Future<({List<ExpenseListItem> items, bool hasMore})> listActivePaged({
+    ExpenseFilter filter = ExpenseFilter.empty,
+    int offset = 0,
+    int limit = AppConstants.listPageSize,
+  }) async {
+    final profileId = _profileId;
+    if (profileId == null) return (items: <ExpenseListItem>[], hasMore: false);
+
+    final cache = Get.isRegistered<ProfileLookupCacheService>()
+        ? Get.find<ProfileLookupCacheService>()
+        : null;
+    final categoryMap = cache != null
+        ? await cache.categories(_categories)
+        : {for (final c in await _categories.getCategories()) c.id: c};
+    final accountMap = cache != null
+        ? await cache.accounts(_accounts)
+        : {for (final a in await _accounts.getActiveAccounts()) a.id: a};
+
+    final hasTextFilter = filter.searchQuery.trim().isNotEmpty ||
+        (filter.tag != null && filter.tag!.isNotEmpty);
+
+    if (hasTextFilter) {
+      var expenses = await _expenses.findActiveByProfile(profileId);
+      expenses = _applyFilter(expenses, filter, categoryMap, accountMap);
+      final slice = expenses.skip(offset).take(limit).toList();
+      return (
+        items: _mapExpenseItems(slice, categoryMap, accountMap),
+        hasMore: offset + limit < expenses.length,
+      );
+    }
+
+    final range = AppDateUtils.resolveFilterRange(
+      period: filter.datePeriod,
+      customRange: filter.customRange,
+    );
+
+    final expenses = await _expenses.findActiveByProfilePaged(
+      profileId,
+      offset: offset,
+      limit: limit + 1,
+      start: range?.start,
+      end: range?.end,
+      categoryId: filter.categoryId,
+      accountId: filter.accountId,
+    );
+    final hasMore = expenses.length > limit;
+    final page = hasMore ? expenses.sublist(0, limit) : expenses;
+
+    return (
+      items: _mapExpenseItems(page, categoryMap, accountMap),
+      hasMore: hasMore,
+    );
+  }
+
+  List<ExpenseListItem> _mapExpenseItems(
+    List<Expense> expenses,
+    Map<int, dynamic> categoryMap,
+    Map<int, dynamic> accountMap,
+  ) =>
+      expenses.map((expense) {
+        final category = categoryMap[expense.categoryId];
+        final account = accountMap[expense.accountId];
+        return ExpenseListItem(
+          expense: expense,
+          categoryName: category?.name ?? 'Unknown',
+          categoryColorHex: category?.colorHex ?? '#64748B',
+          accountName: account?.name ?? 'Unknown',
+        );
+      }).toList();
 
   Future<List<ExpenseListItem>> listTrash() async {
     final profileId = _profileId;
     if (profileId == null) return [];
 
-    final categories = await _categories.getCategories();
-    final accounts = await _accounts.getActiveAccounts();
-    final categoryMap = {for (final c in categories) c.id: c};
-    final accountMap = {for (final a in accounts) a.id: a};
+    final cache = Get.isRegistered<ProfileLookupCacheService>()
+        ? Get.find<ProfileLookupCacheService>()
+        : null;
+    final categoryMap = cache != null
+        ? await cache.categories(_categories)
+        : {for (final c in await _categories.getCategories()) c.id: c};
+    final accountMap = cache != null
+        ? await cache.accounts(_accounts)
+        : {for (final a in await _accounts.getActiveAccounts()) a.id: a};
 
     final expenses = await _expenses.findDeletedByProfile(profileId);
     return expenses.map((expense) {

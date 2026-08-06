@@ -1,6 +1,7 @@
 import 'package:isar_community/isar.dart';
 
 import '../models/expense.dart';
+import '../../core/constants/app_constants.dart';
 import 'isar_base_repository.dart';
 
 class ExpenseRepository extends IsarBaseRepository<Expense> {
@@ -8,6 +9,92 @@ class ExpenseRepository extends IsarBaseRepository<Expense> {
 
   @override
   IsarCollection<Expense> get collection => isar.expenses;
+
+  Future<List<Expense>> findActiveInRange(
+    int profileId,
+    DateTime start,
+    DateTime end,
+  ) =>
+      runRead(
+        () => collection
+            .filter()
+            .profileIdEqualTo(profileId)
+            .isDeletedEqualTo(false)
+            .dateBetween(start, end)
+            .sortByDateDesc()
+            .findAll(),
+      );
+
+  Future<List<Expense>> findActiveByProfilePaged(
+    int profileId, {
+    int offset = 0,
+    int limit = AppConstants.listPageSize,
+    DateTime? start,
+    DateTime? end,
+    int? categoryId,
+    int? accountId,
+  }) =>
+      runRead(() async {
+        if (categoryId == null &&
+            accountId == null &&
+            start != null &&
+            end != null) {
+          return collection
+              .filter()
+              .profileIdEqualTo(profileId)
+              .isDeletedEqualTo(false)
+              .dateBetween(start, end)
+              .sortByDateDesc()
+              .offset(offset)
+              .limit(limit)
+              .findAll();
+        }
+
+        var query = collection
+            .filter()
+            .profileIdEqualTo(profileId)
+            .isDeletedEqualTo(false);
+        if (categoryId != null) {
+          query = query.categoryIdEqualTo(categoryId);
+        }
+        if (accountId != null) {
+          query = query.accountIdEqualTo(accountId);
+        }
+        final results = await query.sortByDateDesc().findAll();
+        final filtered = start != null && end != null
+            ? results
+                .where((e) => e.date.isAfter(start.subtract(const Duration(milliseconds: 1))) &&
+                    e.date.isBefore(end.add(const Duration(milliseconds: 1))))
+                .toList()
+            : results;
+        final endIndex = (offset + limit).clamp(0, filtered.length);
+        final startIndex = offset.clamp(0, filtered.length);
+        return filtered.sublist(startIndex, endIndex);
+      });
+
+  Future<Map<int, double>> sumActiveByCategoryInMonthBatch({
+    required int profileId,
+    required int year,
+    required int month,
+  }) =>
+      runRead(() async {
+        final start = DateTime(year, month);
+        final end = DateTime(year, month + 1).subtract(
+          const Duration(milliseconds: 1),
+        );
+        final expenses = await collection
+            .filter()
+            .profileIdEqualTo(profileId)
+            .isDeletedEqualTo(false)
+            .dateBetween(start, end)
+            .findAll();
+        final totals = <int, double>{};
+        for (final expense in expenses) {
+          totals[expense.categoryId] =
+              (totals[expense.categoryId] ?? 0) + expense.amount;
+        }
+        return totals;
+      });
 
   Future<List<Expense>> findActiveByProfile(int profileId) => runRead(
         () => collection

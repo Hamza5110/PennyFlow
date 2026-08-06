@@ -16,7 +16,7 @@ import 'expense_repository.dart';
 import 'income_repository.dart';
 import 'payment_account_repository.dart';
 
-/// Aggregates real expense/income data for the dashboard (Phase 5).
+/// Aggregates real expense/income data for the dashboard (Phase 5 / 20).
 class DashboardRepository extends BaseRepository {
   DashboardRepository(
     this._expenses,
@@ -41,9 +41,30 @@ class DashboardRepository extends BaseRepository {
   }) async {
     final reference = now ?? DateTime.now();
     final range = period.toDateRange(now: reference);
+    final todayRange = AppDateUtils.rangeFor(DatePeriod.today, now: reference);
+    final monthRange = AppDateUtils.rangeFor(DatePeriod.thisMonth, now: reference);
 
-    final expenses = await _expenses.findActiveByProfile(profileId);
-    final incomes = await _incomes.findActiveByProfile(profileId);
+    final windowStart = _earliest([
+      range.start,
+      todayRange.start,
+      monthRange.start,
+    ]);
+    final windowEnd = _latest([
+      range.end,
+      todayRange.end,
+      monthRange.end,
+    ]);
+
+    final expenses = await _expenses.findActiveInRange(
+      profileId,
+      windowStart,
+      windowEnd,
+    );
+    final incomes = await _incomes.findActiveInRange(
+      profileId,
+      windowStart,
+      windowEnd,
+    );
 
     final totalExpense = expenses
         .where((e) => range.contains(e.date))
@@ -51,9 +72,6 @@ class DashboardRepository extends BaseRepository {
     final totalIncome = incomes
         .where((e) => range.contains(e.date))
         .fold<double>(0, (sum, e) => sum + e.amount);
-
-    final todayRange = AppDateUtils.rangeFor(DatePeriod.today, now: reference);
-    final monthRange = AppDateUtils.rangeFor(DatePeriod.thisMonth, now: reference);
 
     final todaySpending = expenses
         .where((e) => todayRange.contains(e.date))
@@ -87,8 +105,8 @@ class DashboardRepository extends BaseRepository {
     final categoryMap = {for (final c in categories) c.id: c};
     final accountMap = {for (final a in accounts) a.id: a};
 
-    final expenses = await _expenses.findActiveByProfile(profileId);
-    final incomes = await _incomes.findActiveByProfile(profileId);
+    final expenses = await _expenses.findRecentByProfile(profileId, limit: limit);
+    final incomes = await _incomes.findRecentByProfile(profileId, limit: limit);
 
     final items = <DashboardTransaction>[
       for (final expense in expenses)
@@ -134,23 +152,25 @@ class DashboardRepository extends BaseRepository {
   }) async {
     final reference = now ?? DateTime.now();
     final formatter = DateFormat('MMM');
-    final expenses = await _expenses.findActiveByProfile(profileId);
+    final start = DateTime(reference.year, reference.month - (months - 1), 1);
+    final end = DateTime(reference.year, reference.month + 1, 0, 23, 59, 59);
+    final expenses = await _expenses.findActiveInRange(profileId, start, end);
     final points = <MonthlySpendingPoint>[];
 
     for (var i = months - 1; i >= 0; i--) {
       final monthDate = DateTime(reference.year, reference.month - i, 1);
-      final start = DateTime(monthDate.year, monthDate.month);
-      final end = DateTime(monthDate.year, monthDate.month + 1, 0, 23, 59, 59);
+      final monthStart = DateTime(monthDate.year, monthDate.month);
+      final monthEnd = DateTime(monthDate.year, monthDate.month + 1, 0, 23, 59, 59);
       final total = expenses
           .where(
-            (e) => !e.date.isBefore(start) && !e.date.isAfter(end),
+            (e) => !e.date.isBefore(monthStart) && !e.date.isAfter(monthEnd),
           )
           .fold<double>(0, (sum, e) => sum + e.amount);
 
       points.add(
         MonthlySpendingPoint(
-          month: start,
-          label: formatter.format(start),
+          month: monthStart,
+          label: formatter.format(monthStart),
           amount: total,
         ),
       );
@@ -160,4 +180,9 @@ class DashboardRepository extends BaseRepository {
 
   Future<List<BudgetProgress>> getBudgetProgress() => _budgets.getDashboardProgress();
 
+  DateTime _earliest(List<DateTime> values) =>
+      values.reduce((a, b) => a.isBefore(b) ? a : b);
+
+  DateTime _latest(List<DateTime> values) =>
+      values.reduce((a, b) => a.isAfter(b) ? a : b);
 }

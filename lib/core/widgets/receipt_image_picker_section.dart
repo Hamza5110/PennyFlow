@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart' as p;
 
 import '../../core/constants/app_constants.dart';
 import 'receipt_image_viewer_page.dart';
@@ -64,8 +65,10 @@ class _Thumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final file = File(path);
+    final displayPath = _resolveDisplayPath(path);
+    final file = File(displayPath);
     final exists = file.existsSync();
+    final cacheSize = (size * MediaQuery.devicePixelRatioOf(context)).round();
 
     return Stack(
       children: [
@@ -80,6 +83,8 @@ class _Thumbnail extends StatelessWidget {
                     width: size,
                     height: size,
                     fit: BoxFit.cover,
+                    cacheWidth: cacheSize,
+                    cacheHeight: cacheSize,
                   )
                 : Container(
                     width: size,
@@ -108,6 +113,15 @@ class _Thumbnail extends StatelessWidget {
           ),
       ],
     );
+  }
+
+  String _resolveDisplayPath(String fullPath) {
+    final thumb = p.join(
+      p.dirname(fullPath),
+      '${p.basenameWithoutExtension(fullPath)}_thumb.jpg',
+    );
+    if (File(thumb).existsSync()) return thumb;
+    return fullPath;
   }
 }
 

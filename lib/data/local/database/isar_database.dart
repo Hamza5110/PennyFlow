@@ -28,6 +28,11 @@ class IsarDatabase extends GetxService {
 
   bool get isOpen => _isar != null && _isar!.isOpen;
 
+  /// Binds a pre-opened Isar instance for repository/integration tests.
+  Future<void> bindIsarForTesting(Isar instance) async {
+    _isar = instance;
+  }
+
   Future<IsarDatabase> init() async {
     if (_isar != null && _isar!.isOpen) return this;
 

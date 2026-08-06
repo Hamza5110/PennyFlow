@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../../../core/constants/recurring_constants.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../data/models/recurring/recurring_list_item.dart';
-import '../../../services/settings/settings_service.dart';
 
 class RecurringListTile extends StatelessWidget {
   const RecurringListTile({

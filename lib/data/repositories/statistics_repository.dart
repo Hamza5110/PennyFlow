@@ -6,6 +6,7 @@ import '../../core/utils/app_date_utils.dart';
 import '../models/expense.dart';
 import '../models/income.dart';
 import '../models/statistics/category_statistic.dart';
+import '../models/statistics/statistics_bundle.dart';
 import '../models/statistics/statistics_chart_point.dart';
 import '../models/statistics/statistics_period.dart';
 import '../models/statistics/statistics_summary.dart';
@@ -13,7 +14,7 @@ import 'category_repository.dart';
 import 'expense_repository.dart';
 import 'income_repository.dart';
 
-/// Aggregates expense/income data for statistics charts (Phase 11).
+/// Aggregates expense/income data for statistics charts (Phase 11 / 20).
 class StatisticsRepository extends BaseRepository {
   StatisticsRepository(
     this._expenses,
@@ -25,15 +26,148 @@ class StatisticsRepository extends BaseRepository {
   final IncomeRepository _incomes;
   final CategoryRepository _categories;
 
+  /// Loads all chart data in one DB pass for the selected period.
+  Future<StatisticsBundle> loadBundle(
+    int profileId,
+    StatisticsPeriod period, {
+    DateTime? now,
+    int months = 6,
+  }) async {
+    final range = period.toDateRange(now: now);
+    final expenses = await _expenses.findActiveInRange(
+      profileId,
+      range.start,
+      range.end,
+    );
+    final incomes = await _incomes.findActiveInRange(
+      profileId,
+      range.start,
+      range.end,
+    );
+
+    final summary = await _buildSummary(
+      profileId,
+      expenses,
+      incomes,
+      range,
+    );
+    final dailyPoints = _buildDailyExpenses(expenses, range);
+    final weeklyPoints = _buildWeeklyExpenses(expenses, range);
+    final monthlyPoints = await _buildMonthlyExpenses(profileId, months: months, now: now);
+    final incomeVsExpense = _buildIncomeVsExpense(expenses, incomes);
+    final categories = await _buildCategoryBreakdown(profileId, expenses);
+
+    return StatisticsBundle(
+      summary: summary,
+      dailyPoints: dailyPoints,
+      weeklyPoints: weeklyPoints,
+      monthlyPoints: monthlyPoints,
+      incomeVsExpense: incomeVsExpense,
+      trendPoints: dailyPoints,
+      categories: categories,
+    );
+  }
+
   Future<StatisticsSummary> getSummary(
     int profileId,
     StatisticsPeriod period, {
     DateTime? now,
   }) async {
     final range = period.toDateRange(now: now);
-    final expenses = await _filterExpenses(profileId, range);
-    final incomes = await _filterIncomes(profileId, range);
+    final expenses = await _expenses.findActiveInRange(
+      profileId,
+      range.start,
+      range.end,
+    );
+    final incomes = await _incomes.findActiveInRange(
+      profileId,
+      range.start,
+      range.end,
+    );
+    return _buildSummary(profileId, expenses, incomes, range);
+  }
 
+  Future<List<StatisticsChartPoint>> getDailyExpenses(
+    int profileId,
+    StatisticsPeriod period, {
+    DateTime? now,
+  }) async {
+    final range = period.toDateRange(now: now);
+    final expenses = await _expenses.findActiveInRange(
+      profileId,
+      range.start,
+      range.end,
+    );
+    return _buildDailyExpenses(expenses, range);
+  }
+
+  Future<List<StatisticsChartPoint>> getWeeklyExpenses(
+    int profileId,
+    StatisticsPeriod period, {
+    DateTime? now,
+  }) async {
+    final range = period.toDateRange(now: now);
+    final expenses = await _expenses.findActiveInRange(
+      profileId,
+      range.start,
+      range.end,
+    );
+    return _buildWeeklyExpenses(expenses, range);
+  }
+
+  Future<List<StatisticsChartPoint>> getMonthlyExpenses(
+    int profileId, {
+    int months = 6,
+    DateTime? now,
+  }) => _buildMonthlyExpenses(profileId, months: months, now: now);
+
+  Future<List<StatisticsChartPoint>> getIncomeVsExpense(
+    int profileId,
+    StatisticsPeriod period, {
+    DateTime? now,
+  }) async {
+    final range = period.toDateRange(now: now);
+    final expenses = await _expenses.findActiveInRange(
+      profileId,
+      range.start,
+      range.end,
+    );
+    final incomes = await _incomes.findActiveInRange(
+      profileId,
+      range.start,
+      range.end,
+    );
+    return _buildIncomeVsExpense(expenses, incomes);
+  }
+
+  Future<List<StatisticsChartPoint>> getSpendingTrend(
+    int profileId,
+    StatisticsPeriod period, {
+    DateTime? now,
+  }) =>
+      getDailyExpenses(profileId, period, now: now);
+
+  Future<List<CategoryStatistic>> getCategoryBreakdown(
+    int profileId,
+    StatisticsPeriod period, {
+    DateTime? now,
+    int limit = 8,
+  }) async {
+    final range = period.toDateRange(now: now);
+    final expenses = await _expenses.findActiveInRange(
+      profileId,
+      range.start,
+      range.end,
+    );
+    return _buildCategoryBreakdown(profileId, expenses, limit: limit);
+  }
+
+  Future<StatisticsSummary> _buildSummary(
+    int profileId,
+    List<Expense> expenses,
+    List<Income> incomes,
+    DateRange range,
+  ) async {
     final totalExpense =
         expenses.fold<double>(0, (sum, e) => sum + e.amount);
     final totalIncome = incomes.fold<double>(0, (sum, i) => sum + i.amount);
@@ -67,15 +201,11 @@ class StatisticsRepository extends BaseRepository {
     );
   }
 
-  Future<List<StatisticsChartPoint>> getDailyExpenses(
-    int profileId,
-    StatisticsPeriod period, {
-    DateTime? now,
-  }) async {
-    final range = period.toDateRange(now: now);
-    final expenses = await _filterExpenses(profileId, range);
+  List<StatisticsChartPoint> _buildDailyExpenses(
+    List<Expense> expenses,
+    DateRange range,
+  ) {
     final points = <StatisticsChartPoint>[];
-
     var cursor = range.start.startOfDay;
     final end = range.end.startOfDay;
     while (!cursor.isAfter(end)) {
@@ -95,15 +225,11 @@ class StatisticsRepository extends BaseRepository {
     return points;
   }
 
-  Future<List<StatisticsChartPoint>> getWeeklyExpenses(
-    int profileId,
-    StatisticsPeriod period, {
-    DateTime? now,
-  }) async {
-    final range = period.toDateRange(now: now);
-    final expenses = await _filterExpenses(profileId, range);
+  List<StatisticsChartPoint> _buildWeeklyExpenses(
+    List<Expense> expenses,
+    DateRange range,
+  ) {
     final points = <StatisticsChartPoint>[];
-
     var weekStart = range.start.startOfWeek;
     var weekIndex = 1;
     while (!weekStart.isAfter(range.end)) {
@@ -125,67 +251,54 @@ class StatisticsRepository extends BaseRepository {
     return points;
   }
 
-  Future<List<StatisticsChartPoint>> getMonthlyExpenses(
+  Future<List<StatisticsChartPoint>> _buildMonthlyExpenses(
     int profileId, {
     int months = 6,
     DateTime? now,
   }) async {
     final reference = now ?? DateTime.now();
     final formatter = DateFormat('MMM');
-    final expenses = await _expenses.findActiveByProfile(profileId);
+    final start = DateTime(reference.year, reference.month - (months - 1), 1);
+    final end = DateTime(reference.year, reference.month + 1, 0, 23, 59, 59);
+    final expenses = await _expenses.findActiveInRange(profileId, start, end);
     final points = <StatisticsChartPoint>[];
 
     for (var i = months - 1; i >= 0; i--) {
       final monthDate = DateTime(reference.year, reference.month - i, 1);
-      final start = monthDate.startOfMonth;
-      final end = monthDate.endOfMonth;
+      final monthStart = monthDate.startOfMonth;
+      final monthEnd = monthDate.endOfMonth;
       final total = expenses
-          .where((e) => e.date.isBetween(start, end))
+          .where((e) => e.date.isBetween(monthStart, monthEnd))
           .fold<double>(0, (sum, e) => sum + e.amount);
       points.add(
         StatisticsChartPoint(
-          label: formatter.format(start),
+          label: formatter.format(monthStart),
           amount: total,
-          date: start,
+          date: monthStart,
         ),
       );
     }
     return points;
   }
 
-  Future<List<StatisticsChartPoint>> getIncomeVsExpense(
-    int profileId,
-    StatisticsPeriod period, {
-    DateTime? now,
-  }) async {
-    final range = period.toDateRange(now: now);
-    final expenses = await _filterExpenses(profileId, range);
-    final incomes = await _filterIncomes(profileId, range);
-
+  List<StatisticsChartPoint> _buildIncomeVsExpense(
+    List<Expense> expenses,
+    List<Income> incomes,
+  ) {
     final expenseTotal =
         expenses.fold<double>(0, (sum, e) => sum + e.amount);
     final incomeTotal = incomes.fold<double>(0, (sum, i) => sum + i.amount);
-
     return [
       StatisticsChartPoint(label: 'income', amount: incomeTotal),
       StatisticsChartPoint(label: 'expense', amount: expenseTotal),
     ];
   }
 
-  Future<List<StatisticsChartPoint>> getSpendingTrend(
+  Future<List<CategoryStatistic>> _buildCategoryBreakdown(
     int profileId,
-    StatisticsPeriod period, {
-    DateTime? now,
-  }) async => getDailyExpenses(profileId, period, now: now);
-
-  Future<List<CategoryStatistic>> getCategoryBreakdown(
-    int profileId,
-    StatisticsPeriod period, {
-    DateTime? now,
+    List<Expense> expenses, {
     int limit = 8,
   }) async {
-    final range = period.toDateRange(now: now);
-    final expenses = await _filterExpenses(profileId, range);
     final categories = await _categories.findByProfile(profileId);
     final categoryMap = {for (final c in categories) c.id: c};
 
@@ -211,15 +324,5 @@ class StatisticsRepository extends BaseRepository {
 
     stats.sort((a, b) => b.amount.compareTo(a.amount));
     return stats.take(limit).toList();
-  }
-
-  Future<List<Expense>> _filterExpenses(int profileId, DateRange range) async {
-    final expenses = await _expenses.findActiveByProfile(profileId);
-    return expenses.where((e) => range.contains(e.date)).toList();
-  }
-
-  Future<List<Income>> _filterIncomes(int profileId, DateRange range) async {
-    final incomes = await _incomes.findActiveByProfile(profileId);
-    return incomes.where((i) => range.contains(i.date)).toList();
   }
 }

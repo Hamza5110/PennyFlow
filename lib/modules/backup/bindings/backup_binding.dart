@@ -59,8 +59,6 @@ class BackupBinding extends Bindings {
         BackupService(
           Get.find<AuthService>(),
           Get.find<SettingsService>(),
-          Get.find<LocalStorageService>(),
-          Get.find<ImageService>(),
           Get.find<ReminderService>(),
           Get.find<GoogleDriveBackupClient>(),
           Get.find<BackupBundleBuilder>(),
