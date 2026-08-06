@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../core/utils/validators.dart';
+import '../../../core/widgets/app_bottom_sheet.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../data/models/dashboard/mock_quick_add_option.dart';
@@ -46,9 +47,8 @@ class QuickAddSheet extends StatefulWidget {
         ),
       ),
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: AppBottomSheet.backgroundColorFromTheme,
+      shape: AppBottomSheet.shape,
     );
   }
 

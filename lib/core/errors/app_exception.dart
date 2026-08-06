@@ -91,6 +91,15 @@ final class UpdateException extends AppException {
   });
 }
 
+final class SecurityException extends AppException {
+  const SecurityException({
+    required super.message,
+    super.code = 'SECURITY_ERROR',
+    super.cause,
+    super.stackTrace,
+  });
+}
+
 final class NotFoundException extends AppException {
   const NotFoundException({
     required super.message,

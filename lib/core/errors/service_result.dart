@@ -33,6 +33,12 @@ class ServiceResult<T> extends Equatable {
         exception: exception,
       );
 
+  factory ServiceResult.cancelled({String errorCode = 'CANCELLED'}) =>
+      ServiceResult._(
+        success: false,
+        errorCode: errorCode,
+      );
+
   factory ServiceResult.fromFailure(Failure failure) => ServiceResult.failure(
         userMessage: failure.message,
         errorCode: failure.code,

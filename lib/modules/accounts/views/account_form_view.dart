@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/app_dropdown.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../controllers/account_form_controller.dart';
@@ -25,17 +26,13 @@ class AccountFormView extends GetView<AccountFormController> {
             ),
             const SizedBox(height: 16),
             Obx(
-              () => DropdownButtonFormField<String>(
-                initialValue: controller.selectedType.value,
-                decoration: InputDecoration(labelText: 'accounts_type'.tr),
-                items: controller.typeOptions
-                    .map(
-                      (option) => DropdownMenuItem(
-                        value: option.key,
-                        child: Text(option.label),
-                      ),
-                    )
-                    .toList(),
+              () => AppDropdown<String>(
+                value: controller.selectedType.value,
+                label: 'accounts_type'.tr,
+                items: controller.typeOptions.map((option) => option.key).toList(),
+                itemLabel: (key) => controller.typeOptions
+                    .firstWhere((option) => option.key == key)
+                    .label,
                 onChanged: controller.onTypeChanged,
               ),
             ),

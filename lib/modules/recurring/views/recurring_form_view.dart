@@ -5,6 +5,7 @@ import '../../../core/constants/income_sources.dart';
 import '../../../core/constants/recurring_constants.dart';
 import '../../../core/extensions/date_extensions.dart';
 import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/app_dropdown.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../controllers/recurring_form_controller.dart';
@@ -51,34 +52,25 @@ class RecurringFormView extends GetView<RecurringFormController> {
               const SizedBox(height: 16),
               if (controller.transactionType.value ==
                   RecurringTransactionTypes.expense) ...[
-                DropdownButtonFormField<int>(
+                AppDropdown<int>(
+                  items: controller.categories.map((c) => c.id).toList(),
+                  itemLabel: (id) => controller.categories
+                      .firstWhere((c) => c.id == id)
+                      .name,
                   value: controller.selectedCategoryId.value,
-                  decoration:
-                      InputDecoration(labelText: 'expense_category'.tr),
-                  items: controller.categories
-                      .map(
-                        (c) => DropdownMenuItem(
-                          value: c.id,
-                          child: Text(c.name),
-                        ),
-                      )
-                      .toList(),
+                  label: 'expense_category'.tr,
                   onChanged: (v) => controller.selectedCategoryId.value = v,
                 ),
               ] else ...[
-                DropdownButtonFormField<String>(
+                AppDropdown<String>(
+                  items: controller.sourceOptions.map((o) => o.key).toList(),
+                  itemLabel: (key) => controller.sourceOptions
+                      .firstWhere((o) => o.key == key)
+                      .label,
                   value: controller.useCustomSource.value
                       ? IncomeSources.custom
                       : controller.selectedSourceKey.value,
-                  decoration: InputDecoration(labelText: 'income_source'.tr),
-                  items: controller.sourceOptions
-                      .map(
-                        (option) => DropdownMenuItem(
-                          value: option.key,
-                          child: Text(option.label),
-                        ),
-                      )
-                      .toList(),
+                  label: 'income_source'.tr,
                   onChanged: controller.onSourceChanged,
                 ),
                 if (controller.useCustomSource.value) ...[
@@ -90,31 +82,20 @@ class RecurringFormView extends GetView<RecurringFormController> {
                 ],
               ],
               const SizedBox(height: 16),
-              DropdownButtonFormField<int>(
+              AppDropdown<int>(
+                items: controller.accounts.map((a) => a.id).toList(),
+                itemLabel: (id) =>
+                    controller.accounts.firstWhere((a) => a.id == id).name,
                 value: controller.selectedAccountId.value,
-                decoration: InputDecoration(labelText: 'expense_account'.tr),
-                items: controller.accounts
-                    .map(
-                      (a) => DropdownMenuItem(
-                        value: a.id,
-                        child: Text(a.name),
-                      ),
-                    )
-                    .toList(),
+                label: 'expense_account'.tr,
                 onChanged: (v) => controller.selectedAccountId.value = v,
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
+              AppDropdown<String>(
+                items: RecurringFrequencies.all,
+                itemLabel: (freq) => 'recurring_freq_$freq'.tr,
                 value: controller.frequency.value,
-                decoration:
-                    InputDecoration(labelText: 'recurring_frequency'.tr),
-                items: [
-                  for (final freq in RecurringFrequencies.all)
-                    DropdownMenuItem(
-                      value: freq,
-                      child: Text('recurring_freq_$freq'.tr),
-                    ),
-                ],
+                label: 'recurring_frequency'.tr,
                 onChanged: (v) {
                   if (v != null) controller.frequency.value = v;
                 },

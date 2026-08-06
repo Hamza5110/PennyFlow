@@ -41,6 +41,18 @@ void main() {
         AppRoutes.home,
       );
     });
+
+    test('routes to app lock when enabled and session locked', () {
+      expect(
+        StartupRouteResolver.resolve(
+          appLockEnabled: true,
+          isSessionUnlocked: false,
+          hasProfile: true,
+          hasCompletedOnboarding: true,
+        ),
+        AppRoutes.appLock,
+      );
+    });
   });
 
   group('AuthUser', () {

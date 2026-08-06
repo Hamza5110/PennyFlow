@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/utils/app_date_utils.dart';
+import '../../../core/widgets/app_bottom_sheet.dart';
+import '../../../core/widgets/app_dropdown.dart';
 import '../../../core/widgets/date_filter_section.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/expense/expense_filter.dart';
@@ -26,9 +28,8 @@ class ExpenseFilterSheet extends StatefulWidget {
     return Get.bottomSheet<void>(
       ExpenseFilterSheet(initial: initial, onApply: onApply),
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: AppBottomSheet.backgroundColorFromTheme,
+      shape: AppBottomSheet.shape,
     );
   }
 
@@ -91,33 +92,25 @@ class _ExpenseFilterSheetState extends State<ExpenseFilterSheet> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 16),
-                DropdownButtonFormField<int?>(
-                  initialValue: _categoryId,
-                  decoration: InputDecoration(labelText: 'expense_category'.tr),
-                  items: [
-                    DropdownMenuItem(
-                      value: null,
-                      child: Text('expense_all_categories'.tr),
-                    ),
-                    ...categoryList.map(
-                      (c) => DropdownMenuItem(value: c.id, child: Text(c.name)),
-                    ),
-                  ],
+                AppDropdown<int?>(
+                  value: _categoryId,
+                  label: 'expense_category'.tr,
+                  items: [null, ...categoryList.map((c) => c.id)],
+                  itemLabel: (id) {
+                    if (id == null) return 'expense_all_categories'.tr;
+                    return categoryList.firstWhere((c) => c.id == id).name;
+                  },
                   onChanged: (v) => setState(() => _categoryId = v),
                 ),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<int?>(
-                  initialValue: _accountId,
-                  decoration: InputDecoration(labelText: 'expense_account'.tr),
-                  items: [
-                    DropdownMenuItem(
-                      value: null,
-                      child: Text('expense_all_accounts'.tr),
-                    ),
-                    ...accountList.map(
-                      (a) => DropdownMenuItem(value: a.id, child: Text(a.name)),
-                    ),
-                  ],
+                AppDropdown<int?>(
+                  value: _accountId,
+                  label: 'expense_account'.tr,
+                  items: [null, ...accountList.map((a) => a.id)],
+                  itemLabel: (id) {
+                    if (id == null) return 'expense_all_accounts'.tr;
+                    return accountList.firstWhere((a) => a.id == id).name;
+                  },
                   onChanged: (v) => setState(() => _accountId = v),
                 ),
                 const SizedBox(height: 12),

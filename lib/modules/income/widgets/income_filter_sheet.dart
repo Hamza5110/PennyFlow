@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/income_sources.dart';
 import '../../../core/utils/app_date_utils.dart';
+import '../../../core/widgets/app_bottom_sheet.dart';
+import '../../../core/widgets/app_dropdown.dart';
 import '../../../core/widgets/date_filter_section.dart';
 import '../../../data/models/income/income_filter.dart';
 import '../../../services/payment_account/payment_account_service.dart';
@@ -24,9 +26,8 @@ class IncomeFilterSheet extends StatefulWidget {
     return Get.bottomSheet<void>(
       IncomeFilterSheet(initial: initial, onApply: onApply),
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: AppBottomSheet.backgroundColorFromTheme,
+      shape: AppBottomSheet.shape,
     );
   }
 
@@ -73,29 +74,25 @@ class _IncomeFilterSheetState extends State<IncomeFilterSheet> {
               children: [
                 Text('income_filters'.tr, style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 16),
-                DropdownButtonFormField<String?>(
-                  initialValue: _source,
-                  decoration: InputDecoration(labelText: 'income_source'.tr),
-                  items: [
-                    DropdownMenuItem(value: null, child: Text('income_all_sources'.tr)),
-                    for (final key in IncomeSources.predefinedKeys)
-                      DropdownMenuItem(
-                        value: key,
-                        child: Text(IncomeSources.labelKeys[key]!.tr),
-                      ),
-                  ],
+                AppDropdown<String?>(
+                  value: _source,
+                  label: 'income_source'.tr,
+                  items: const [null, ...IncomeSources.predefinedKeys],
+                  itemLabel: (key) {
+                    if (key == null) return 'income_all_sources'.tr;
+                    return IncomeSources.labelKeys[key]!.tr;
+                  },
                   onChanged: (v) => setState(() => _source = v),
                 ),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<int?>(
-                  initialValue: _accountId,
-                  decoration: InputDecoration(labelText: 'income_account'.tr),
-                  items: [
-                    DropdownMenuItem(value: null, child: Text('income_all_accounts'.tr)),
-                    ...accountList.map(
-                      (a) => DropdownMenuItem(value: a.id, child: Text(a.name)),
-                    ),
-                  ],
+                AppDropdown<int?>(
+                  value: _accountId,
+                  label: 'income_account'.tr,
+                  items: [null, ...accountList.map((a) => a.id)],
+                  itemLabel: (id) {
+                    if (id == null) return 'income_all_accounts'.tr;
+                    return accountList.firstWhere((a) => a.id == id).name;
+                  },
                   onChanged: (v) => setState(() => _accountId = v),
                 ),
                 const SizedBox(height: 12),

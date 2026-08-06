@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/reminder_constants.dart';
 import '../../../core/extensions/date_extensions.dart';
 import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/app_dropdown.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../controllers/reminder_form_controller.dart';
@@ -22,16 +23,12 @@ class ReminderFormView extends GetView<ReminderFormController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              DropdownButtonFormField<String>(
+              AppDropdown<String>(
+                items: ReminderTypes.manualTypes,
+                itemLabel: (type) => 'reminder_type_$type'.tr,
                 value: controller.type.value,
-                decoration: InputDecoration(labelText: 'reminders_type'.tr),
-                items: [
-                  for (final reminderType in ReminderTypes.manualTypes)
-                    DropdownMenuItem(
-                      value: reminderType,
-                      child: Text('reminder_type_$reminderType'.tr),
-                    ),
-                ],
+                label: 'reminders_type'.tr,
+                enabled: !controller.isEditing,
                 onChanged: controller.isEditing
                     ? null
                     : (value) {

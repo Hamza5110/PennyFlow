@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/settings_constants.dart';
+import '../../../core/widgets/app_bottom_sheet.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../controllers/settings_controller.dart';
 
@@ -142,6 +143,65 @@ class SettingsView extends GetView<SettingsController> {
             ),
           ),
           const SizedBox(height: 16),
+          _SectionHeader(title: 'settings_security_section'.tr),
+          Card(
+            child: Column(
+              children: [
+                Obx(
+                  () => SwitchListTile(
+                    secondary: const Icon(Icons.lock_outline_rounded),
+                    title: Text('security_app_lock'.tr),
+                    subtitle: Text('security_app_lock_subtitle'.tr),
+                    value: controller.appLockEnabled.value,
+                    onChanged: controller.setAppLock,
+                  ),
+                ),
+                Obx(
+                  () {
+                    if (!controller.appLockEnabled.value) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return Column(
+                      children: [
+                        const Divider(height: 1),
+                        SwitchListTile(
+                          title: Text('security_biometric'.tr),
+                          subtitle: Text(
+                            controller.biometricAvailable.value
+                                ? 'security_biometric_subtitle'.tr
+                                : 'security_biometric_unavailable'.tr,
+                          ),
+                          value: controller.biometricEnabled.value,
+                          onChanged: controller.biometricAvailable.value
+                              ? controller.setBiometric
+                              : null,
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          title: Text('security_change_pin'.tr),
+                          trailing: const Icon(Icons.chevron_right_rounded),
+                          onTap: controller.changePin,
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          title: Text('security_lock_timeout'.tr),
+                          subtitle: Text(
+                            controller.lockTimeoutLabel(
+                              controller.lockTimeoutMinutes.value,
+                            ),
+                          ),
+                          trailing: const Icon(Icons.chevron_right_rounded),
+                          onTap: () => _pickLockTimeout(context),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
           _SectionHeader(title: 'settings_updates_section'.tr),
           Card(
             child: Column(
@@ -216,70 +276,96 @@ class SettingsView extends GetView<SettingsController> {
     );
   }
 
-  Future<void> _pickTheme(BuildContext context) async {
-    final selected = await showModalBottomSheet<ThemeMode>(
+  Future<T?> _showPickerSheet<T>(
+    BuildContext context,
+    Widget child,
+  ) {
+    return showModalBottomSheet<T>(
       context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final option in SettingsConstants.themeOptions)
-              ListTile(
-                title: Text(option.labelKey.tr),
-                trailing: controller.themeMode.value == option.mode
-                    ? const Icon(Icons.check_rounded)
-                    : null,
-                onTap: () => Navigator.pop(context, option.mode),
-              ),
-          ],
-        ),
+      backgroundColor: AppBottomSheet.backgroundColor(context),
+      shape: AppBottomSheet.shape,
+      builder: (context) => SafeArea(child: child),
+    );
+  }
+
+  Future<void> _pickTheme(BuildContext context) async {
+    final selected = await _showPickerSheet<ThemeMode>(
+      context,
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final option in SettingsConstants.themeOptions)
+            ListTile(
+              title: Text(option.labelKey.tr),
+              trailing: controller.themeMode.value == option.mode
+                  ? const Icon(Icons.check_rounded)
+                  : null,
+              onTap: () => Navigator.pop(context, option.mode),
+            ),
+        ],
       ),
     );
     if (selected != null) await controller.setThemeMode(selected);
   }
 
   Future<void> _pickLanguage(BuildContext context) async {
-    final selected = await showModalBottomSheet<String>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final option in SettingsConstants.supportedLocales)
-              ListTile(
-                title: Text(option.labelKey.tr),
-                trailing: controller.localeCode.value == option.code
-                    ? const Icon(Icons.check_rounded)
-                    : null,
-                onTap: () => Navigator.pop(context, option.code),
-              ),
-          ],
-        ),
+    final selected = await _showPickerSheet<String>(
+      context,
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final option in SettingsConstants.supportedLocales)
+            ListTile(
+              title: Text(option.labelKey.tr),
+              trailing: controller.localeCode.value == option.code
+                  ? const Icon(Icons.check_rounded)
+                  : null,
+              onTap: () => Navigator.pop(context, option.code),
+            ),
+        ],
       ),
     );
     if (selected != null) await controller.setLocale(selected);
   }
 
   Future<void> _pickCurrency(BuildContext context) async {
-    final selected = await showModalBottomSheet<String>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final code in SettingsConstants.supportedCurrencyCodes)
-              ListTile(
-                title: Text(code),
-                trailing: controller.currencyCode.value == code
-                    ? const Icon(Icons.check_rounded)
-                    : null,
-                onTap: () => Navigator.pop(context, code),
-              ),
-          ],
-        ),
+    final selected = await _showPickerSheet<String>(
+      context,
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final code in SettingsConstants.supportedCurrencyCodes)
+            ListTile(
+              title: Text(code),
+              trailing: controller.currencyCode.value == code
+                  ? const Icon(Icons.check_rounded)
+                  : null,
+              onTap: () => Navigator.pop(context, code),
+            ),
+        ],
       ),
     );
     if (selected != null) await controller.updateCurrency(selected);
+  }
+
+  Future<void> _pickLockTimeout(BuildContext context) async {
+    final selected = await _showPickerSheet<int>(
+      context,
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final option in SettingsConstants.lockTimeoutOptions)
+            ListTile(
+              title: Text(option.labelKey.tr),
+              trailing: controller.lockTimeoutMinutes.value == option.minutes
+                  ? const Icon(Icons.check_rounded)
+                  : null,
+              onTap: () => Navigator.pop(context, option.minutes),
+            ),
+        ],
+      ),
+    );
+    if (selected != null) await controller.setLockTimeout(selected);
   }
 }
 

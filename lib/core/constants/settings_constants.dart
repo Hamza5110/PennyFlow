@@ -22,4 +22,12 @@ abstract final class SettingsConstants {
     (mode: ThemeMode.light, labelKey: 'settings_theme_light'),
     (mode: ThemeMode.dark, labelKey: 'settings_theme_dark'),
   ];
+
+  static const List<({int minutes, String labelKey})> lockTimeoutOptions = [
+    (minutes: 0, labelKey: 'security_lock_timeout_immediate'),
+    (minutes: 1, labelKey: 'security_lock_timeout_1m'),
+    (minutes: 5, labelKey: 'security_lock_timeout_5m'),
+    (minutes: 15, labelKey: 'security_lock_timeout_15m'),
+    (minutes: 30, labelKey: 'security_lock_timeout_30m'),
+  ];
 }

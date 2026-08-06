@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/friend_constants.dart';
 import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/app_dropdown.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/receipt_image_picker_section.dart';
@@ -23,14 +24,13 @@ class FriendTransactionFormView extends GetView<FriendTransactionFormController>
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Obx(
-              () => DropdownButtonFormField<int>(
-                initialValue: controller.selectedFriendId.value,
-                decoration: InputDecoration(labelText: 'friends_name'.tr),
-                items: controller.friendOptions
-                    .map(
-                      (f) => DropdownMenuItem(value: f.id, child: Text(f.name)),
-                    )
-                    .toList(),
+              () => AppDropdown<int>(
+                items: controller.friendOptions.map((f) => f.id).toList(),
+                itemLabel: (id) => controller.friendOptions
+                    .firstWhere((f) => f.id == id)
+                    .name,
+                value: controller.selectedFriendId.value,
+                label: 'friends_name'.tr,
                 onChanged: (v) => controller.selectedFriendId.value = v,
               ),
             ),

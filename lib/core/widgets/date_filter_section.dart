@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../utils/app_date_utils.dart';
+import 'app_dropdown.dart';
 
 typedef DateFilterSelection = ({
   DatePeriod? period,
@@ -90,38 +91,29 @@ class _DateFilterSectionState extends State<DateFilterSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        DropdownButtonFormField<DatePeriod?>(
-          initialValue: _period,
-          decoration: InputDecoration(
-            labelText: widget.label ?? 'search_date'.tr,
-          ),
-          items: [
-            DropdownMenuItem(value: null, child: Text('search_any_date'.tr)),
-            DropdownMenuItem(
-              value: DatePeriod.today,
-              child: Text('dashboard_period_today'.tr),
-            ),
-            DropdownMenuItem(
-              value: DatePeriod.yesterday,
-              child: Text('search_yesterday'.tr),
-            ),
-            DropdownMenuItem(
-              value: DatePeriod.thisWeek,
-              child: Text('dashboard_period_week'.tr),
-            ),
-            DropdownMenuItem(
-              value: DatePeriod.thisMonth,
-              child: Text('dashboard_period_month'.tr),
-            ),
-            DropdownMenuItem(
-              value: DatePeriod.lastMonth,
-              child: Text('search_last_month'.tr),
-            ),
-            DropdownMenuItem(
-              value: DatePeriod.custom,
-              child: Text('search_custom_range'.tr),
-            ),
+        AppDropdown<DatePeriod?>(
+          value: _period,
+          label: widget.label ?? 'search_date'.tr,
+          items: const [
+            null,
+            DatePeriod.today,
+            DatePeriod.yesterday,
+            DatePeriod.thisWeek,
+            DatePeriod.thisMonth,
+            DatePeriod.lastMonth,
+            DatePeriod.custom,
           ],
+          itemLabel: (period) {
+            if (period == null) return 'search_any_date'.tr;
+            return switch (period) {
+              DatePeriod.today => 'dashboard_period_today'.tr,
+              DatePeriod.yesterday => 'search_yesterday'.tr,
+              DatePeriod.thisWeek => 'dashboard_period_week'.tr,
+              DatePeriod.thisMonth => 'dashboard_period_month'.tr,
+              DatePeriod.lastMonth => 'search_last_month'.tr,
+              DatePeriod.custom => 'search_custom_range'.tr,
+            };
+          },
           onChanged: (value) {
             setState(() {
               _period = value;

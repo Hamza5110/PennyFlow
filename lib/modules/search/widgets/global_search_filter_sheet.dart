@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/friend_constants.dart';
 import '../../../core/utils/app_date_utils.dart';
+import '../../../core/widgets/app_bottom_sheet.dart';
+import '../../../core/widgets/app_dropdown.dart';
 import '../../../core/widgets/date_filter_section.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/friend/friend_models.dart';
@@ -29,9 +31,8 @@ class GlobalSearchFilterSheet extends StatefulWidget {
     return Get.bottomSheet<void>(
       GlobalSearchFilterSheet(initial: initial, onApply: onApply),
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: AppBottomSheet.backgroundColorFromTheme,
+      shape: AppBottomSheet.shape,
     );
   }
 
@@ -109,27 +110,21 @@ class _GlobalSearchFilterSheetState extends State<GlobalSearchFilterSheet> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 16),
-                DropdownButtonFormField<GlobalSearchScope>(
-                  initialValue: _scope,
-                  decoration: InputDecoration(labelText: 'search_scope'.tr),
-                  items: [
-                    DropdownMenuItem(
-                      value: GlobalSearchScope.all,
-                      child: Text('search_scope_all'.tr),
-                    ),
-                    DropdownMenuItem(
-                      value: GlobalSearchScope.expenses,
-                      child: Text('search_scope_expenses'.tr),
-                    ),
-                    DropdownMenuItem(
-                      value: GlobalSearchScope.income,
-                      child: Text('search_scope_income'.tr),
-                    ),
-                    DropdownMenuItem(
-                      value: GlobalSearchScope.friends,
-                      child: Text('search_scope_friends'.tr),
-                    ),
+                AppDropdown<GlobalSearchScope>(
+                  items: const [
+                    GlobalSearchScope.all,
+                    GlobalSearchScope.expenses,
+                    GlobalSearchScope.income,
+                    GlobalSearchScope.friends,
                   ],
+                  itemLabel: (scope) => switch (scope) {
+                    GlobalSearchScope.all => 'search_scope_all'.tr,
+                    GlobalSearchScope.expenses => 'search_scope_expenses'.tr,
+                    GlobalSearchScope.income => 'search_scope_income'.tr,
+                    GlobalSearchScope.friends => 'search_scope_friends'.tr,
+                  },
+                  value: _scope,
+                  label: 'search_scope'.tr,
                   onChanged: (v) => setState(() => _scope = v ?? _scope),
                 ),
                 const SizedBox(height: 12),
@@ -144,79 +139,61 @@ class _GlobalSearchFilterSheetState extends State<GlobalSearchFilterSheet> {
                   },
                 ),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<int?>(
-                  initialValue: _categoryId,
-                  decoration:
-                      InputDecoration(labelText: 'expense_category'.tr),
-                  items: [
-                    DropdownMenuItem(
-                      value: null,
-                      child: Text('expense_all_categories'.tr),
-                    ),
-                    for (final category in categoryList)
-                      DropdownMenuItem(
-                        value: category.id,
-                        child: Text(category.name),
-                      ),
-                  ],
+                AppDropdown<int?>(
+                  items: [null, ...categoryList.map((c) => c.id)],
+                  itemLabel: (id) {
+                    if (id == null) return 'expense_all_categories'.tr;
+                    return categoryList.firstWhere((c) => c.id == id).name;
+                  },
+                  value: _categoryId,
+                  label: 'expense_category'.tr,
                   onChanged: (v) => setState(() => _categoryId = v),
                 ),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<int?>(
-                  initialValue: _accountId,
-                  decoration: InputDecoration(labelText: 'expense_account'.tr),
-                  items: [
-                    DropdownMenuItem(
-                      value: null,
-                      child: Text('expense_all_accounts'.tr),
-                    ),
-                    for (final account in accountList)
-                      DropdownMenuItem(
-                        value: account.id,
-                        child: Text(account.name),
-                      ),
-                  ],
+                AppDropdown<int?>(
+                  items: [null, ...accountList.map((a) => a.id)],
+                  itemLabel: (id) {
+                    if (id == null) return 'expense_all_accounts'.tr;
+                    return accountList.firstWhere((a) => a.id == id).name;
+                  },
+                  value: _accountId,
+                  label: 'expense_account'.tr,
                   onChanged: (v) => setState(() => _accountId = v),
                 ),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<int?>(
-                  initialValue: _friendId,
-                  decoration: InputDecoration(labelText: 'friends_name'.tr),
-                  items: [
-                    DropdownMenuItem(
-                      value: null,
-                      child: Text('search_all_friends'.tr),
-                    ),
-                    for (final item in friendList)
-                      DropdownMenuItem(
-                        value: item.friend.id,
-                        child: Text(item.friend.name),
-                      ),
-                  ],
+                AppDropdown<int?>(
+                  items: [null, ...friendList.map((item) => item.friend.id)],
+                  itemLabel: (id) {
+                    if (id == null) return 'search_all_friends'.tr;
+                    return friendList
+                        .firstWhere((item) => item.friend.id == id)
+                        .friend
+                        .name;
+                  },
+                  value: _friendId,
+                  label: 'friends_name'.tr,
                   onChanged: (v) => setState(() => _friendId = v),
                 ),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<String?>(
-                  initialValue: _status,
-                  decoration: InputDecoration(labelText: 'friends_status'.tr),
-                  items: [
-                    DropdownMenuItem(
-                      value: null,
-                      child: Text('friends_all_statuses'.tr),
-                    ),
-                    DropdownMenuItem(
-                      value: FriendTransactionStatus.pending,
-                      child: Text('friends_status_pending'.tr),
-                    ),
-                    DropdownMenuItem(
-                      value: FriendTransactionStatus.partiallyPaid,
-                      child: Text('friends_status_partial'.tr),
-                    ),
-                    DropdownMenuItem(
-                      value: FriendTransactionStatus.completed,
-                      child: Text('friends_status_completed'.tr),
-                    ),
+                AppDropdown<String?>(
+                  items: const [
+                    null,
+                    FriendTransactionStatus.pending,
+                    FriendTransactionStatus.partiallyPaid,
+                    FriendTransactionStatus.completed,
                   ],
+                  itemLabel: (status) => switch (status) {
+                    null => 'friends_all_statuses'.tr,
+                    FriendTransactionStatus.pending =>
+                      'friends_status_pending'.tr,
+                    FriendTransactionStatus.partiallyPaid =>
+                      'friends_status_partial'.tr,
+                    FriendTransactionStatus.completed =>
+                      'friends_status_completed'.tr,
+                    _ => '',
+                  },
+                  value: _status,
+                  label: 'friends_status'.tr,
                   onChanged: (v) => setState(() => _status = v),
                 ),
                 const SizedBox(height: 12),

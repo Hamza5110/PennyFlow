@@ -35,6 +35,7 @@ class AppLifecycleService extends GetxService
       AppLifecycleState.resumed.obs;
 
   bool _isHandlingResume = false;
+  AppLifecycleState? _previousState;
 
   Future<AppLifecycleService> init() async {
     WidgetsBinding.instance.addObserver(this);
@@ -47,6 +48,7 @@ class AppLifecycleService extends GetxService
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    final previous = _previousState;
     lifecycleState.value = state;
     log.d('Lifecycle → ${state.name}');
 
@@ -55,15 +57,22 @@ class AppLifecycleService extends GetxService
       case AppLifecycleState.detached:
         _onBackground();
       case AppLifecycleState.resumed:
-        unawaited(_onForeground());
+        if (_resumedFromBackground(previous)) {
+          unawaited(_onForeground());
+        }
       case AppLifecycleState.inactive:
       case AppLifecycleState.hidden:
         break;
     }
+
+    _previousState = state;
   }
 
+  bool _resumedFromBackground(AppLifecycleState? previous) =>
+      previous == AppLifecycleState.paused ||
+      previous == AppLifecycleState.detached;
+
   void _onBackground() {
-    _settings.lockSession();
     unawaited(
       _storage.setString(
         StorageKeys.lastBackgroundAt,

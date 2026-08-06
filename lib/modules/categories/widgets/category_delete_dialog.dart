@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/utils/category_icons.dart';
+import '../../../core/widgets/app_dropdown.dart';
 import '../../../data/models/category.dart';
 
 class CategoryDeleteDialog {
@@ -62,19 +63,14 @@ class _CategoryDeleteDialogBodyState extends State<_CategoryDeleteDialogBody> {
             }),
           ),
           const SizedBox(height: 16),
-          DropdownButtonFormField<int>(
-            initialValue: _selectedId,
-            decoration: InputDecoration(labelText: 'categories_reassign_to'.tr),
-            items: widget.alternatives
-                .map(
-                  (category) => DropdownMenuItem(
-                    value: category.id,
-                    child: Text(category.name),
-                  ),
-                )
-                .toList(),
+          AppDropdown<Category>(
+            items: widget.alternatives,
+            itemLabel: (category) => category.name,
+            value: widget.alternatives
+                .firstWhere((category) => category.id == _selectedId),
+            label: 'categories_reassign_to'.tr,
             onChanged: (value) {
-              if (value != null) setState(() => _selectedId = value);
+              if (value != null) setState(() => _selectedId = value.id);
             },
           ),
         ],

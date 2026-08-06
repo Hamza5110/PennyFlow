@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/app_dropdown.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/receipt_image_picker_section.dart';
@@ -27,19 +28,15 @@ class IncomeFormView extends GetView<IncomeFormController> {
             ),
             const SizedBox(height: 16),
             Obx(
-              () => DropdownButtonFormField<String>(
-                initialValue: controller.useCustomSource.value
+              () => AppDropdown<String>(
+                value: controller.useCustomSource.value
                     ? controller.sourceOptions.last.key
                     : controller.selectedSourceKey.value,
-                decoration: InputDecoration(labelText: 'income_source'.tr),
-                items: controller.sourceOptions
-                    .map(
-                      (option) => DropdownMenuItem(
-                        value: option.key,
-                        child: Text(option.label),
-                      ),
-                    )
-                    .toList(),
+                label: 'income_source'.tr,
+                items: controller.sourceOptions.map((option) => option.key).toList(),
+                itemLabel: (key) => controller.sourceOptions
+                    .firstWhere((option) => option.key == key)
+                    .label,
                 onChanged: controller.onSourceChanged,
               ),
             ),
@@ -56,17 +53,12 @@ class IncomeFormView extends GetView<IncomeFormController> {
             ),
             const SizedBox(height: 16),
             Obx(
-              () => DropdownButtonFormField<int>(
-                initialValue: controller.selectedAccountId.value,
-                decoration: InputDecoration(labelText: 'income_account'.tr),
-                items: controller.accounts
-                    .map(
-                      (a) => DropdownMenuItem(
-                        value: a.id,
-                        child: Text(a.name),
-                      ),
-                    )
-                    .toList(),
+              () => AppDropdown<int>(
+                value: controller.selectedAccountId.value,
+                label: 'income_account'.tr,
+                items: controller.accounts.map((a) => a.id).toList(),
+                itemLabel: (id) =>
+                    controller.accounts.firstWhere((a) => a.id == id).name,
                 onChanged: (v) => controller.selectedAccountId.value = v,
               ),
             ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -28,6 +30,7 @@ class SettingsService extends GetxService with BaseService {
   final RxnInt lastBackupSizeBytes = RxnInt();
   final Rx<BackupStatus> lastBackupStatus = BackupStatus.idle.obs;
   final RxBool appLockEnabled = false.obs;
+  final RxBool biometricEnabled = false.obs;
   final RxInt lockTimeoutMinutes = 5.obs;
   final RxBool isSessionUnlocked = true.obs;
 
@@ -64,9 +67,11 @@ class SettingsService extends GetxService with BaseService {
 
     appLockEnabled.value =
         _storage.getBoolOr(StorageKeys.appLockEnabled, false);
+    biometricEnabled.value =
+        _storage.getBoolOr(StorageKeys.biometricEnabled, false);
     lockTimeoutMinutes.value =
         _storage.getIntOr(StorageKeys.lockTimeoutMinutes, 5);
-    isSessionUnlocked.value = true;
+    isSessionUnlocked.value = !appLockEnabled.value;
 
     log.i('SettingsService loaded');
     return this;
@@ -180,7 +185,17 @@ class SettingsService extends GetxService with BaseService {
   Future<void> setAppLockEnabled(bool enabled) async {
     appLockEnabled.value = enabled;
     await _storage.setBool(StorageKeys.appLockEnabled, enabled);
-    if (!enabled) unlockSession();
+    if (!enabled) {
+      await setBiometricEnabled(false);
+      unlockSession();
+    } else {
+      lockSession();
+    }
+  }
+
+  Future<void> setBiometricEnabled(bool enabled) async {
+    biometricEnabled.value = enabled;
+    await _storage.setBool(StorageKeys.biometricEnabled, enabled);
   }
 
   Future<void> setLockTimeoutMinutes(int minutes) async {
@@ -190,7 +205,10 @@ class SettingsService extends GetxService with BaseService {
 
   void lockSession() => isSessionUnlocked.value = false;
 
-  void unlockSession() => isSessionUnlocked.value = true;
+  void unlockSession() {
+    isSessionUnlocked.value = true;
+    unawaited(_storage.remove(StorageKeys.lastBackgroundAt));
+  }
 
   /// Returns true when background duration exceeds the configured timeout.
   bool shouldLockAfterBackground() {
@@ -202,7 +220,10 @@ class SettingsService extends GetxService with BaseService {
     final lastBackground = DateTime.tryParse(raw);
     if (lastBackground == null) return false;
 
-    final timeout = Duration(minutes: lockTimeoutMinutes.value);
+    final timeoutMinutes = lockTimeoutMinutes.value;
+    if (timeoutMinutes <= 0) return true;
+
+    final timeout = Duration(minutes: timeoutMinutes);
     return DateTime.now().difference(lastBackground) >= timeout;
   }
 }

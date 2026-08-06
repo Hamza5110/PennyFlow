@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/widgets/app_button.dart';
+import '../../../core/constants/validation_constants.dart';
 import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/pin_dots.dart';
+import '../../../core/widgets/pin_pad.dart';
 import '../controllers/app_lock_controller.dart';
 
-/// Lock screen shown when app lock is enabled and session is locked.
-///
-/// PIN and biometric unlock are implemented in Phase 19.
 class AppLockView extends GetView<AppLockController> {
   const AppLockView({super.key});
 
@@ -19,16 +18,16 @@ class AppLockView extends GetView<AppLockController> {
       title: 'app_lock_title'.tr,
       automaticallyImplyLeading: false,
       body: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(24),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Spacer(),
             Icon(
               Icons.lock_outline_rounded,
-              size: 72,
+              size: 64,
               color: theme.colorScheme.primary,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Text(
               'app_lock_subtitle'.tr,
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -38,11 +37,20 @@ class AppLockView extends GetView<AppLockController> {
             ),
             const SizedBox(height: 32),
             Obx(
-              () => AppButton(
-                label: 'app_lock_unlock'.tr,
-                onPressed: controller.unlock,
-                isLoading: controller.isLoading.value,
-                icon: Icons.lock_open_rounded,
+              () => PinDots(
+                length: controller.pinBuffer.value.length,
+                maxLength: ValidationConstants.minPinLength,
+                hasError: controller.hasError.value,
+              ),
+            ),
+            const Spacer(),
+            Obx(
+              () => PinPad(
+                key: const ValueKey('app_lock_pad'),
+                onDigit: controller.onDigit,
+                onBackspace: controller.onBackspace,
+                showBiometric: controller.showBiometric.value,
+                onBiometric: controller.unlockWithBiometric,
               ),
             ),
           ],

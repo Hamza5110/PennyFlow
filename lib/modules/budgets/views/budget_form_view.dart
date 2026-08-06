@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/app_dropdown.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../controllers/budget_form_controller.dart';
@@ -24,14 +25,12 @@ class BudgetFormView extends GetView<BudgetFormController> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Obx(
-              () => DropdownButtonFormField<int>(
-                initialValue: controller.selectedCategoryId.value,
-                decoration: InputDecoration(labelText: 'budgets_category'.tr),
-                items: controller.categories
-                    .map(
-                      (c) => DropdownMenuItem(value: c.id, child: Text(c.name)),
-                    )
-                    .toList(),
+              () => AppDropdown<int>(
+                items: controller.categories.map((c) => c.id).toList(),
+                itemLabel: (id) =>
+                    controller.categories.firstWhere((c) => c.id == id).name,
+                value: controller.selectedCategoryId.value,
+                label: 'budgets_category'.tr,
                 onChanged: (v) => controller.selectedCategoryId.value = v,
               ),
             ),
@@ -51,16 +50,11 @@ class BudgetFormView extends GetView<BudgetFormController> {
             ),
             const SizedBox(height: 16),
             Obx(
-              () => DropdownButtonFormField<int>(
-                initialValue: controller.selectedMonth.value,
-                decoration: InputDecoration(labelText: 'budgets_month'.tr),
-                items: [
-                  for (var i = 0; i < 12; i++)
-                    DropdownMenuItem(
-                      value: i + 1,
-                      child: Text(_months[i]),
-                    ),
-                ],
+              () => AppDropdown<int>(
+                items: List.generate(12, (i) => i + 1),
+                itemLabel: (month) => _months[month - 1],
+                value: controller.selectedMonth.value,
+                label: 'budgets_month'.tr,
                 onChanged: (v) {
                   if (v != null) controller.selectedMonth.value = v;
                 },
@@ -68,17 +62,15 @@ class BudgetFormView extends GetView<BudgetFormController> {
             ),
             const SizedBox(height: 16),
             Obx(
-              () => DropdownButtonFormField<int>(
-                initialValue: controller.selectedYear.value,
-                decoration: InputDecoration(labelText: 'budgets_year'.tr),
+              () => AppDropdown<int>(
                 items: [
-                  for (final year in [
-                    DateTime.now().year - 1,
-                    DateTime.now().year,
-                    DateTime.now().year + 1,
-                  ])
-                    DropdownMenuItem(value: year, child: Text('$year')),
+                  DateTime.now().year - 1,
+                  DateTime.now().year,
+                  DateTime.now().year + 1,
                 ],
+                itemLabel: (year) => '$year',
+                value: controller.selectedYear.value,
+                label: 'budgets_year'.tr,
                 onChanged: (v) {
                   if (v != null) controller.selectedYear.value = v;
                 },

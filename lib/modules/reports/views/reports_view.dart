@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/widgets/app_button.dart';
-import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/utils/app_date_utils.dart';
+import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/app_dropdown.dart';
+import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/date_filter_section.dart';
 import '../../../data/models/report/report_scope.dart';
 import '../controllers/reports_controller.dart';
@@ -156,16 +157,11 @@ class _MonthYearPicker extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: DropdownButtonFormField<int>(
+          child: AppDropdown<int>(
+            items: List.generate(12, (index) => index + 1),
+            itemLabel: (month) => month.toString(),
             value: controller.selectedMonth.value,
-            decoration: InputDecoration(labelText: 'budgets_month'.tr),
-            items: [
-              for (var month = 1; month <= 12; month++)
-                DropdownMenuItem(
-                  value: month,
-                  child: Text(month.toString()),
-                ),
-            ],
+            label: 'budgets_month'.tr,
             onChanged: (value) {
               if (value != null) controller.setMonth(value);
             },
@@ -173,16 +169,11 @@ class _MonthYearPicker extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: DropdownButtonFormField<int>(
+          child: AppDropdown<int>(
+            items: years,
+            itemLabel: (year) => year.toString(),
             value: controller.selectedYear.value,
-            decoration: InputDecoration(labelText: 'budgets_year'.tr),
-            items: [
-              for (final year in years)
-                DropdownMenuItem(
-                  value: year,
-                  child: Text(year.toString()),
-                ),
-            ],
+            label: 'budgets_year'.tr,
             onChanged: (value) {
               if (value != null) controller.setYear(value);
             },
@@ -203,16 +194,11 @@ class _YearPicker extends StatelessWidget {
     final now = DateTime.now();
     final years = List.generate(6, (index) => now.year - index);
 
-    return DropdownButtonFormField<int>(
+    return AppDropdown<int>(
+      items: years,
+      itemLabel: (year) => year.toString(),
       value: controller.selectedYear.value,
-      decoration: InputDecoration(labelText: 'budgets_year'.tr),
-      items: [
-        for (final year in years)
-          DropdownMenuItem(
-            value: year,
-            child: Text(year.toString()),
-          ),
-      ],
+      label: 'budgets_year'.tr,
       onChanged: (value) {
         if (value != null) controller.setYear(value);
       },

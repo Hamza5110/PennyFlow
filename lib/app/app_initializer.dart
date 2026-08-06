@@ -38,6 +38,7 @@ import '../services/lifecycle/app_lifecycle_service.dart';
 import '../services/profile/profile_service.dart';
 import '../services/recurring/recurring_service.dart';
 import '../services/reminder/reminder_service.dart';
+import '../services/security/app_lock_service.dart';
 import '../services/search/filter_session_service.dart';
 import '../services/search/search_service.dart';
 import '../services/settings/settings_service.dart';
@@ -309,6 +310,15 @@ abstract final class AppInitializer {
         Get.find<ApkDownloadManager>(),
         Get.find<UpdateRepository>(),
       ).init(),
+      permanent: true,
+    );
+
+    Get.put<AppLockService>(
+      AppLockService(
+        settings,
+        Get.find<SecureStorageService>(),
+        Get.find<ProfileRepository>(),
+      ),
       permanent: true,
     );
 

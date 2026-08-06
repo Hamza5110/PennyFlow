@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/friend_constants.dart';
 import '../../../core/utils/app_date_utils.dart';
+import '../../../core/widgets/app_bottom_sheet.dart';
+import '../../../core/widgets/app_dropdown.dart';
 import '../../../core/widgets/date_filter_section.dart';
 import '../../../data/models/friend/friend_models.dart';
 import '../../../services/friend/friend_service.dart';
@@ -24,9 +26,8 @@ class FriendFilterSheet extends StatefulWidget {
     return Get.bottomSheet<void>(
       FriendFilterSheet(initial: initial, onApply: onApply),
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: AppBottomSheet.backgroundColorFromTheme,
+      shape: AppBottomSheet.shape,
     );
   }
 
@@ -76,44 +77,41 @@ class _FriendFilterSheetState extends State<FriendFilterSheet> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 16),
-                DropdownButtonFormField<int?>(
-                  initialValue: _friendId,
-                  decoration: InputDecoration(labelText: 'friends_name'.tr),
-                  items: [
-                    DropdownMenuItem(
-                      value: null,
-                      child: Text('search_all_friends'.tr),
-                    ),
-                    for (final item in friendList)
-                      DropdownMenuItem(
-                        value: item.friend.id,
-                        child: Text(item.friend.name),
-                      ),
-                  ],
+                AppDropdown<int?>(
+                  value: _friendId,
+                  label: 'friends_name'.tr,
+                  items: [null, ...friendList.map((item) => item.friend.id)],
+                  itemLabel: (id) {
+                    if (id == null) return 'search_all_friends'.tr;
+                    return friendList
+                        .firstWhere((item) => item.friend.id == id)
+                        .friend
+                        .name;
+                  },
                   onChanged: (v) => setState(() => _friendId = v),
                 ),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<String?>(
-                  initialValue: _status,
-                  decoration: InputDecoration(labelText: 'friends_status'.tr),
-                  items: [
-                    DropdownMenuItem(
-                      value: null,
-                      child: Text('friends_all_statuses'.tr),
-                    ),
-                    DropdownMenuItem(
-                      value: FriendTransactionStatus.pending,
-                      child: Text('friends_status_pending'.tr),
-                    ),
-                    DropdownMenuItem(
-                      value: FriendTransactionStatus.partiallyPaid,
-                      child: Text('friends_status_partial'.tr),
-                    ),
-                    DropdownMenuItem(
-                      value: FriendTransactionStatus.completed,
-                      child: Text('friends_status_completed'.tr),
-                    ),
+                AppDropdown<String?>(
+                  value: _status,
+                  label: 'friends_status'.tr,
+                  items: const [
+                    null,
+                    FriendTransactionStatus.pending,
+                    FriendTransactionStatus.partiallyPaid,
+                    FriendTransactionStatus.completed,
                   ],
+                  itemLabel: (status) {
+                    if (status == null) return 'friends_all_statuses'.tr;
+                    return switch (status) {
+                      FriendTransactionStatus.pending =>
+                        'friends_status_pending'.tr,
+                      FriendTransactionStatus.partiallyPaid =>
+                        'friends_status_partial'.tr,
+                      FriendTransactionStatus.completed =>
+                        'friends_status_completed'.tr,
+                      _ => status,
+                    };
+                  },
                   onChanged: (v) => setState(() => _status = v),
                 ),
                 const SizedBox(height: 12),

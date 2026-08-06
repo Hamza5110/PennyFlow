@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/app_dropdown.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/receipt_image_picker_section.dart';
@@ -28,33 +29,24 @@ class ExpenseFormView extends GetView<ExpenseFormController> {
             ),
             const SizedBox(height: 16),
             Obx(
-              () => DropdownButtonFormField<int>(
-                initialValue: controller.selectedCategoryId.value,
-                decoration: InputDecoration(labelText: 'expense_category'.tr),
-                items: controller.categories
-                    .map(
-                      (c) => DropdownMenuItem(
-                        value: c.id,
-                        child: Text(c.name),
-                      ),
-                    )
-                    .toList(),
+              () => AppDropdown<int>(
+                value: controller.selectedCategoryId.value,
+                label: 'expense_category'.tr,
+                items: controller.categories.map((c) => c.id).toList(),
+                itemLabel: (id) => controller.categories
+                    .firstWhere((c) => c.id == id)
+                    .name,
                 onChanged: (v) => controller.selectedCategoryId.value = v,
               ),
             ),
             const SizedBox(height: 16),
             Obx(
-              () => DropdownButtonFormField<int>(
-                initialValue: controller.selectedAccountId.value,
-                decoration: InputDecoration(labelText: 'expense_account'.tr),
-                items: controller.accounts
-                    .map(
-                      (a) => DropdownMenuItem(
-                        value: a.id,
-                        child: Text(a.name),
-                      ),
-                    )
-                    .toList(),
+              () => AppDropdown<int>(
+                value: controller.selectedAccountId.value,
+                label: 'expense_account'.tr,
+                items: controller.accounts.map((a) => a.id).toList(),
+                itemLabel: (id) =>
+                    controller.accounts.firstWhere((a) => a.id == id).name,
                 onChanged: (v) => controller.selectedAccountId.value = v,
               ),
             ),
