@@ -17,7 +17,7 @@ void main() {
     await harness.dispose();
   });
 
-  Expense _expense({
+  Expense expense({
     required int profileId,
     required double amount,
     required DateTime date,
@@ -37,10 +37,10 @@ void main() {
   group('ExpenseRepository', () {
     test('findActiveByProfile returns only active rows for profile', () async {
       await repository.put(
-        _expense(profileId: 1, amount: 100, date: DateTime(2026, 3, 1)),
+        expense(profileId: 1, amount: 100, date: DateTime(2026, 3, 1)),
       );
       await repository.put(
-        _expense(
+        expense(
           profileId: 1,
           amount: 50,
           date: DateTime(2026, 3, 2),
@@ -48,7 +48,7 @@ void main() {
         ),
       );
       await repository.put(
-        _expense(profileId: 2, amount: 75, date: DateTime(2026, 3, 3)),
+        expense(profileId: 2, amount: 75, date: DateTime(2026, 3, 3)),
       );
 
       final results = await repository.findActiveByProfile(1);
@@ -58,13 +58,13 @@ void main() {
 
     test('findActiveInRange filters by date window', () async {
       await repository.put(
-        _expense(profileId: 1, amount: 10, date: DateTime(2026, 3, 1)),
+        expense(profileId: 1, amount: 10, date: DateTime(2026, 3, 1)),
       );
       await repository.put(
-        _expense(profileId: 1, amount: 20, date: DateTime(2026, 3, 15)),
+        expense(profileId: 1, amount: 20, date: DateTime(2026, 3, 15)),
       );
       await repository.put(
-        _expense(profileId: 1, amount: 30, date: DateTime(2026, 4, 1)),
+        expense(profileId: 1, amount: 30, date: DateTime(2026, 4, 1)),
       );
 
       final results = await repository.findActiveInRange(
@@ -80,7 +80,7 @@ void main() {
     test('findActiveByProfilePaged returns limited window', () async {
       for (var i = 1; i <= 5; i++) {
         await repository.put(
-          _expense(
+          expense(
             profileId: 1,
             amount: i.toDouble(),
             date: DateTime(2026, 3, i),
@@ -99,7 +99,7 @@ void main() {
 
     test('sumActiveByCategoryInMonthBatch aggregates per category', () async {
       await repository.put(
-        _expense(
+        expense(
           profileId: 1,
           amount: 100,
           date: DateTime(2026, 3, 5),
@@ -107,7 +107,7 @@ void main() {
         ),
       );
       await repository.put(
-        _expense(
+        expense(
           profileId: 1,
           amount: 40,
           date: DateTime(2026, 3, 10),
@@ -115,7 +115,7 @@ void main() {
         ),
       );
       await repository.put(
-        _expense(
+        expense(
           profileId: 1,
           amount: 25,
           date: DateTime(2026, 3, 12),
@@ -123,7 +123,7 @@ void main() {
         ),
       );
       await repository.put(
-        _expense(
+        expense(
           profileId: 1,
           amount: 999,
           date: DateTime(2026, 4, 1),

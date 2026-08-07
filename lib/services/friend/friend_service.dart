@@ -441,7 +441,7 @@ class FriendService extends GetxService with BaseService {
       result = result.where((t) => t.friendId == filter.friendId).toList();
     }
 
-    DateRange? range = AppDateUtils.resolveFilterRange(
+    final DateRange? range = AppDateUtils.resolveFilterRange(
       period: filter.datePeriod,
       customRange: filter.customRange,
     );
@@ -481,7 +481,7 @@ class FriendService extends GetxService with BaseService {
       throw const ValidationException(message: 'Name is required', field: 'name');
     }
     if (name.length > ValidationConstants.maxFriendNameLength) {
-      throw ValidationException(
+      throw const ValidationException(
         message:
             'Name must be at most ${ValidationConstants.maxFriendNameLength} characters',
         field: 'name',
@@ -506,7 +506,7 @@ class FriendService extends GetxService with BaseService {
     }
     if (input.notes != null &&
         input.notes!.length > ValidationConstants.maxNotesLength) {
-      throw ValidationException(
+      throw const ValidationException(
         message:
             'Notes must be at most ${ValidationConstants.maxNotesLength} characters',
         field: 'notes',
@@ -530,7 +530,7 @@ class FriendService extends GetxService with BaseService {
     }
     if (input.note != null &&
         input.note!.length > ValidationConstants.maxNotesLength) {
-      throw ValidationException(
+      throw const ValidationException(
         message:
             'Notes must be at most ${ValidationConstants.maxNotesLength} characters',
         field: 'note',

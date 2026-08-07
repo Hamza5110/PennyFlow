@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 
 import '../../core/base/base_service.dart';
 import '../../core/constants/app_constants.dart';
-import '../../core/constants/app_constants.dart';
 import '../../core/constants/validation_constants.dart';
 import '../../core/errors/app_exception.dart';
 import '../../core/errors/service_result.dart';
@@ -308,7 +307,7 @@ class ExpenseService extends GetxService with BaseService {
           .toList();
     }
 
-    DateRange? range = AppDateUtils.resolveFilterRange(
+    final DateRange? range = AppDateUtils.resolveFilterRange(
       period: filter.datePeriod,
       customRange: filter.customRange,
     );
@@ -349,27 +348,27 @@ class ExpenseService extends GetxService with BaseService {
       );
     }
     if (input.notes != null && input.notes!.length > AppConstants.maxNotesLength) {
-      throw ValidationException(
+      throw const ValidationException(
         message: 'Notes must be at most ${AppConstants.maxNotesLength} characters',
         field: 'notes',
       );
     }
     if (input.tags.length > AppConstants.maxTagsPerTransaction) {
-      throw ValidationException(
+      throw const ValidationException(
         message: 'Maximum ${AppConstants.maxTagsPerTransaction} tags allowed',
         field: 'tags',
       );
     }
     for (final tag in input.tags) {
       if (tag.length > AppConstants.maxTagLength) {
-        throw ValidationException(
+        throw const ValidationException(
           message: 'Each tag must be at most ${AppConstants.maxTagLength} characters',
           field: 'tags',
         );
       }
     }
     if (input.receiptImagePaths.length > AppConstants.maxImagesPerTransaction) {
-      throw ValidationException(
+      throw const ValidationException(
         message: 'Maximum ${AppConstants.maxImagesPerTransaction} images allowed',
         field: 'images',
       );

@@ -91,7 +91,7 @@ abstract final class ReportPdfGenerator {
   }
 
   static pw.Widget _summaryTable(ReportData data) {
-    return pw.Table.fromTextArray(
+    return pw.TableHelper.fromTextArray(
       headers: ['Metric', 'Amount'],
       data: [
         ['Total Income', _money(data.totalIncome, data.currencyCode)],
@@ -102,7 +102,7 @@ abstract final class ReportPdfGenerator {
   }
 
   static pw.Widget _incomeTable(ReportData data, DateFormat dateFmt) {
-    return pw.Table.fromTextArray(
+    return pw.TableHelper.fromTextArray(
       headers: ['Date', 'Source', 'Account', 'Amount'],
       data: [
         for (final row in data.incomes)
@@ -117,7 +117,7 @@ abstract final class ReportPdfGenerator {
   }
 
   static pw.Widget _expenseTable(ReportData data, DateFormat dateFmt) {
-    return pw.Table.fromTextArray(
+    return pw.TableHelper.fromTextArray(
       headers: ['Date', 'Category', 'Account', 'Amount'],
       data: [
         for (final row in data.expenses)
@@ -132,7 +132,7 @@ abstract final class ReportPdfGenerator {
   }
 
   static pw.Widget _friendSummaryTable(ReportData data) {
-    return pw.Table.fromTextArray(
+    return pw.TableHelper.fromTextArray(
       headers: ['Metric', 'Amount'],
       data: [
         ['Money Lent', _money(data.friendSummary.moneyLent, data.currencyCode)],
@@ -153,7 +153,7 @@ abstract final class ReportPdfGenerator {
     ReportData data,
     DateFormat dateFmt,
   ) {
-    return pw.Table.fromTextArray(
+    return pw.TableHelper.fromTextArray(
       headers: ['Date', 'Friend', 'Type', 'Amount', 'Status'],
       data: [
         for (final row in data.friendTransactions)
@@ -169,7 +169,7 @@ abstract final class ReportPdfGenerator {
   }
 
   static pw.Widget _categoryTable(ReportData data) {
-    return pw.Table.fromTextArray(
+    return pw.TableHelper.fromTextArray(
       headers: ['Category', 'Amount', 'Share %'],
       data: [
         for (final item in data.categoryBreakdown)
@@ -183,7 +183,7 @@ abstract final class ReportPdfGenerator {
   }
 
   static pw.Widget _monthlyTable(ReportData data) {
-    return pw.Table.fromTextArray(
+    return pw.TableHelper.fromTextArray(
       headers: ['Month', 'Income', 'Expense', 'Net'],
       data: [
         for (final row in data.monthlySummary)

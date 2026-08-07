@@ -1,5 +1,5 @@
-import '../../core/extensions/date_extensions.dart';
 import '../../core/constants/recurring_constants.dart';
+import '../../core/extensions/date_extensions.dart';
 
 /// Computes next run dates for recurring templates (FR-126).
 abstract final class RecurringScheduleUtils {

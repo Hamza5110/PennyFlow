@@ -89,10 +89,9 @@ class BudgetFormController extends BaseController {
           ? await _budgets.update(_budgetId!, input)
           : await _budgets.create(input);
       if (result.success) {
-        ErrorHandler.showSuccess(
+        ErrorHandler.popWithSuccess(
           isEditing ? 'budgets_updated'.tr : 'budgets_created'.tr,
         );
-        Get.back(result: true);
         return;
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);

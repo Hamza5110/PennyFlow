@@ -64,8 +64,7 @@ class ExpenseDetailController extends BaseController {
     await runGuarded(() async {
       final result = await _expenses.duplicate(id);
       if (result.success) {
-        ErrorHandler.showSuccess('expense_duplicated'.tr);
-        Get.back(result: true);
+        ErrorHandler.popWithSuccess('expense_duplicated'.tr);
         return;
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);
@@ -79,8 +78,7 @@ class ExpenseDetailController extends BaseController {
     await runGuarded(() async {
       final result = await _expenses.softDelete(id);
       if (result.success) {
-        ErrorHandler.showSuccess('expense_deleted'.tr);
-        Get.back(result: true);
+        ErrorHandler.popWithSuccess('expense_deleted'.tr);
         return;
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);

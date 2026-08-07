@@ -4,6 +4,7 @@
 abstract final class StorageKeys {
   // ── Theme & locale ──────────────────────────────────────────────────────
   static const String themeMode = 'theme_mode';
+  static const String themeVariant = 'theme_variant';
   static const String localeCode = 'locale_code';
 
   // ── Active profile ──────────────────────────────────────────────────────

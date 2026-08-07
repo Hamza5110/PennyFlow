@@ -1,7 +1,7 @@
 import 'package:isar_community/isar.dart';
 
-import '../models/income.dart';
 import '../../core/constants/app_constants.dart';
+import '../models/income.dart';
 import 'isar_base_repository.dart';
 
 class IncomeRepository extends IsarBaseRepository<Income> {

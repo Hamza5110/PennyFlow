@@ -12,9 +12,9 @@ import '../controllers/friend_detail_controller.dart';
 import '../controllers/friend_form_controller.dart';
 import '../controllers/friend_transaction_detail_controller.dart';
 import '../controllers/friend_transaction_form_controller.dart';
+import '../controllers/friend_transactions_list_controller.dart';
 import '../controllers/friend_trash_controller.dart';
 import '../controllers/friends_list_controller.dart';
-import '../controllers/friend_transactions_list_controller.dart';
 import '../controllers/repayment_form_controller.dart';
 
 class FriendsBinding extends Bindings {

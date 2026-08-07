@@ -26,6 +26,17 @@ class BackupView extends GetView<BackupController> {
         final isRunning = progress != null &&
             progress.phase != BackupPhase.idle &&
             controller.isRunning.value;
+        final phase = progress?.phase;
+        final isBackupRunning = isRunning &&
+            (phase == BackupPhase.exporting ||
+                phase == BackupPhase.uploading ||
+                phase == BackupPhase.verifying);
+        final isRestoreRunning = isRunning &&
+            (phase == BackupPhase.downloading ||
+                phase == BackupPhase.restoring);
+        final hasRemoteBackup = controller.remoteMeta.value != null;
+        final isBusy =
+            isRunning || controller.isDeletingRemote.value;
 
         return RefreshIndicator(
           onRefresh: controller.loadRemoteMeta,
@@ -94,6 +105,13 @@ class BackupView extends GetView<BackupController> {
                           value: AppFormatters.dateTime(remote.modifiedAt.toLocal()),
                         );
                       }),
+                      const SizedBox(height: 8),
+                      Text(
+                        'backup_appdata_info'.tr,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -131,18 +149,28 @@ class BackupView extends GetView<BackupController> {
               ],
               AppButton(
                 label: 'backup_now'.tr,
-                onPressed: controller.backupNow,
-                isLoading: controller.isLoading.value,
+                onPressed: isBusy ? null : controller.backupNow,
+                isLoading: isBackupRunning,
                 icon: Icons.cloud_upload_outlined,
               ),
               const SizedBox(height: 12),
               AppButton(
                 label: 'backup_restore'.tr,
-                onPressed: controller.restore,
+                onPressed: isBusy ? null : controller.restore,
                 variant: AppButtonVariant.outlined,
-                isLoading: controller.isLoading.value,
+                isLoading: isRestoreRunning,
                 icon: Icons.cloud_download_outlined,
               ),
+              if (controller.isSignedIn && hasRemoteBackup) ...[
+                const SizedBox(height: 12),
+                AppButton(
+                  label: 'backup_delete'.tr,
+                  onPressed: isBusy ? null : controller.deleteRemoteBackup,
+                  variant: AppButtonVariant.text,
+                  isLoading: controller.isDeletingRemote.value,
+                  icon: Icons.delete_outline_rounded,
+                ),
+              ],
             ],
           ),
         );

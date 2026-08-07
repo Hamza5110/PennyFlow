@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../app/theme/app_theme.dart';
+import '../../app/theme/app_theme_variant.dart';
 import '../../core/base/base_service.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/storage_keys.dart';
@@ -19,6 +21,7 @@ class SettingsService extends GetxService with BaseService {
   final LocalStorageService _storage;
 
   final Rx<ThemeMode> themeMode = ThemeMode.system.obs;
+  final Rx<AppThemeVariant> themeVariant = AppThemeVariant.teal.obs;
   final RxString localeCode = 'en'.obs;
   final RxString currencyCode = AppConstants.defaultCurrencyCode.obs;
   final RxBool autoBackupEnabled = false.obs;
@@ -36,6 +39,7 @@ class SettingsService extends GetxService with BaseService {
 
   Future<SettingsService> init() async {
     themeMode.value = _readThemeMode();
+    themeVariant.value = _readThemeVariant();
     localeCode.value = _storage.getString(StorageKeys.localeCode) ?? 'en';
     currencyCode.value = _storage.getString(StorageKeys.currencyCode) ??
         AppConstants.defaultCurrencyCode;
@@ -89,6 +93,11 @@ class SettingsService extends GetxService with BaseService {
     }
   }
 
+  AppThemeVariant _readThemeVariant() {
+    final raw = _storage.getString(StorageKeys.themeVariant);
+    return AppThemeVariant.fromStorage(raw);
+  }
+
   Future<void> setThemeMode(ThemeMode mode) async {
     themeMode.value = mode;
     final value = switch (mode) {
@@ -97,7 +106,19 @@ class SettingsService extends GetxService with BaseService {
       ThemeMode.system => 'system',
     };
     await _storage.setString(StorageKeys.themeMode, value);
-    Get.changeThemeMode(mode);
+    _applyTheme();
+  }
+
+  Future<void> setThemeVariant(AppThemeVariant variant) async {
+    themeVariant.value = variant;
+    await _storage.setString(StorageKeys.themeVariant, variant.name);
+    _applyTheme();
+  }
+
+  void _applyTheme() {
+    Get.changeTheme(AppTheme.light(themeVariant.value));
+    Get.changeThemeMode(themeMode.value);
+    Get.forceAppUpdate();
   }
 
   Future<void> setLocaleCode(String code) async {

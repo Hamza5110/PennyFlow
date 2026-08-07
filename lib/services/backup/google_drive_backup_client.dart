@@ -80,6 +80,37 @@ class GoogleDriveBackupClient with BaseService {
     );
   }
 
+  /// Re-fetches file metadata after upload — [files.update] may return a stale MD5.
+  Future<BackupRemoteMeta> refreshRemoteMeta(String fileId) async {
+    final driveApi = await _requireDriveApi();
+    final response = await _withRetry(
+      () => driveApi.files.get(
+        fileId,
+        $fields: 'id,name,size,modifiedTime,md5Checksum',
+      ),
+    );
+    if (response is! drive.File) {
+      throw const BackupException(
+        message: 'Unexpected Drive metadata response',
+        code: 'BACKUP_VERIFY_FAILED',
+      );
+    }
+
+    return BackupRemoteMeta(
+      fileId: response.id!,
+      fileName: response.name ?? '',
+      sizeBytes: int.tryParse(response.size ?? '0') ?? 0,
+      modifiedAt: response.modifiedTime ?? DateTime.now().toUtc(),
+      md5Checksum: response.md5Checksum,
+    );
+  }
+
+  Future<void> deleteBackup(BackupRemoteMeta meta) async {
+    final driveApi = await _requireDriveApi();
+    await _withRetry(() => driveApi.files.delete(meta.fileId));
+    log.i('Deleted remote backup ${meta.fileName}');
+  }
+
   Future<File> downloadBackup({
     required BackupRemoteMeta meta,
     required File targetFile,

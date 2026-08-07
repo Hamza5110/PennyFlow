@@ -172,10 +172,9 @@ class RecurringFormController extends BaseController {
           : await _recurring.create(input);
 
       if (result.success) {
-        ErrorHandler.showSuccess(
+        ErrorHandler.popWithSuccess(
           isEditing ? 'recurring_updated'.tr : 'recurring_created'.tr,
         );
-        Get.back<void>(result: true);
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);
       }

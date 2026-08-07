@@ -92,7 +92,7 @@ class ImageService extends GetxService with BaseService {
       currentPath = result.path;
       final size = await File(result.path).length();
       if (!ImageCompressionUtils.exceedsMaxSize(size)) {
-        await _createThumbnail(currentPath!);
+        await _createThumbnail(currentPath);
         return currentPath;
       }
 

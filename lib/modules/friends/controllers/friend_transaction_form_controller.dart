@@ -138,12 +138,11 @@ class FriendTransactionFormController extends BaseController {
           ? await _friends.updateTransaction(_transactionId!, input)
           : await _friends.createTransaction(input);
       if (result.success) {
-        ErrorHandler.showSuccess(
+        ErrorHandler.popWithSuccess(
           isEditing
               ? 'friends_transaction_updated'.tr
               : 'friends_transaction_created'.tr,
         );
-        Get.back(result: true);
         return;
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);

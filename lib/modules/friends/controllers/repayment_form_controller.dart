@@ -89,8 +89,7 @@ class RepaymentFormController extends BaseController {
     await runGuarded(() async {
       final result = await _friends.addRepayment(id, _buildInput());
       if (result.success) {
-        ErrorHandler.showSuccess('friends_repayment_added'.tr);
-        Get.back(result: true);
+        ErrorHandler.popWithSuccess('friends_repayment_added'.tr);
         return;
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);

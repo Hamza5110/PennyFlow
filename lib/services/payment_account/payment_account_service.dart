@@ -12,8 +12,8 @@ import '../../data/models/payment_account/payment_account_list_item.dart';
 import '../../data/repositories/expense_repository.dart';
 import '../../data/repositories/income_repository.dart';
 import '../../data/repositories/payment_account_repository.dart';
-import '../settings/settings_service.dart';
 import '../cache/profile_lookup_cache_service.dart';
+import '../settings/settings_service.dart';
 
 /// Default payment accounts (FR-071).
 abstract final class PaymentAccountDefaults {
@@ -255,7 +255,7 @@ class PaymentAccountService extends GetxService with BaseService {
       throw const ValidationException(message: 'Name is required', field: 'name');
     }
     if (name.length > ValidationConstants.maxAccountNameLength) {
-      throw ValidationException(
+      throw const ValidationException(
         message:
             'Name must be at most ${ValidationConstants.maxAccountNameLength} characters',
         field: 'name',

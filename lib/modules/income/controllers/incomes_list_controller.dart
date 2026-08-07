@@ -107,7 +107,8 @@ class IncomesListController extends BaseController {
     loadIncomes();
   }
 
-  void openAdd() => Get.toNamed<void>(AppRoutes.incomeForm);
+  void openAdd() =>
+      Get.toNamed<void>(AppRoutes.incomeForm)?.then((_) => loadIncomes());
 
   void openDetail(IncomeListItem item) {
     Get.toNamed<void>(

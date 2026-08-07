@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 
 import '../../core/base/base_service.dart';
 import '../../core/constants/app_constants.dart';
-import '../../core/constants/app_constants.dart';
 import '../../core/constants/income_sources.dart';
 import '../../core/constants/validation_constants.dart';
 import '../../core/errors/app_exception.dart';
@@ -259,7 +258,7 @@ class IncomeService extends GetxService with BaseService {
       result = result.where((e) => e.accountId == filter.accountId).toList();
     }
 
-    DateRange? range = AppDateUtils.resolveFilterRange(
+    final DateRange? range = AppDateUtils.resolveFilterRange(
       period: filter.datePeriod,
       customRange: filter.customRange,
     );
@@ -304,13 +303,13 @@ class IncomeService extends GetxService with BaseService {
       );
     }
     if (input.source.length > AppConstants.maxNameLength) {
-      throw ValidationException(
+      throw const ValidationException(
         message: 'Source must be at most ${AppConstants.maxNameLength} characters',
         field: 'source',
       );
     }
     if (input.notes != null && input.notes!.length > AppConstants.maxNotesLength) {
-      throw ValidationException(
+      throw const ValidationException(
         message: 'Notes must be at most ${AppConstants.maxNotesLength} characters',
         field: 'notes',
       );

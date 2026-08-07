@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/settings_constants.dart';
-import '../../../core/widgets/app_bottom_sheet.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../controllers/settings_controller.dart';
 
@@ -22,11 +20,13 @@ class SettingsView extends GetView<SettingsController> {
               children: [
                 Obx(
                   () => ListTile(
-                    leading: const Icon(Icons.brightness_6_outlined),
+                    leading: const Icon(Icons.palette_outlined),
                     title: Text('settings_theme'.tr),
-                    subtitle: Text(controller.themeLabel(controller.themeMode.value)),
+                    subtitle: Text(
+                      '${controller.themeVariantLabel(controller.themeVariant.value)} · ${controller.themeLabel(controller.themeMode.value)}',
+                    ),
                     trailing: const Icon(Icons.chevron_right_rounded),
-                    onTap: () => _pickTheme(context),
+                    onTap: controller.openThemePicker,
                   ),
                 ),
                 const Divider(height: 1),
@@ -36,7 +36,7 @@ class SettingsView extends GetView<SettingsController> {
                     title: Text('settings_language'.tr),
                     subtitle: Text(controller.localeLabel(controller.localeCode.value)),
                     trailing: const Icon(Icons.chevron_right_rounded),
-                    onTap: () => _pickLanguage(context),
+                    onTap: controller.openLanguagePicker,
                   ),
                 ),
               ],
@@ -49,9 +49,9 @@ class SettingsView extends GetView<SettingsController> {
               () => ListTile(
                 leading: const Icon(Icons.payments_outlined),
                 title: Text('settings_currency'.tr),
-                subtitle: Text(controller.currencyCode.value),
+                subtitle: Text(controller.currencyLabel(controller.currencyCode.value)),
                 trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => _pickCurrency(context),
+                onTap: controller.openCurrencyPicker,
               ),
             ),
           ),
@@ -192,7 +192,7 @@ class SettingsView extends GetView<SettingsController> {
                             ),
                           ),
                           trailing: const Icon(Icons.chevron_right_rounded),
-                          onTap: () => _pickLockTimeout(context),
+                          onTap: controller.openLockTimeoutPicker,
                         ),
                       ],
                     );
@@ -281,98 +281,6 @@ class SettingsView extends GetView<SettingsController> {
         ],
       ),
     );
-  }
-
-  Future<T?> _showPickerSheet<T>(
-    BuildContext context,
-    Widget child,
-  ) {
-    return showModalBottomSheet<T>(
-      context: context,
-      backgroundColor: AppBottomSheet.backgroundColor(context),
-      shape: AppBottomSheet.shape,
-      builder: (context) => SafeArea(child: child),
-    );
-  }
-
-  Future<void> _pickTheme(BuildContext context) async {
-    final selected = await _showPickerSheet<ThemeMode>(
-      context,
-      Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final option in SettingsConstants.themeOptions)
-            ListTile(
-              title: Text(option.labelKey.tr),
-              trailing: controller.themeMode.value == option.mode
-                  ? const Icon(Icons.check_rounded)
-                  : null,
-              onTap: () => Navigator.pop(context, option.mode),
-            ),
-        ],
-      ),
-    );
-    if (selected != null) await controller.setThemeMode(selected);
-  }
-
-  Future<void> _pickLanguage(BuildContext context) async {
-    final selected = await _showPickerSheet<String>(
-      context,
-      Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final option in SettingsConstants.supportedLocales)
-            ListTile(
-              title: Text(option.labelKey.tr),
-              trailing: controller.localeCode.value == option.code
-                  ? const Icon(Icons.check_rounded)
-                  : null,
-              onTap: () => Navigator.pop(context, option.code),
-            ),
-        ],
-      ),
-    );
-    if (selected != null) await controller.setLocale(selected);
-  }
-
-  Future<void> _pickCurrency(BuildContext context) async {
-    final selected = await _showPickerSheet<String>(
-      context,
-      Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final code in SettingsConstants.supportedCurrencyCodes)
-            ListTile(
-              title: Text(code),
-              trailing: controller.currencyCode.value == code
-                  ? const Icon(Icons.check_rounded)
-                  : null,
-              onTap: () => Navigator.pop(context, code),
-            ),
-        ],
-      ),
-    );
-    if (selected != null) await controller.updateCurrency(selected);
-  }
-
-  Future<void> _pickLockTimeout(BuildContext context) async {
-    final selected = await _showPickerSheet<int>(
-      context,
-      Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final option in SettingsConstants.lockTimeoutOptions)
-            ListTile(
-              title: Text(option.labelKey.tr),
-              trailing: controller.lockTimeoutMinutes.value == option.minutes
-                  ? const Icon(Icons.check_rounded)
-                  : null,
-              onTap: () => Navigator.pop(context, option.minutes),
-            ),
-        ],
-      ),
-    );
-    if (selected != null) await controller.setLockTimeout(selected);
   }
 }
 

@@ -21,8 +21,8 @@ class PennyFlowApp extends StatelessWidget {
       () => GetMaterialApp(
         title: AppConfig.instance.displayName,
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.light(),
-        darkTheme: AppTheme.dark(),
+        theme: AppTheme.light(settings.themeVariant.value),
+        darkTheme: AppTheme.dark(settings.themeVariant.value),
         themeMode: settings.themeMode.value,
         translations: AppTranslations(),
         locale: Locale(settings.localeCode.value),

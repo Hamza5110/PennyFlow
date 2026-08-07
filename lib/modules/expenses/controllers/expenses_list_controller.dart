@@ -107,7 +107,8 @@ class ExpensesListController extends BaseController {
     loadExpenses();
   }
 
-  void openAdd() => Get.toNamed<void>(AppRoutes.expenseForm);
+  void openAdd() =>
+      Get.toNamed<void>(AppRoutes.expenseForm)?.then((_) => loadExpenses());
 
   void openDetail(ExpenseListItem item) {
     Get.toNamed<void>(

@@ -13,10 +13,11 @@ class ExpenseFormView extends GetView<ExpenseFormController> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      title: controller.isEditing ? 'expense_edit'.tr : 'expense_add'.tr,
-      isLoading: false,
-      body: SingleChildScrollView(
+    return Obx(
+      () => AppScaffold(
+        title: controller.isEditing ? 'expense_edit'.tr : 'expense_add'.tr,
+        isLoading: controller.isLoading.value,
+        body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -113,6 +114,7 @@ class ExpenseFormView extends GetView<ExpenseFormController> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

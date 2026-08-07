@@ -77,8 +77,7 @@ class FriendTransactionDetailController extends BaseController {
     await runGuarded(() async {
       final result = await _friends.softDeleteTransaction(id);
       if (result.success) {
-        ErrorHandler.showSuccess('friends_transaction_deleted'.tr);
-        Get.back(result: true);
+        ErrorHandler.popWithSuccess('friends_transaction_deleted'.tr);
         return;
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);

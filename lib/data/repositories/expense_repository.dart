@@ -1,7 +1,7 @@
 import 'package:isar_community/isar.dart';
 
-import '../models/expense.dart';
 import '../../core/constants/app_constants.dart';
+import '../models/expense.dart';
 import 'isar_base_repository.dart';
 
 class ExpenseRepository extends IsarBaseRepository<Expense> {

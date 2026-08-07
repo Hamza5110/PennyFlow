@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:penny_flow/data/models/category.dart';
 import 'package:penny_flow/data/models/expense.dart';
-import 'package:penny_flow/data/models/payment_account.dart';
 import 'package:penny_flow/data/models/statistics/statistics_period.dart';
 import 'package:penny_flow/data/repositories/category_repository.dart';
 import 'package:penny_flow/data/repositories/expense_repository.dart';

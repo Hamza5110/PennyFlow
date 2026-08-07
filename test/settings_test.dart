@@ -8,8 +8,12 @@ void main() {
       expect(SettingsConstants.supportedCurrencyCodes, contains('USD'));
     });
 
-    test('theme options include system light and dark', () {
-      expect(SettingsConstants.themeOptions.length, 3);
+    test('theme mode options include system light and dark', () {
+      expect(SettingsConstants.themeModeOptions.length, 3);
+    });
+
+    test('theme variants include multiple palettes', () {
+      expect(SettingsConstants.themeVariants.length, greaterThan(1));
     });
   });
 }

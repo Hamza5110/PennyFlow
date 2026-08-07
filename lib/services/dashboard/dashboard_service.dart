@@ -2,10 +2,10 @@ import 'package:get/get.dart';
 
 import '../../core/base/base_service.dart';
 import '../../core/constants/income_sources.dart';
+import '../../data/models/dashboard/budget_progress.dart';
 import '../../data/models/dashboard/dashboard_period.dart';
 import '../../data/models/dashboard/dashboard_summary.dart';
 import '../../data/models/dashboard/dashboard_transaction.dart';
-import '../../data/models/dashboard/budget_progress.dart';
 import '../../data/models/dashboard/monthly_spending_point.dart';
 import '../../data/repositories/dashboard_repository.dart';
 import '../settings/settings_service.dart';

@@ -17,7 +17,7 @@ void main() {
     await harness.dispose();
   });
 
-  Repayment _repayment({
+  Repayment repayment({
     required int transactionId,
     required double amount,
   }) {
@@ -29,19 +29,19 @@ void main() {
 
   group('RepaymentRepository', () {
     test('sumByTransaction totals repayments for one transaction', () async {
-      await repository.put(_repayment(transactionId: 7, amount: 50));
-      await repository.put(_repayment(transactionId: 7, amount: 25));
-      await repository.put(_repayment(transactionId: 8, amount: 10));
+      await repository.put(repayment(transactionId: 7, amount: 50));
+      await repository.put(repayment(transactionId: 7, amount: 25));
+      await repository.put(repayment(transactionId: 8, amount: 10));
 
       final total = await repository.sumByTransaction(7);
       expect(total, 75);
     });
 
     test('sumByTransactionIds returns map for multiple transactions', () async {
-      await repository.put(_repayment(transactionId: 1, amount: 10));
-      await repository.put(_repayment(transactionId: 1, amount: 5));
-      await repository.put(_repayment(transactionId: 2, amount: 20));
-      await repository.put(_repayment(transactionId: 3, amount: 99));
+      await repository.put(repayment(transactionId: 1, amount: 10));
+      await repository.put(repayment(transactionId: 1, amount: 5));
+      await repository.put(repayment(transactionId: 2, amount: 20));
+      await repository.put(repayment(transactionId: 3, amount: 99));
 
       final totals = await repository.sumByTransactionIds([1, 2, 4]);
       expect(totals[1], 15);

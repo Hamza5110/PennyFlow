@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../app/theme/app_theme_variant.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/backup_constants.dart';
 import '../../core/constants/storage_keys.dart';
@@ -32,15 +34,10 @@ class BackupBundleRestorer {
   final ImageService _images;
   final _uuid = const Uuid();
 
+  /// Validates bundle integrity in memory — avoids fragile cache extraction.
   Future<BackupManifest> validate(File bundleFile) async {
-    final extracted = await _extractBundle(bundleFile);
-    try {
-      return _readAndVerifyManifest(extracted);
-    } finally {
-      if (await extracted.exists()) {
-        await extracted.delete(recursive: true);
-      }
-    }
+    final entries = await _readZipEntries(bundleFile);
+    return _verifyManifestFromEntries(entries);
   }
 
   Future<BackupManifest> restore({
@@ -82,6 +79,99 @@ class BackupBundleRestorer {
         await extracted.delete(recursive: true);
       }
     }
+  }
+
+  Future<Map<String, List<int>>> _readZipEntries(File bundleFile) async {
+    if (!await bundleFile.exists()) {
+      throw const BackupException(
+        message: 'Backup bundle file not found',
+        code: 'BACKUP_INVALID',
+      );
+    }
+
+    final bytes = await bundleFile.readAsBytes();
+    if (bytes.isEmpty) {
+      throw const BackupException(
+        message: 'Backup bundle is empty',
+        code: 'BACKUP_INVALID',
+      );
+    }
+
+    final Archive archive;
+    try {
+      archive = ZipDecoder().decodeBytes(bytes);
+    } catch (error) {
+      throw BackupException(
+        message: 'Backup bundle is not a valid zip archive',
+        code: 'BACKUP_INVALID',
+        cause: error,
+      );
+    }
+
+    final entries = <String, List<int>>{};
+    for (final file in archive) {
+      if (!file.isFile) continue;
+      final safeName = _safeZipEntryName(file.name);
+      if (safeName == null) continue;
+      entries[safeName] = List<int>.from(file.content as List<int>);
+    }
+
+    if (entries.isEmpty) {
+      throw const BackupException(
+        message: 'Backup bundle contains no files',
+        code: 'BACKUP_INVALID',
+      );
+    }
+
+    return entries;
+  }
+
+  BackupManifest _verifyManifestFromEntries(Map<String, List<int>> entries) {
+    final manifestBytes = entries[BackupConstants.manifestFileName];
+    if (manifestBytes == null) {
+      throw BackupException(
+        message:
+            'Backup manifest is missing (entries: ${entries.keys.join(', ')})',
+        code: 'BACKUP_INVALID',
+      );
+    }
+
+    final manifest = BackupManifest.fromJson(
+      jsonDecode(utf8.decode(manifestBytes)) as Map<String, dynamic>,
+    );
+
+    if (manifest.schemaVersion > AppConstants.databaseSchemaVersion) {
+      throw BackupException(
+        message:
+            'Backup requires a newer app version (schema ${manifest.schemaVersion})',
+        code: 'BACKUP_SCHEMA_TOO_NEW',
+      );
+    }
+
+    final dataBytes = entries[BackupConstants.dataFileName];
+    if (dataBytes == null) {
+      throw const BackupException(
+        message: 'Backup data is missing',
+        code: 'BACKUP_INVALID',
+      );
+    }
+
+    final settingsBytes = entries[BackupConstants.settingsFileName];
+    final receiptBytes = _collectReceiptBytesFromEntries(entries);
+
+    final contentChecksum = BackupChecksumUtils.sha256OfBytes([
+      ...dataBytes,
+      ...?settingsBytes,
+      ...receiptBytes,
+    ]);
+    if (contentChecksum != manifest.sha256.toLowerCase()) {
+      throw const BackupException(
+        message: 'Backup integrity check failed',
+        code: 'BACKUP_CHECKSUM_MISMATCH',
+      );
+    }
+
+    return manifest;
   }
 
   Future<BackupManifest> _readAndVerifyManifest(Directory extracted) async {
@@ -135,23 +225,50 @@ class BackupBundleRestorer {
   }
 
   Future<Directory> _extractBundle(File bundleFile) async {
-    final bytes = await bundleFile.readAsBytes();
-    final archive = ZipDecoder().decodeBytes(bytes);
+    final entries = await _readZipEntries(bundleFile);
+    final supportDir = await getApplicationSupportDirectory();
     final targetDir = Directory(
-      p.join(
-        (await getTemporaryDirectory()).path,
-        'pennyflow_restore_${_uuid.v4()}',
-      ),
+      p.join(supportDir.path, 'pennyflow_restore_${_uuid.v4()}'),
     );
     await targetDir.create(recursive: true);
 
-    for (final file in archive) {
-      if (!file.isFile) continue;
-      final outFile = File(p.join(targetDir.path, file.name));
+    for (final entry in entries.entries) {
+      final outFile = File(p.join(targetDir.path, entry.key));
       await outFile.parent.create(recursive: true);
-      await outFile.writeAsBytes(file.content as List<int>);
+      await outFile.writeAsBytes(entry.value);
     }
     return targetDir;
+  }
+
+  /// Normalizes zip entry paths and rejects traversal attempts.
+  String? _safeZipEntryName(String rawName) {
+    var normalized = p.posix.normalize(rawName.replaceAll(r'\', '/'));
+    while (normalized.startsWith('/')) {
+      normalized = normalized.substring(1);
+    }
+    if (normalized.startsWith('./')) {
+      normalized = normalized.substring(2);
+    }
+    if (normalized.isEmpty ||
+        normalized.startsWith('../') ||
+        normalized.contains('/../')) {
+      return null;
+    }
+    return normalized;
+  }
+
+  List<int> _collectReceiptBytesFromEntries(Map<String, List<int>> entries) {
+    final prefix = '${BackupConstants.receiptsFolderName}/';
+    final receiptEntries = entries.entries
+        .where((entry) => entry.key.startsWith(prefix))
+        .toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+
+    final buffer = <int>[];
+    for (final entry in receiptEntries) {
+      buffer.addAll(entry.value);
+    }
+    return buffer;
   }
 
   Future<List<int>> _collectReceiptBytes(Directory receiptsDir) async {
@@ -210,7 +327,18 @@ class BackupBundleRestorer {
   Future<void> _applySettings(Map<String, dynamic> settings) async {
     final themeMode = settings[StorageKeys.themeMode] as String?;
     if (themeMode != null) {
-      await _storage.setString(StorageKeys.themeMode, themeMode);
+      final mode = switch (themeMode) {
+        'light' => ThemeMode.light,
+        'dark' => ThemeMode.dark,
+        _ => ThemeMode.system,
+      };
+      await _settings.setThemeMode(mode);
+    }
+
+    final themeVariant = settings[StorageKeys.themeVariant] as String?;
+    if (themeVariant != null) {
+      await _storage.setString(StorageKeys.themeVariant, themeVariant);
+      await _settings.setThemeVariant(AppThemeVariant.fromStorage(themeVariant));
     }
 
     final locale = settings[StorageKeys.localeCode] as String?;

@@ -86,14 +86,14 @@ class NotificationService extends GetxService with BaseService {
 
     try {
       final tzScheduled = tz.TZDateTime.from(scheduledAt, tz.local);
-      final details = NotificationDetails(
+      final details = const NotificationDetails(
         android: AndroidNotificationDetails(
           _reminderChannelId,
           _reminderChannelName,
           importance: Importance.high,
           priority: Priority.high,
         ),
-        iOS: const DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(),
       );
 
       await _plugin.zonedSchedule(

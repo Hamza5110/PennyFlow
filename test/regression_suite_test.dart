@@ -21,7 +21,7 @@ void main() {
     });
 
     test('release info parses minimum viable GitHub payload', () {
-      final release = ReleaseInfo.fromGitHubJson({
+      final release = ReleaseInfo.fromGitHubJson(const {
         'tag_name': 'v3.0.0',
         'body': 'Release notes',
         'assets': [

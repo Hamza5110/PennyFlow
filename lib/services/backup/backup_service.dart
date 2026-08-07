@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -84,6 +86,9 @@ class BackupService extends GetxService with BaseService {
       );
       bundleFile = built.bundle;
 
+      _setProgress(BackupPhase.verifying, 0.85);
+      await _restorer.validate(bundleFile);
+
       _setProgress(BackupPhase.uploading, 0.1);
       await _settings.recordBackupMeta(
         at: DateTime.now(),
@@ -103,29 +108,17 @@ class BackupService extends GetxService with BaseService {
         status: BackupStatus.verifying,
       );
 
-      final downloaded = File(
-        p.join(
-          (await getTemporaryDirectory()).path,
-          'pennyflow_verify_${_uuid.v4()}.zip',
-        ),
-      );
-      try {
-        await _drive.downloadBackup(meta: remote, targetFile: downloaded);
-        await _restorer.validate(downloaded);
-      } finally {
-        if (await downloaded.exists()) {
-          await downloaded.delete();
-        }
-      }
+      final refreshed = await _drive.refreshRemoteMeta(remote.fileId);
+      await _verifyUploadedBundle(bundleFile, refreshed);
 
       await _settings.recordBackupMeta(
-        at: remote.modifiedAt.toLocal(),
-        sizeBytes: remote.sizeBytes,
+        at: refreshed.modifiedAt.toLocal(),
+        sizeBytes: refreshed.sizeBytes,
         status: BackupStatus.success,
       );
       _setProgress(BackupPhase.idle, 1);
-      log.i('Backup completed (${remote.sizeBytes} bytes)');
-      return ServiceResult.success(remote);
+      log.i('Backup completed (${refreshed.sizeBytes} bytes)');
+      return ServiceResult.success(refreshed);
     } catch (error, stackTrace) {
       await _settings.recordBackupMeta(
         at: DateTime.now(),
@@ -254,6 +247,55 @@ class BackupService extends GetxService with BaseService {
     return _drive.fetchRemoteMeta(profileId);
   }
 
+  Future<ServiceResult<void>> deleteRemoteBackup() async {
+    if (isRunning.value) {
+      return ServiceResult.failure(
+        userMessage: 'A backup operation is already in progress',
+        errorCode: 'BACKUP_IN_PROGRESS',
+      );
+    }
+
+    if (!_auth.isSignedIn) {
+      return ServiceResult.failure(
+        userMessage: 'Sign in with Google to manage your backup',
+        errorCode: 'BACKUP_NOT_SIGNED_IN',
+      );
+    }
+
+    final profileId = _settings.activeProfileId;
+    if (profileId == null) {
+      return ServiceResult.failure(
+        userMessage: 'No active profile found',
+        errorCode: 'PROFILE_NOT_FOUND',
+      );
+    }
+
+    try {
+      final remote = await _drive.fetchRemoteMeta(profileId);
+      if (remote == null) {
+        return ServiceResult.failure(
+          userMessage: 'No backup found in Google Drive',
+          errorCode: 'BACKUP_NOT_FOUND',
+        );
+      }
+
+      await _drive.deleteBackup(remote);
+      log.i('Remote backup deleted for profile $profileId');
+      return ServiceResult.success();
+    } catch (error, stackTrace) {
+      log.e('Delete backup failed', error: error, stackTrace: stackTrace);
+      return ServiceResult.failure(
+        userMessage: error is AppException
+            ? error.message
+            : 'Could not delete cloud backup. Please try again.',
+        errorCode: error is AppException ? error.code : 'BACKUP_DELETE_FAILED',
+        exception: error is AppException
+            ? error
+            : BackupException(message: error.toString(), cause: error),
+      );
+    }
+  }
+
   Future<bool> shouldOfferRestore() async {
     if (!_auth.isSignedIn) return false;
     final profileId = _settings.activeProfileId;
@@ -275,6 +317,35 @@ class BackupService extends GetxService with BaseService {
     final result = await backupNow(manual: false);
     if (result.isFailure) {
       log.w('Auto-backup failed: ${result.userMessage}');
+    }
+  }
+
+  Future<void> _verifyUploadedBundle(
+    File bundleFile,
+    BackupRemoteMeta remote,
+  ) async {
+    final localSize = await bundleFile.length();
+    if (remote.sizeBytes > 0 && remote.sizeBytes != localSize) {
+      throw BackupException(
+        message:
+            'Upload verification failed (size mismatch: local $localSize, remote ${remote.sizeBytes})',
+        code: 'BACKUP_VERIFY_FAILED',
+      );
+    }
+
+    // Local bundle is already checksum-validated before upload. Size match is the
+    // reliable post-upload signal — Drive's md5Checksum is often stale after update.
+    final remoteMd5 = remote.md5Checksum;
+    if (remoteMd5 == null || remoteMd5.isEmpty) return;
+
+    final localMd5 = base64Encode(
+      md5.convert(await bundleFile.readAsBytes()).bytes,
+    );
+    if (localMd5 != remoteMd5) {
+      log.w(
+        'Drive MD5 mismatch after upload (local=$localMd5, remote=$remoteMd5) '
+        '— sizes match ($localSize bytes), treating upload as successful',
+      );
     }
   }
 

@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   group('ReleaseInfo', () {
     test('fromGitHubJson parses apk asset and version tag', () {
-      final release = ReleaseInfo.fromGitHubJson({
+      final release = ReleaseInfo.fromGitHubJson(const {
         'tag_name': 'v1.2.0',
         'body': 'Bug fixes',
         'published_at': '2026-03-15T10:00:00Z',
@@ -29,7 +29,7 @@ void main() {
     });
 
     test('detects forced update from body marker', () {
-      final release = ReleaseInfo.fromGitHubJson({
+      final release = ReleaseInfo.fromGitHubJson(const {
         'tag_name': '2.0.0',
         'body': 'Security patch [force-update]',
         'assets': [

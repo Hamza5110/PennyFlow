@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -72,8 +73,13 @@ class AuthService extends GetxService with BaseService {
         account = result;
       } catch (error, stackTrace) {
         if (error is AuthException) rethrow;
+        log.e(
+          'Google Sign-In failed',
+          error: error,
+          stackTrace: stackTrace,
+        );
         throw AuthException(
-          message: 'Google Sign-In failed. Please try again.',
+          message: _googleSignInFailureMessage(error),
           cause: error,
           stackTrace: stackTrace,
         );
@@ -97,6 +103,27 @@ class AuthService extends GetxService with BaseService {
       currentUser.value = null;
       log.i('User signed out — auto-backup disabled');
     });
+  }
+
+  String _googleSignInFailureMessage(Object error) {
+    if (error is PlatformException) {
+      final details = '${error.code} ${error.message ?? ''}'.toLowerCase();
+      if (details.contains('10') || details.contains('developer_error')) {
+        return 'Google Sign-In is not configured for this app build. '
+            'Add an Android OAuth client with package com.pennyflow.app '
+            'and your debug/release SHA-1 in Google Cloud Console.';
+      }
+      if (details.contains('12500') || details.contains('sign_in_failed')) {
+        return 'Google Sign-In failed. Check your network connection and try again.';
+      }
+      if (details.contains('network')) {
+        return 'Network error during Google Sign-In. Please try again.';
+      }
+      if (error.message != null && error.message!.isNotEmpty) {
+        return 'Google Sign-In failed: ${error.message}';
+      }
+    }
+    return 'Google Sign-In failed. Please try again.';
   }
 
   Future<AuthUser> _applySignedInAccount(GoogleSignInAccount account) async {

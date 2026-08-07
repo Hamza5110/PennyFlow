@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/base/base_controller.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/income_sources.dart';
+import '../../../core/constants/validation_constants.dart';
 import '../../../core/errors/error_handler.dart';
 import '../../../data/models/income.dart';
 import '../../../data/models/income/income_input.dart';
@@ -171,7 +172,28 @@ class IncomeFormController extends BaseController {
     );
   }
 
+  String? _validateBeforeSave() {
+    final amountText = amountController.text.trim();
+    if (amountText.isEmpty) return 'validation_amount_required'.tr;
+    final amount = double.tryParse(amountText);
+    if (amount == null ||
+        amount < ValidationConstants.minAmount ||
+        amount > ValidationConstants.maxAmount) {
+      return 'validation_amount_invalid'.tr;
+    }
+    if (selectedAccountId.value == null) {
+      return 'validation_account_required'.tr;
+    }
+    return null;
+  }
+
   Future<void> save() async {
+    final validationError = _validateBeforeSave();
+    if (validationError != null) {
+      ErrorHandler.showError(validationError);
+      return;
+    }
+
     await runGuarded(() async {
       final input = _buildInput();
       final result = isEditing
@@ -179,13 +201,14 @@ class IncomeFormController extends BaseController {
           : await _incomes.create(input);
 
       if (result.success) {
-        ErrorHandler.showSuccess(
+        ErrorHandler.popWithSuccess(
           isEditing ? 'income_updated'.tr : 'income_created'.tr,
         );
-        Get.back(result: true);
         return;
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);
+      } else {
+        ErrorHandler.showError('common_something_went_wrong'.tr);
       }
     });
   }

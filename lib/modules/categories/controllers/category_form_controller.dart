@@ -79,10 +79,9 @@ class CategoryFormController extends BaseController {
           : await _categories.create(input);
 
       if (result.success) {
-        ErrorHandler.showSuccess(
+        ErrorHandler.popWithSuccess(
           isEditing ? 'categories_updated'.tr : 'categories_created'.tr,
         );
-        Get.back(result: true);
         return;
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);

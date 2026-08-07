@@ -1,10 +1,11 @@
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:googleapis_auth/googleapis_auth.dart' as auth;
 import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:googleapis_auth/googleapis_auth.dart' as auth;
 
 import '../../app/config/app_config.dart';
 import '../../app/config/env_config.dart';
+import '../../core/logging/app_logger.dart';
 
 /// Thin wrapper around [GoogleSignIn] for sign-in flows and testing seams.
 class GoogleSignInClient {
@@ -26,6 +27,11 @@ class GoogleSignInClient {
 
   static GoogleSignIn _createDefault() {
     final serverClientId = EnvConfig.current.googleServerClientId;
+    if (serverClientId.isEmpty) {
+      AppLogger.instance.w(
+        'GOOGLE_SERVER_CLIENT_ID is not set — Google Drive backup will not work',
+      );
+    }
     return GoogleSignIn(
       scopes: AppConfig.googleSignInScopes,
       serverClientId: serverClientId.isEmpty ? null : serverClientId,

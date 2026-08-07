@@ -2,27 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'app_colors.dart';
+import 'app_theme_variant.dart';
 import 'app_typography.dart';
 
 /// Material 3 themes for PennyFlow.
 abstract final class AppTheme {
-  static ThemeData light() => _build(Brightness.light);
+  static ThemeData light([AppThemeVariant variant = AppThemeVariant.teal]) =>
+      _build(Brightness.light, variant);
 
-  static ThemeData dark() => _build(Brightness.dark);
+  static ThemeData dark([AppThemeVariant variant = AppThemeVariant.teal]) =>
+      _build(Brightness.dark, variant);
 
-  static ThemeData _build(Brightness brightness) {
+  static ThemeData _build(Brightness brightness, AppThemeVariant variant) {
     final isLight = brightness == Brightness.light;
 
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: AppColors.seed,
-      secondary: AppColors.seedSecondary,
-      tertiary: AppColors.seedTertiary,
+      seedColor: variant.seedColor,
+      secondary: variant.secondaryColor,
+      tertiary: variant.tertiaryColor,
       brightness: brightness,
       surface: isLight ? AppColors.lightSurface : AppColors.darkSurface,
     ).copyWith(
-      primary: isLight ? AppColors.brandPrimary : AppColors.brandPrimaryLight,
+      primary: isLight
+          ? variant.seedColor
+          : variant.previewAccent(Brightness.dark),
       onPrimary: Colors.white,
-      secondary: isLight ? AppColors.brandSecondary : const Color(0xFF94A3B8),
+      secondary: isLight ? variant.secondaryColor : const Color(0xFF94A3B8),
       surfaceContainerHighest: isLight
           ? AppColors.lightSurfaceVariant
           : AppColors.darkSurfaceVariant,

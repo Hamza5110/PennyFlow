@@ -2,10 +2,10 @@ import 'package:get/get.dart';
 
 import '../../../app/routes/app_routes.dart';
 import '../../../core/base/base_controller.dart';
+import '../../../data/models/dashboard/budget_progress.dart';
 import '../../../data/models/dashboard/dashboard_period.dart';
 import '../../../data/models/dashboard/dashboard_summary.dart';
 import '../../../data/models/dashboard/dashboard_transaction.dart';
-import '../../../data/models/dashboard/budget_progress.dart';
 import '../../../data/models/dashboard/monthly_spending_point.dart';
 import '../../../services/dashboard/dashboard_service.dart';
 import '../../../services/settings/settings_service.dart';

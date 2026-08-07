@@ -86,10 +86,9 @@ class AccountFormController extends BaseController {
           : await _accounts.create(input);
 
       if (result.success) {
-        ErrorHandler.showSuccess(
+        ErrorHandler.popWithSuccess(
           isEditing ? 'accounts_updated'.tr : 'accounts_created'.tr,
         );
-        Get.back(result: true);
         return;
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);

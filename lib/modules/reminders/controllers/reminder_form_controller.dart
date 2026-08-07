@@ -107,10 +107,9 @@ class ReminderFormController extends BaseController {
           : await _reminders.create(input);
 
       if (result.success) {
-        ErrorHandler.showSuccess(
+        ErrorHandler.popWithSuccess(
           isEditing ? 'reminder_updated'.tr : 'reminder_created'.tr,
         );
-        Get.back<void>(result: true);
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);
       }

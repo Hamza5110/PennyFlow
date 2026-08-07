@@ -64,8 +64,7 @@ class IncomeDetailController extends BaseController {
     await runGuarded(() async {
       final result = await _incomes.duplicate(id);
       if (result.success) {
-        ErrorHandler.showSuccess('income_duplicated'.tr);
-        Get.back(result: true);
+        ErrorHandler.popWithSuccess('income_duplicated'.tr);
         return;
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);
@@ -79,8 +78,7 @@ class IncomeDetailController extends BaseController {
     await runGuarded(() async {
       final result = await _incomes.softDelete(id);
       if (result.success) {
-        ErrorHandler.showSuccess('income_deleted'.tr);
-        Get.back(result: true);
+        ErrorHandler.popWithSuccess('income_deleted'.tr);
         return;
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);

@@ -61,10 +61,9 @@ class FriendFormController extends BaseController {
           ? await _friends.updateFriend(_friendId!, input)
           : await _friends.createFriend(input);
       if (result.success) {
-        ErrorHandler.showSuccess(
+        ErrorHandler.popWithSuccess(
           isEditing ? 'friends_updated'.tr : 'friends_created'.tr,
         );
-        Get.back(result: true);
         return;
       } else if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);

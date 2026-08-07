@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../app/routes/app_routes.dart';
+import '../../../app/theme/app_theme_variant.dart';
 import '../../../core/base/base_controller.dart';
 import '../../../core/constants/settings_constants.dart';
 import '../../../core/errors/error_handler.dart';
@@ -34,6 +35,7 @@ class SettingsController extends BaseController {
   final RxBool biometricAvailable = false.obs;
 
   Rx<ThemeMode> get themeMode => _settings.themeMode;
+  Rx<AppThemeVariant> get themeVariant => _settings.themeVariant;
   RxString get localeCode => _settings.localeCode;
   RxString get currencyCode => _settings.currencyCode;
   RxBool get autoBackupEnabled => _settings.autoBackupEnabled;
@@ -63,6 +65,18 @@ class SettingsController extends BaseController {
   }
 
   Future<void> setThemeMode(ThemeMode mode) => _settings.setThemeMode(mode);
+
+  Future<void> setThemeVariant(AppThemeVariant variant) =>
+      _settings.setThemeVariant(variant);
+
+  void openThemePicker() => Get.toNamed<void>(AppRoutes.themePicker);
+
+  void openLanguagePicker() => Get.toNamed<void>(AppRoutes.languagePicker);
+
+  void openCurrencyPicker() => Get.toNamed<void>(AppRoutes.currencyPicker);
+
+  void openLockTimeoutPicker() =>
+      Get.toNamed<void>(AppRoutes.lockTimeoutPicker);
 
   Future<void> setLocale(String code) => _settings.setLocaleCode(code);
 
@@ -268,11 +282,21 @@ class SettingsController extends BaseController {
   }
 
   String themeLabel(ThemeMode mode) {
-    final option = SettingsConstants.themeOptions.firstWhere(
+    final option = SettingsConstants.themeModeOptions.firstWhere(
       (item) => item.mode == mode,
-      orElse: () => SettingsConstants.themeOptions.first,
+      orElse: () => SettingsConstants.themeModeOptions.first,
     );
     return option.labelKey.tr;
+  }
+
+  String themeVariantLabel(AppThemeVariant variant) => variant.labelKey.tr;
+
+  String currencyLabel(String code) {
+    final option = SettingsConstants.currencyOptions.firstWhere(
+      (item) => item.code == code,
+      orElse: () => SettingsConstants.currencyOptions.first,
+    );
+    return '${option.labelKey.tr} (${option.code})';
   }
 
   String localeLabel(String code) {

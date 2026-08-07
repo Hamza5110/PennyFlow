@@ -108,10 +108,8 @@ class ReportsController extends BaseController {
       }
 
       lastGenerated.value = result.data;
-      Get.snackbar(
-        'common_success'.tr,
+      ErrorHandler.showSuccess(
         'reports_generated'.trParams({'file': result.data!.fileName}),
-        snackPosition: SnackPosition.BOTTOM,
       );
     });
   }

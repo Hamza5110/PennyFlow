@@ -5,12 +5,12 @@ import '../../../core/base/base_controller.dart';
 import '../../../services/auth/auth_service.dart';
 import '../../../services/profile/profile_service.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
-import '../../update/widgets/update_prompt_dialog.dart';
 import '../../expenses/controllers/expenses_list_controller.dart';
 import '../../friends/controllers/friend_transactions_list_controller.dart';
 import '../../friends/controllers/friends_list_controller.dart';
 import '../../income/controllers/incomes_list_controller.dart';
 import '../../statistics/controllers/statistics_controller.dart';
+import '../../update/widgets/update_prompt_dialog.dart';
 
 class MainShellController extends BaseController {
   MainShellController(this._profiles, this._auth);

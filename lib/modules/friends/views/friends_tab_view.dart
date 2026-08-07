@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'friends_list_view.dart';
 import 'friend_transactions_list_view.dart';
+import 'friends_list_view.dart';
 
 class FriendsTabView extends StatelessWidget {
   const FriendsTabView({super.key});

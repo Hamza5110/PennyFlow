@@ -38,6 +38,10 @@ abstract final class AppRoutes {
   static const String reminders = '/reminders';
   static const String reminderForm = '/reminders/form';
   static const String settings = '/settings';
+  static const String themePicker = '/settings/theme';
+  static const String languagePicker = '/settings/language';
+  static const String currencyPicker = '/settings/currency';
+  static const String lockTimeoutPicker = '/settings/lock-timeout';
   static const String about = '/settings/about';
   static const String privacy = '/settings/privacy';
   static const String licenses = '/settings/licenses';

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import '../../core/constants/storage_keys.dart';
-import '../models/update/update_history_entry.dart';
 import '../../services/storage/local_storage_service.dart';
+import '../models/update/update_history_entry.dart';
 
 /// Persists update history in SharedPreferences (FR-174).
 class UpdateRepository {

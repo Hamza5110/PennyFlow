@@ -6,8 +6,8 @@ import '../../../core/constants/friend_constants.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_scaffold.dart';
-import '../../../services/settings/settings_service.dart';
 import '../../../core/widgets/receipt_image_picker_section.dart';
+import '../../../services/settings/settings_service.dart';
 import '../controllers/friend_transaction_detail_controller.dart';
 
 class FriendTransactionDetailView

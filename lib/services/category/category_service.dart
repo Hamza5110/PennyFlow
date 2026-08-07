@@ -10,8 +10,8 @@ import '../../data/models/category.dart';
 import '../../data/models/category/category_input.dart';
 import '../../data/repositories/category_repository.dart';
 import '../../data/repositories/expense_repository.dart';
-import '../settings/settings_service.dart';
 import '../cache/profile_lookup_cache_service.dart';
+import '../settings/settings_service.dart';
 
 /// Default expense categories (FR-063).
 abstract final class CategoryDefaults {
@@ -192,7 +192,7 @@ class CategoryService extends GetxService with BaseService {
       throw const ValidationException(message: 'Name is required', field: 'name');
     }
     if (name.length > ValidationConstants.maxCategoryNameLength) {
-      throw ValidationException(
+      throw const ValidationException(
         message:
             'Name must be at most ${ValidationConstants.maxCategoryNameLength} characters',
         field: 'name',

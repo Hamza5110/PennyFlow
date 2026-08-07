@@ -19,6 +19,7 @@ class BackupController extends BaseController {
   final SettingsService _settings;
 
   final Rxn<BackupRemoteMeta> remoteMeta = Rxn<BackupRemoteMeta>();
+  final RxBool isDeletingRemote = false.obs;
 
   bool get isSignedIn => _auth.isSignedIn;
 
@@ -83,7 +84,7 @@ class BackupController extends BaseController {
       if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);
       }
-    });
+    }, trackLoading: false);
   }
 
   Future<void> restore() async {
@@ -129,7 +130,52 @@ class BackupController extends BaseController {
       if (result.userMessage != null) {
         ErrorHandler.showError(result.userMessage!);
       }
-    });
+    }, trackLoading: false);
+  }
+
+  Future<void> deleteRemoteBackup() async {
+    if (!isSignedIn) {
+      ErrorHandler.showError('backup_sign_in_required'.tr);
+      return;
+    }
+
+    if (remoteMeta.value == null) {
+      ErrorHandler.showError('backup_not_found'.tr);
+      return;
+    }
+
+    final confirmed = await Get.dialog<bool>(
+      AlertDialog(
+        title: Text('backup_delete_confirm_title'.tr),
+        content: Text('backup_delete_confirm_message'.tr),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back<bool>(result: false),
+            child: Text('common_cancel'.tr),
+          ),
+          TextButton(
+            onPressed: () => Get.back<bool>(result: true),
+            child: Text('common_delete'.tr),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    isDeletingRemote.value = true;
+    try {
+      final result = await _backup.deleteRemoteBackup();
+      if (result.success) {
+        remoteMeta.value = null;
+        ErrorHandler.showSuccess('backup_delete_success'.tr);
+        return;
+      }
+      if (result.userMessage != null) {
+        ErrorHandler.showError(result.userMessage!);
+      }
+    } finally {
+      isDeletingRemote.value = false;
+    }
   }
 
   void openSignIn() => Get.toNamed<void>(AppRoutes.auth);

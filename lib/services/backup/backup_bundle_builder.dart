@@ -127,6 +127,7 @@ class BackupBundleBuilder {
 
   Map<String, dynamic> _exportSettings() => {
         StorageKeys.themeMode: _storage.getString(StorageKeys.themeMode),
+        StorageKeys.themeVariant: _settings.themeVariant.value.name,
         StorageKeys.localeCode: _settings.localeCode.value,
         StorageKeys.currencyCode: _settings.currencyCode.value,
         StorageKeys.notificationsEnabled: _settings.notificationsEnabled.value,
@@ -236,7 +237,11 @@ class BackupBundleBuilder {
     final archive = Archive();
     await for (final entity in sourceDir.list(recursive: true)) {
       if (entity is! File) continue;
-      final relative = p.relative(entity.path, from: sourceDir.path);
+      final relative = p
+          .relative(entity.path, from: sourceDir.path)
+          .replaceAll(r'\', '/')
+          .replaceFirst(RegExp(r'^/+'), '');
+      if (relative.isEmpty || relative.contains('..')) continue;
       final bytes = await entity.readAsBytes();
       archive.addFile(ArchiveFile(relative, bytes.length, bytes));
     }

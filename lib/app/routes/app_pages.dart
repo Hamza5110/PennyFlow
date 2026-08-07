@@ -1,16 +1,24 @@
 import 'package:get/get.dart';
 
+import '../../modules/accounts/bindings/accounts_binding.dart';
+import '../../modules/accounts/views/account_form_view.dart';
+import '../../modules/accounts/views/accounts_list_view.dart';
 import '../../modules/app_lock/bindings/app_lock_binding.dart';
 import '../../modules/app_lock/views/app_lock_view.dart';
 import '../../modules/auth/bindings/auth_binding.dart';
 import '../../modules/auth/views/auth_view.dart';
+import '../../modules/backup/bindings/backup_binding.dart';
+import '../../modules/backup/views/backup_view.dart';
+import '../../modules/budgets/bindings/budgets_binding.dart';
+import '../../modules/budgets/views/budget_form_view.dart';
+import '../../modules/budgets/views/budgets_list_view.dart';
+import '../../modules/categories/bindings/categories_binding.dart';
+import '../../modules/categories/views/categories_list_view.dart';
+import '../../modules/categories/views/category_form_view.dart';
 import '../../modules/expenses/bindings/expenses_binding.dart';
 import '../../modules/expenses/views/expense_detail_view.dart';
 import '../../modules/expenses/views/expense_form_view.dart';
 import '../../modules/expenses/views/expense_trash_view.dart';
-import '../../modules/accounts/bindings/accounts_binding.dart';
-import '../../modules/accounts/views/account_form_view.dart';
-import '../../modules/accounts/views/accounts_list_view.dart';
 import '../../modules/friends/bindings/friends_binding.dart';
 import '../../modules/friends/views/friend_detail_view.dart';
 import '../../modules/friends/views/friend_form_view.dart';
@@ -18,9 +26,6 @@ import '../../modules/friends/views/friend_transaction_detail_view.dart';
 import '../../modules/friends/views/friend_transaction_form_view.dart';
 import '../../modules/friends/views/friend_trash_view.dart';
 import '../../modules/friends/views/repayment_form_view.dart';
-import '../../modules/categories/bindings/categories_binding.dart';
-import '../../modules/categories/views/categories_list_view.dart';
-import '../../modules/categories/views/category_form_view.dart';
 import '../../modules/income/bindings/income_binding.dart';
 import '../../modules/income/views/income_detail_view.dart';
 import '../../modules/income/views/income_form_view.dart';
@@ -29,31 +34,30 @@ import '../../modules/main_shell/bindings/main_shell_binding.dart';
 import '../../modules/main_shell/views/main_shell_page.dart';
 import '../../modules/profile_setup/bindings/profile_setup_binding.dart';
 import '../../modules/profile_setup/views/profile_setup_view.dart';
-import '../../modules/splash/bindings/splash_binding.dart';
-import '../../modules/splash/views/splash_view.dart';
-import '../../modules/budgets/bindings/budgets_binding.dart';
-import '../../modules/budgets/views/budget_form_view.dart';
-import '../../modules/budgets/views/budgets_list_view.dart';
-import '../../modules/reports/bindings/reports_binding.dart';
-import '../../modules/reports/views/reports_view.dart';
 import '../../modules/recurring/bindings/recurring_binding.dart';
 import '../../modules/recurring/views/recurring_form_view.dart';
 import '../../modules/recurring/views/recurring_list_view.dart';
-import '../../modules/backup/bindings/backup_binding.dart';
-import '../../modules/backup/views/backup_view.dart';
-import '../../modules/settings/bindings/settings_binding.dart';
-import '../../modules/settings/views/about_view.dart';
-import '../../modules/settings/views/licenses_view.dart';
-import '../../modules/settings/views/privacy_view.dart';
-import '../../modules/settings/views/settings_view.dart';
-import '../../modules/update/bindings/update_binding.dart';
-import '../../modules/update/views/update_history_view.dart';
-import '../../modules/update/views/update_view.dart';
 import '../../modules/reminders/bindings/reminders_binding.dart';
 import '../../modules/reminders/views/reminder_form_view.dart';
 import '../../modules/reminders/views/reminders_list_view.dart';
+import '../../modules/reports/bindings/reports_binding.dart';
+import '../../modules/reports/views/reports_view.dart';
 import '../../modules/search/bindings/search_binding.dart';
 import '../../modules/search/views/search_view.dart';
+import '../../modules/settings/bindings/settings_binding.dart';
+import '../../modules/settings/views/about_view.dart';
+import '../../modules/settings/views/currency_picker_view.dart';
+import '../../modules/settings/views/language_picker_view.dart';
+import '../../modules/settings/views/licenses_view.dart';
+import '../../modules/settings/views/lock_timeout_picker_view.dart';
+import '../../modules/settings/views/privacy_view.dart';
+import '../../modules/settings/views/settings_view.dart';
+import '../../modules/settings/views/theme_picker_view.dart';
+import '../../modules/splash/bindings/splash_binding.dart';
+import '../../modules/splash/views/splash_view.dart';
+import '../../modules/update/bindings/update_binding.dart';
+import '../../modules/update/views/update_history_view.dart';
+import '../../modules/update/views/update_view.dart';
 import 'app_routes.dart';
 
 /// GetX page table.
@@ -244,6 +248,30 @@ abstract final class AppPages {
     GetPage(
       name: AppRoutes.settings,
       page: SettingsView.new,
+      binding: SettingsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.themePicker,
+      page: ThemePickerView.new,
+      binding: SettingsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.languagePicker,
+      page: LanguagePickerView.new,
+      binding: SettingsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.currencyPicker,
+      page: CurrencyPickerView.new,
+      binding: SettingsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.lockTimeoutPicker,
+      page: LockTimeoutPickerView.new,
       binding: SettingsBinding(),
       transition: Transition.rightToLeft,
     ),
