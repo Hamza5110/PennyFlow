@@ -189,7 +189,10 @@ class CategoryService extends GetxService with BaseService {
   void _validateInput(CategoryInput input) {
     final name = input.name.trim();
     if (name.isBlank) {
-      throw const ValidationException(message: 'Name is required', field: 'name');
+      throw const ValidationException(
+        message: 'Name is required',
+        field: 'name',
+      );
     }
     if (name.length > ValidationConstants.maxCategoryNameLength) {
       throw const ValidationException(
