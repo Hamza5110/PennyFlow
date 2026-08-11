@@ -53,8 +53,13 @@ class MainShellPage extends GetView<MainShellController> {
           surfaceTintColor: Colors.transparent,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(tab.labelKey.tr),
+              Text(
+                tab.labelKey.tr,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               if (index == 0)
                 Obx(
                   () => Text(
@@ -62,6 +67,8 @@ class MainShellPage extends GetView<MainShellController> {
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               if (index == 4)
@@ -73,6 +80,8 @@ class MainShellPage extends GetView<MainShellController> {
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
             ],

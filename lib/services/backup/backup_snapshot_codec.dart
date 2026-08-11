@@ -418,6 +418,11 @@ class BackupSnapshotCodec {
         'targetAmount': budget.targetAmount,
         'year': budget.year,
         'month': budget.month,
+        'periodType': budget.periodType,
+        'periodStart': budget.periodStart.toIso8601String(),
+        'periodEnd': budget.periodEnd.toIso8601String(),
+        'autoRepeat': budget.autoRepeat,
+        'lastCycleStart': budget.lastCycleStart?.toIso8601String(),
         'warningThreshold': budget.warningThreshold,
         'warningNotified': budget.warningNotified,
         'exceededNotified': budget.exceededNotified,
@@ -426,18 +431,37 @@ class BackupSnapshotCodec {
         'updatedAt': budget.updatedAt.toIso8601String(),
       };
 
-  Budget _budgetFromMap(Map<String, dynamic> map) => Budget()
-    ..id = map['id'] as int
-    ..categoryId = map['categoryId'] as int
-    ..targetAmount = (map['targetAmount'] as num).toDouble()
-    ..year = map['year'] as int
-    ..month = map['month'] as int
-    ..warningThreshold = (map['warningThreshold'] as num?)?.toDouble() ?? 0.8
-    ..warningNotified = map['warningNotified'] as bool? ?? false
-    ..exceededNotified = map['exceededNotified'] as bool? ?? false
-    ..profileId = map['profileId'] as int
-    ..createdAt = DateTime.parse(map['createdAt'] as String)
-    ..updatedAt = DateTime.parse(map['updatedAt'] as String);
+  Budget _budgetFromMap(Map<String, dynamic> map) {
+    final year = map['year'] as int;
+    final month = map['month'] as int;
+    final fallbackStart = DateTime(year, month);
+    final fallbackEnd = DateTime(year, month + 1)
+        .subtract(const Duration(milliseconds: 1));
+
+    return Budget()
+      ..id = map['id'] as int
+      ..categoryId = map['categoryId'] as int
+      ..targetAmount = (map['targetAmount'] as num).toDouble()
+      ..year = year
+      ..month = month
+      ..periodType = map['periodType'] as String? ?? 'monthly'
+      ..periodStart = map['periodStart'] != null
+          ? DateTime.parse(map['periodStart'] as String)
+          : fallbackStart
+      ..periodEnd = map['periodEnd'] != null
+          ? DateTime.parse(map['periodEnd'] as String)
+          : fallbackEnd
+      ..autoRepeat = map['autoRepeat'] as bool? ?? true
+      ..lastCycleStart = map['lastCycleStart'] != null
+          ? DateTime.parse(map['lastCycleStart'] as String)
+          : fallbackStart
+      ..warningThreshold = (map['warningThreshold'] as num?)?.toDouble() ?? 0.8
+      ..warningNotified = map['warningNotified'] as bool? ?? false
+      ..exceededNotified = map['exceededNotified'] as bool? ?? false
+      ..profileId = map['profileId'] as int
+      ..createdAt = DateTime.parse(map['createdAt'] as String)
+      ..updatedAt = DateTime.parse(map['updatedAt'] as String);
+  }
 
   Map<String, dynamic> _recurringTemplateToMap(RecurringTemplate template) => {
         'id': template.id,

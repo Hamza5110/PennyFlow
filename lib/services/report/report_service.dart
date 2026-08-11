@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/base/base_service.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/errors/app_exception.dart';
 import '../../core/errors/service_result.dart';
 import '../../data/models/report/report_data.dart';
@@ -16,6 +17,7 @@ import '../settings/settings_service.dart';
 import 'report_csv_generator.dart';
 import 'report_excel_generator.dart';
 import 'report_pdf_generator.dart';
+import 'report_storage.dart';
 
 class ReportService extends GetxService with BaseService {
   ReportService(this._repository, this._settings);
@@ -62,16 +64,22 @@ class ReportService extends GetxService with BaseService {
       );
 
       final fileName = _buildFileName(scope, format);
-      final filePath = await _resolveOutputPath(fileName);
+      final stagingPath = await _resolveStagingPath(fileName);
 
       switch (format) {
         case ReportFormat.pdf:
-          await ReportPdfGenerator.writeToFile(data: data, path: filePath);
+          await ReportPdfGenerator.writeToFile(data: data, path: stagingPath);
         case ReportFormat.excel:
-          await ReportExcelGenerator.writeToFile(data: data, path: filePath);
+          await ReportExcelGenerator.writeToFile(data: data, path: stagingPath);
         case ReportFormat.csv:
-          await ReportCsvGenerator.writeToFile(data: data, path: filePath);
+          await ReportCsvGenerator.writeToFile(data: data, path: stagingPath);
       }
+
+      final filePath = await _finalizeOutputPath(
+        stagingPath: stagingPath,
+        fileName: fileName,
+        format: format,
+      );
 
       return ReportGeneratedFile(
         path: filePath,
@@ -89,9 +97,44 @@ class ReportService extends GetxService with BaseService {
     return 'pennyflow_report_${from}_$to.$ext';
   }
 
-  Future<String> _resolveOutputPath(String fileName) async {
-    final dir = await getApplicationDocumentsDirectory();
-    final reportsDir = Directory(p.join(dir.path, 'reports'));
+  Future<String> _resolveStagingPath(String fileName) async {
+    if (Platform.isAndroid) {
+      final tempDir = await getTemporaryDirectory();
+      return p.join(tempDir.path, fileName);
+    }
+    return await _resolveDownloadsReportsPath(fileName);
+  }
+
+  Future<String> _finalizeOutputPath({
+    required String stagingPath,
+    required String fileName,
+    required ReportFormat format,
+  }) async {
+    if (Platform.isAndroid) {
+      return ReportStorage.saveToDownloads(
+        sourcePath: stagingPath,
+        displayName: fileName,
+        format: format,
+      );
+    }
+    return stagingPath;
+  }
+
+  Future<String> _resolveDownloadsReportsPath(String fileName) async {
+    final downloadsDir = await getDownloadsDirectory();
+    if (downloadsDir == null) {
+      throw const ValidationException(
+        message: 'Downloads directory is not available',
+        code: 'DOWNLOADS_UNAVAILABLE',
+      );
+    }
+    final reportsDir = Directory(
+      p.join(
+        downloadsDir.path,
+        AppConstants.reportsFolderName,
+        AppConstants.reportsSubfolderName,
+      ),
+    );
     if (!await reportsDir.exists()) {
       await reportsDir.create(recursive: true);
     }

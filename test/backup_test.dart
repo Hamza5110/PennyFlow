@@ -18,7 +18,7 @@ void main() {
     test('round-trips through JSON', () {
       final manifest = BackupManifest(
         formatVersion: 1,
-        schemaVersion: 9,
+        schemaVersion: 10,
         profileId: 3,
         createdAt: DateTime.utc(2026, 3, 15, 12),
         sha256: 'abc123',

@@ -4,6 +4,7 @@ import '../../core/base/base_service.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/friend_constants.dart';
 import '../../core/constants/reminder_constants.dart';
+import '../../core/constants/storage_keys.dart';
 import '../../core/constants/validation_constants.dart';
 import '../../core/errors/app_exception.dart';
 import '../../core/errors/service_result.dart';
@@ -16,6 +17,7 @@ import '../../data/repositories/friend_repository.dart';
 import '../../data/repositories/reminder_repository.dart';
 import '../notification/notification_service.dart';
 import '../settings/settings_service.dart';
+import '../storage/local_storage_service.dart';
 
 class ReminderService extends GetxService with BaseService {
   ReminderService(
@@ -23,14 +25,20 @@ class ReminderService extends GetxService with BaseService {
     this._friends,
     this._notifications,
     this._settings,
+    this._storage,
   );
 
   final ReminderRepository _reminders;
   final FriendRepository _friends;
   final NotificationService _notifications;
   final SettingsService _settings;
+  final LocalStorageService _storage;
 
   int? get _profileId => _settings.activeProfileId;
+
+  bool get _alertsAllowed =>
+      _settings.notificationsEnabled.value &&
+      _settings.reminderAlertsEnabled.value;
 
   Future<List<ReminderListItem>> listReminders({bool includeCompleted = false}) async {
     final profileId = _profileId;
@@ -90,7 +98,12 @@ class ReminderService extends GetxService with BaseService {
 
       final id = await _reminders.put(reminder);
       reminder.id = id;
-      await _scheduleIfNeeded(reminder);
+      await _clearNotifiedFlag(reminder);
+      await _scheduleIfNeeded(
+        reminder,
+        notifyIfOverdue: true,
+        promptForPermissions: true,
+      );
       return reminder;
     });
   }
@@ -111,7 +124,12 @@ class ReminderService extends GetxService with BaseService {
         ..updatedAt = DateTime.now();
 
       await _reminders.put(existing);
-      await _scheduleIfNeeded(existing);
+      await _clearNotifiedFlag(existing);
+      await _scheduleIfNeeded(
+        existing,
+        notifyIfOverdue: true,
+        promptForPermissions: true,
+      );
       return existing;
     });
   }
@@ -125,6 +143,7 @@ class ReminderService extends GetxService with BaseService {
         ..updatedAt = DateTime.now();
       await _reminders.put(reminder);
       await _notifications.cancelReminder(reminder.id);
+      await _markNotified(reminder);
     });
   }
 
@@ -132,12 +151,18 @@ class ReminderService extends GetxService with BaseService {
     return guardVoid(() async {
       final profileId = _requireProfileId();
       final reminder = await _getOwnedReminder(id, profileId);
+      await _clearNotifiedFlag(reminder);
       reminder
         ..scheduledAt = DateTime.now().add(duration)
         ..isCompleted = false
         ..updatedAt = DateTime.now();
       await _reminders.put(reminder);
-      await _scheduleIfNeeded(reminder);
+      await _clearNotifiedFlag(reminder);
+      await _scheduleIfNeeded(
+        reminder,
+        notifyIfOverdue: true,
+        promptForPermissions: true,
+      );
     });
   }
 
@@ -151,18 +176,64 @@ class ReminderService extends GetxService with BaseService {
         ..updatedAt = DateTime.now();
       await _reminders.put(reminder);
       await _notifications.cancelReminder(reminder.id);
+      await _clearNotifiedFlag(reminder);
     });
   }
 
-  /// Re-schedules all pending reminders (app start / resume).
+  /// Soft-deletes and cancels the reminder linked to a friend transaction.
+  Future<void> deleteByLinkedFriendTransaction(int transactionId) async {
+    final profileId = _profileId;
+    if (profileId == null) return;
+
+    final existing = await _reminders.findByLinkedFriendTransaction(
+      profileId,
+      transactionId,
+    );
+    if (existing == null) return;
+
+    existing
+      ..isDeleted = true
+      ..deletedAt = DateTime.now()
+      ..updatedAt = DateTime.now();
+    await _reminders.put(existing);
+    await _notifications.cancelReminder(existing.id);
+    await _clearNotifiedFlag(existing);
+  }
+
+  /// Cancels OS notifications when alerts are disabled, otherwise re-schedules.
+  Future<void> applyAlertPreference() async {
+    if (!_alertsAllowed) {
+      await cancelAllScheduled();
+      return;
+    }
+    // User explicitly turned reminder alerts on — ask now.
+    await _notifications.ensureReminderPermissions(prompt: true);
+    await rescheduleAll();
+  }
+
+  /// Cancels every pending reminder notification for the active profile.
+  Future<void> cancelAllScheduled() async {
+    final profileId = _profileId;
+    if (profileId == null) return;
+
+    final pending = await _reminders.findPendingByProfile(profileId);
+    await _notifications.cancelAllReminders(pending.map((r) => r.id));
+  }
+
+  /// Re-schedules pending reminders and delivers any missed overdue alerts once.
   Future<void> rescheduleAll() async {
-    if (!_settings.reminderAlertsEnabled.value) return;
+    if (!_alertsAllowed) {
+      await cancelAllScheduled();
+      return;
+    }
     final profileId = _profileId;
     if (profileId == null) return;
 
     final pending = await _reminders.findPendingByProfile(profileId);
     for (final reminder in pending) {
-      await _scheduleIfNeeded(reminder);
+      // Catch up overdue reminders that the OS never delivered (exact alarm
+      // denied / app killed). Only fires once per scheduled time.
+      await _scheduleIfNeeded(reminder, notifyIfOverdue: true);
     }
   }
 
@@ -193,13 +264,15 @@ class ReminderService extends GetxService with BaseService {
     });
 
     if (existing != null) {
+      final timeChanged = existing.scheduledAt != scheduledAt;
       existing
         ..title = title
         ..scheduledAt = scheduledAt
         ..isCompleted = false
         ..updatedAt = DateTime.now();
       await _reminders.put(existing);
-      await _scheduleIfNeeded(existing);
+      if (timeChanged) await _clearNotifiedFlag(existing);
+      await _scheduleIfNeeded(existing, notifyIfOverdue: true);
       return;
     }
 
@@ -214,25 +287,31 @@ class ReminderService extends GetxService with BaseService {
 
     final id = await _reminders.put(reminder);
     reminder.id = id;
-    await _scheduleIfNeeded(reminder);
+    await _scheduleIfNeeded(reminder, notifyIfOverdue: true);
   }
 
   DateTime _reminderTimeForDueDate(DateTime dueDate) {
     return DateTime(dueDate.year, dueDate.month, dueDate.day, 9);
   }
 
-  Future<void> _scheduleIfNeeded(Reminder reminder) async {
-    if (!_settings.reminderAlertsEnabled.value || reminder.isCompleted) {
+  Future<void> _scheduleIfNeeded(
+    Reminder reminder, {
+    required bool notifyIfOverdue,
+    bool promptForPermissions = false,
+  }) async {
+    if (!_alertsAllowed || reminder.isCompleted) {
       await _notifications.cancelReminder(reminder.id);
       return;
     }
 
-    if (reminder.scheduledAt.isBefore(DateTime.now())) {
-      await _notifications.showReminderNow(
-        id: reminder.id,
-        title: reminder.title,
-        body: reminder.notes ?? _typeLabel(reminder.type),
-      );
+    if (!reminder.scheduledAt.isAfter(DateTime.now())) {
+      await _notifications.cancelReminder(reminder.id);
+      if (notifyIfOverdue) {
+        if (promptForPermissions) {
+          await _notifications.ensureReminderPermissions(prompt: true);
+        }
+        await _notifyOverdueOnce(reminder);
+      }
       return;
     }
 
@@ -241,8 +320,33 @@ class ReminderService extends GetxService with BaseService {
       title: reminder.title,
       body: reminder.notes ?? _typeLabel(reminder.type),
       scheduledAt: reminder.scheduledAt,
+      promptForPermissions: promptForPermissions,
     );
   }
+
+  Future<void> _notifyOverdueOnce(Reminder reminder) async {
+    if (_wasNotified(reminder)) return;
+
+    await _notifications.showReminderNow(
+      id: reminder.id,
+      title: reminder.title,
+      body: reminder.notes ?? _typeLabel(reminder.type),
+    );
+    await _markNotified(reminder);
+  }
+
+  String _notifiedKey(Reminder reminder) =>
+      '${StorageKeys.reminderNotifiedPrefix}'
+      '${reminder.id}_${reminder.scheduledAt.millisecondsSinceEpoch}';
+
+  bool _wasNotified(Reminder reminder) =>
+      _storage.getBoolOr(_notifiedKey(reminder), false);
+
+  Future<void> _markNotified(Reminder reminder) =>
+      _storage.setBool(_notifiedKey(reminder), true);
+
+  Future<void> _clearNotifiedFlag(Reminder reminder) =>
+      _storage.remove(_notifiedKey(reminder));
 
   String _subtitleFor(Reminder reminder) {
     final type = _typeLabel(reminder.type);

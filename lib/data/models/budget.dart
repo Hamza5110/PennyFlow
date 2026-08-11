@@ -16,9 +16,24 @@ class Budget {
   @Index()
   late int year;
 
-  /// Calendar month 1–12.
+  /// Calendar month 1–12 (kept in sync with [periodStart] for monthly budgets).
   @Index()
   late int month;
+
+  /// [BudgetPeriodType] name: monthly | days7 | days15 | custom.
+  String periodType = 'monthly';
+
+  /// User-chosen period start (anchor for auto-repeat cycles).
+  DateTime periodStart = DateTime.now();
+
+  /// User-chosen period end for the template / fixed range.
+  DateTime periodEnd = DateTime.now();
+
+  /// When true, the budget rolls into the next period automatically.
+  bool autoRepeat = true;
+
+  /// Start of the cycle for which notification flags currently apply.
+  DateTime? lastCycleStart;
 
   double warningThreshold = AppConstants.defaultBudgetWarningThreshold;
 

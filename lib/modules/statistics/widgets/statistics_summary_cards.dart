@@ -27,6 +27,9 @@ class StatisticsSummaryCards extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final crossAxisCount = constraints.maxWidth >= 600 ? 3 : 2;
+        final textScale = MediaQuery.textScalerOf(context).scale(1);
+        final baseAspectRatio = crossAxisCount == 3 ? 1.55 : 1.35;
+        final childAspectRatio = baseAspectRatio / textScale.clamp(1.0, 2.0);
         final items = [
           _SummaryCardData(
             label: 'statistics_total_income'.tr,
@@ -71,7 +74,7 @@ class StatisticsSummaryCards extends StatelessWidget {
             crossAxisCount: crossAxisCount,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childAspectRatio: crossAxisCount == 3 ? 1.6 : 1.45,
+            childAspectRatio: childAspectRatio,
           ),
           itemCount: items.length,
           itemBuilder: (context, index) => _SummaryCard(
@@ -114,32 +117,38 @@ class _SummaryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(data.icon, size: 18, color: data.color),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    data.label,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(data.icon, size: 18, color: data.color),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      data.label,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.65),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            const Spacer(),
+            const SizedBox(height: 4),
             Text(
               data.value,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: data.color,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             if (data.subtitle != null) ...[
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
                 data.subtitle!,
                 style: theme.textTheme.labelSmall,

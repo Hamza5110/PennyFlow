@@ -10,12 +10,14 @@ class BudgetListTile extends StatelessWidget {
     super.key,
     required this.item,
     required this.currencyCode,
+    required this.periodLabel,
     required this.onTap,
     required this.onDelete,
   });
 
   final BudgetListItem item;
   final String currencyCode;
+  final String periodLabel;
   final VoidCallback onTap;
   final VoidCallback onDelete;
 
@@ -33,13 +35,24 @@ class BudgetListTile extends StatelessWidget {
     return ListTile(
       onTap: onTap,
       leading: CircleAvatar(
-        backgroundColor: _parseColor(item.categoryColorHex).withValues(alpha: 0.15),
-        child: Icon(Icons.pie_chart_outline, color: _parseColor(item.categoryColorHex)),
+        backgroundColor:
+            _parseColor(item.categoryColorHex).withValues(alpha: 0.15),
+        child: Icon(
+          Icons.pie_chart_outline,
+          color: _parseColor(item.categoryColorHex),
+        ),
       ),
       title: Text(item.categoryName, style: theme.textTheme.titleMedium),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 4),
+          Text(
+            periodLabel,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
           const SizedBox(height: 6),
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
@@ -53,10 +66,18 @@ class BudgetListTile extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'budgets_spent_remaining'.trParams({
-              'spent': AppFormatters.currency(item.spent, currencyCode: currencyCode),
-              'remaining':
-                  AppFormatters.currency(item.remaining, currencyCode: currencyCode),
-              'target': AppFormatters.currency(item.target, currencyCode: currencyCode),
+              'spent': AppFormatters.currency(
+                item.spent,
+                currencyCode: currencyCode,
+              ),
+              'remaining': AppFormatters.currency(
+                item.remaining,
+                currencyCode: currencyCode,
+              ),
+              'target': AppFormatters.currency(
+                item.target,
+                currencyCode: currencyCode,
+              ),
             }),
           ),
         ],

@@ -375,6 +375,10 @@ class FriendService extends GetxService with BaseService {
       if (txn.profileId != profileId || !txn.isDeleted) {
         throw const NotFoundException(message: 'Transaction not in trash');
       }
+      if (Get.isRegistered<ReminderService>()) {
+        await Get.find<ReminderService>()
+            .deleteByLinkedFriendTransaction(txn.id);
+      }
       await _images.deleteImages(txn.imagePaths);
       final repayments = await _repayments.findByTransaction(id);
       for (final repayment in repayments) {

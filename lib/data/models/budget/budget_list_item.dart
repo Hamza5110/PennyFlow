@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../core/utils/budget_period_utils.dart';
 import '../budget.dart';
 
 /// Budget with computed spent/remaining for list and dashboard (FR-080).
@@ -9,12 +10,14 @@ class BudgetListItem extends Equatable {
     required this.categoryName,
     required this.categoryColorHex,
     required this.spent,
+    required this.window,
   });
 
   final Budget budget;
   final String categoryName;
   final String categoryColorHex;
   final double spent;
+  final BudgetPeriodWindow window;
 
   double get target => budget.targetAmount;
 
@@ -24,5 +27,5 @@ class BudgetListItem extends Equatable {
 
   @override
   List<Object?> get props =>
-      [budget, categoryName, categoryColorHex, spent];
+      [budget, categoryName, categoryColorHex, spent, window];
 }

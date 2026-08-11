@@ -4,9 +4,11 @@ import 'package:get/get.dart';
 import '../../../core/base/base_controller.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/errors/error_handler.dart';
+import '../../../core/utils/budget_period_utils.dart';
 import '../../../data/models/budget.dart';
 import '../../../data/models/budget/budget_input.dart';
 import '../../../data/models/category.dart';
+import '../../../data/models/enums/app_enums.dart';
 import '../../../services/budget/budget_service.dart';
 import '../../../services/category/category_service.dart';
 import '../budget_routes.dart';
@@ -24,8 +26,10 @@ class BudgetFormController extends BaseController {
 
   final RxList<Category> categories = <Category>[].obs;
   final RxnInt selectedCategoryId = RxnInt();
-  final RxInt selectedYear = DateTime.now().year.obs;
-  final RxInt selectedMonth = DateTime.now().month.obs;
+  final Rx<BudgetPeriodType> periodType = BudgetPeriodType.monthly.obs;
+  final Rx<DateTime> periodStart = DateTime.now().obs;
+  final Rx<DateTime> periodEnd = DateTime.now().obs;
+  final RxBool autoRepeat = true.obs;
 
   int? _budgetId;
   bool get isEditing => _budgetId != null;
@@ -35,6 +39,7 @@ class BudgetFormController extends BaseController {
     super.onInit();
     final args = Get.arguments;
     if (args is BudgetFormArgs) _budgetId = args.budgetId;
+    _syncPeriodEndFromType();
     _bootstrap();
   }
 
@@ -67,18 +72,72 @@ class BudgetFormController extends BaseController {
     thresholdController.text =
         (budget.warningThreshold * 100).toStringAsFixed(0);
     selectedCategoryId.value = budget.categoryId;
-    selectedYear.value = budget.year;
-    selectedMonth.value = budget.month;
+    periodType.value = BudgetPeriodUtils.typeOf(budget);
+    periodStart.value = BudgetPeriodUtils.startOfDay(budget.periodStart);
+    periodEnd.value = BudgetPeriodUtils.startOfDay(budget.periodEnd);
+    autoRepeat.value = budget.autoRepeat;
+  }
+
+  void setPeriodType(BudgetPeriodType type) {
+    periodType.value = type;
+    _syncPeriodEndFromType();
+  }
+
+  Future<void> pickStartDate() async {
+    final picked = await showDatePicker(
+      context: Get.context!,
+      initialDate: periodStart.value,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+    );
+    if (picked == null) return;
+    periodStart.value = BudgetPeriodUtils.startOfDay(picked);
+    if (periodType.value != BudgetPeriodType.custom ||
+        periodEnd.value.isBefore(periodStart.value)) {
+      _syncPeriodEndFromType();
+    }
+  }
+
+  Future<void> pickEndDate() async {
+    final picked = await showDatePicker(
+      context: Get.context!,
+      initialDate: periodEnd.value.isBefore(periodStart.value)
+          ? periodStart.value
+          : periodEnd.value,
+      firstDate: periodStart.value,
+      lastDate: DateTime(2100),
+    );
+    if (picked == null) return;
+    periodEnd.value = BudgetPeriodUtils.startOfDay(picked);
+  }
+
+  void _syncPeriodEndFromType() {
+    periodEnd.value = BudgetPeriodUtils.startOfDay(
+      BudgetPeriodUtils.defaultPeriodEnd(
+        type: periodType.value,
+        periodStart: periodStart.value,
+        customEnd: periodEnd.value,
+      ),
+    );
   }
 
   BudgetInput _buildInput() {
+    final type = periodType.value;
+    final start = BudgetPeriodUtils.startOfDay(periodStart.value);
+    final end = BudgetPeriodUtils.defaultPeriodEnd(
+      type: type,
+      periodStart: start,
+      customEnd: periodEnd.value,
+    );
+
     return BudgetInput(
       categoryId: selectedCategoryId.value!,
       targetAmount: double.parse(targetController.text.trim()),
-      year: selectedYear.value,
-      month: selectedMonth.value,
-      warningThreshold:
-          double.parse(thresholdController.text.trim()) / 100,
+      periodType: type,
+      periodStart: start,
+      periodEnd: end,
+      autoRepeat: autoRepeat.value,
+      warningThreshold: double.parse(thresholdController.text.trim()) / 100,
     );
   }
 

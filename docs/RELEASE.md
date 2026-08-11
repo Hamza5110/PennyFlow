@@ -23,6 +23,37 @@ keytool -genkey -v \
 
 Release builds use the release keystore when `android/key.properties` exists; otherwise they fall back to the debug keystore (local testing only).
 
+## Google Sign-In (required for release)
+
+Debug and release APKs use **different signing certificates**. Google OAuth validates package name + SHA-1, so both fingerprints must be registered.
+
+1. Print fingerprints:
+
+```bash
+# Debug (this machine)
+keytool -list -v \
+  -keystore ~/.android/debug.keystore \
+  -alias androiddebugkey \
+  -storepass android -keypass android
+
+# Release keystore
+keytool -list -v \
+  -keystore android/keystore/pennyflow-release.jks \
+  -alias pennyflow
+
+# Or from a built/published APK
+apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
+```
+
+2. In [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials):
+   - Keep your existing **Web** client ID (used as `GOOGLE_SERVER_CLIENT_ID`)
+   - Create/update an **Android** OAuth client:
+     - Package name: `com.pennyflow.app`
+     - Add **both** debug and release SHA-1 fingerprints
+3. Wait a few minutes after saving, then reinstall the release APK and retry sign-in
+
+Symptom of a missing release SHA-1: `ApiException: 10` / `DEVELOPER_ERROR` (works in debug, fails on GitHub release APK).
+
 ## Build defines
 
 | Define | Required | Description |

@@ -5,6 +5,24 @@ All notable changes to PennyFlow are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-08-11
+
+### Added
+
+- Flexible budget periods: monthly, 7-day, 15-day, and custom ranges with auto-repeat cycles
+- Stronger budget and reminder notification scheduling and delivery
+- Report file storage with Android FileProvider / open-file handling
+
+### Fixed
+
+- Google Sign-In on release builds: document registering debug and release SHA-1 fingerprints
+
+### Release
+
+- Force update for installs below 1.1.0 (`[force-update]` in GitHub release notes)
+
+[1.1.0]: https://github.com/Hamza5110/PennyFlow/releases/tag/v1.1.0
+
 ## [1.0.0] - 2026-08-06
 
 ### Added

@@ -5,7 +5,9 @@ import 'package:path_provider/path_provider.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/logging/app_logger.dart';
+import '../../../core/utils/budget_period_utils.dart';
 import '../../models/app_meta.dart';
+import '../../models/budget.dart';
 import 'isar_schemas.dart';
 
 /// Owns the single Isar instance for the app.
@@ -81,12 +83,26 @@ class IsarDatabase extends GetxService {
     });
   }
 
-  /// Placeholder migration hook — expand as collections are added.
   Future<void> _migrate(int fromVersion) async {
     AppLogger.instance.i(
       'Migrating database from v$fromVersion → v${AppConstants.databaseSchemaVersion}',
     );
     await isar.writeTxn(() async {
+      if (fromVersion < 10) {
+        final budgets = await isar.budgets.where().findAll();
+        for (final budget in budgets) {
+          final start = DateTime(budget.year, budget.month);
+          budget
+            ..periodType = 'monthly'
+            ..periodStart = start
+            ..periodEnd = BudgetPeriodUtils.endOfMonth(budget.year, budget.month)
+            ..autoRepeat = true
+            ..lastCycleStart = start
+            ..updatedAt = DateTime.now();
+          await isar.budgets.put(budget);
+        }
+      }
+
       final meta = await isar.appMetas.where().findFirst();
       if (meta != null) {
         meta

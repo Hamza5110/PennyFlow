@@ -29,6 +29,8 @@ abstract final class StorageKeys {
   static const String notificationsEnabled = 'notifications_enabled';
   static const String budgetAlertsEnabled = 'budget_alerts_enabled';
   static const String reminderAlertsEnabled = 'reminder_alerts_enabled';
+  /// Prefix for one-shot overdue reminder notification flags: `${prefix}${id}_${ms}`
+  static const String reminderNotifiedPrefix = 'reminder_notified_';
 
   // ── App lock ────────────────────────────────────────────────────────────
   static const String appLockEnabled = 'app_lock_enabled';

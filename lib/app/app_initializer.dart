@@ -196,6 +196,7 @@ abstract final class AppInitializer {
         Get.find<FriendRepository>(),
         Get.find<NotificationService>(),
         settings,
+        localStorage,
       ),
       permanent: true,
     );

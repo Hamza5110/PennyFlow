@@ -9,6 +9,10 @@ class BudgetRepository extends IsarBaseRepository<Budget> {
   @override
   IsarCollection<Budget> get collection => isar.budgets;
 
+  Future<List<Budget>> findByProfile(int profileId) => runRead(
+        () => collection.filter().profileIdEqualTo(profileId).findAll(),
+      );
+
   Future<List<Budget>> findByProfileAndMonth(
     int profileId,
     int year,
@@ -20,6 +24,18 @@ class BudgetRepository extends IsarBaseRepository<Budget> {
             .profileIdEqualTo(profileId)
             .yearEqualTo(year)
             .monthEqualTo(month)
+            .findAll(),
+      );
+
+  Future<List<Budget>> findByCategory({
+    required int profileId,
+    required int categoryId,
+  }) =>
+      runRead(
+        () => collection
+            .filter()
+            .profileIdEqualTo(profileId)
+            .categoryIdEqualTo(categoryId)
             .findAll(),
       );
 

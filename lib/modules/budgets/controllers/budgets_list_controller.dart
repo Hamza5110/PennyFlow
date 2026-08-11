@@ -13,8 +13,6 @@ class BudgetsListController extends BaseController {
   final BudgetService _budgets;
 
   final RxList<BudgetListItem> items = <BudgetListItem>[].obs;
-  final RxInt selectedYear = DateTime.now().year.obs;
-  final RxInt selectedMonth = DateTime.now().month.obs;
 
   @override
   void onInit() {
@@ -24,14 +22,12 @@ class BudgetsListController extends BaseController {
 
   Future<void> loadBudgets() async {
     await runGuarded(() async {
-      items.assignAll(
-        await _budgets.listForMonth(
-          year: selectedYear.value,
-          month: selectedMonth.value,
-        ),
-      );
+      items.assignAll(await _budgets.listActive());
     }, showErrorSnackbar: false);
   }
+
+  String periodLabel(BudgetListItem item) =>
+      _budgets.periodLabel(item.budget, window: item.window);
 
   void openAdd() {
     Get.toNamed<void>(AppRoutes.budgetForm)?.then((_) => loadBudgets());

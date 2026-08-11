@@ -60,7 +60,7 @@ chmod +x scripts/build_release_apk.sh
 GOOGLE_SERVER_CLIENT_ID=your-id.apps.googleusercontent.com ./scripts/build_release_apk.sh
 ```
 
-**Version:** `1.0.0+1` · **Application ID:** `com.pennyflow.app`
+**Version:** `1.1.0+2` · **Application ID:** `com.pennyflow.app`
 
 ## Project layout
 

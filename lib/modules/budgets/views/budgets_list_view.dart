@@ -22,12 +22,10 @@ class BudgetsListView extends GetView<BudgetsListController> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Obx(
-              () => Text(
-                'budgets_month_label'.trParams({
-                  'month': controller.selectedMonth.value.toString(),
-                  'year': controller.selectedYear.value.toString(),
-                }),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'budgets_active_label'.tr,
                 style: theme.textTheme.titleSmall,
               ),
             ),
@@ -56,6 +54,7 @@ class BudgetsListView extends GetView<BudgetsListController> {
                     return BudgetListTile(
                       item: item,
                       currencyCode: currency,
+                      periodLabel: controller.periodLabel(item),
                       onTap: () => controller.openEdit(item),
                       onDelete: () => controller.deleteBudget(item),
                     );

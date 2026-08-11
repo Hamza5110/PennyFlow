@@ -6,6 +6,7 @@ import '../../../data/repositories/reminder_repository.dart';
 import '../../../services/notification/notification_service.dart';
 import '../../../services/reminder/reminder_service.dart';
 import '../../../services/settings/settings_service.dart';
+import '../../../services/storage/local_storage_service.dart';
 import '../controllers/reminder_form_controller.dart';
 import '../controllers/reminders_list_controller.dart';
 
@@ -25,6 +26,7 @@ class RemindersBinding extends Bindings {
           Get.find<FriendRepository>(),
           Get.find<NotificationService>(),
           Get.find<SettingsService>(),
+          Get.find<LocalStorageService>(),
         ),
         permanent: true,
       );

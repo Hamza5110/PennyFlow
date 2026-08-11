@@ -23,7 +23,6 @@ class RemindersListController extends BaseController {
 
   Future<void> loadReminders() async {
     await runGuarded(() async {
-      await _reminders.rescheduleAll();
       items.assignAll(
         await _reminders.listReminders(
           includeCompleted: showCompleted.value,

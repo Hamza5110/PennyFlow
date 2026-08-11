@@ -17,48 +17,73 @@ const BudgetSchema = CollectionSchema(
   name: r'Budget',
   id: -3383598594604670326,
   properties: {
-    r'categoryId': PropertySchema(
+    r'autoRepeat': PropertySchema(
       id: 0,
+      name: r'autoRepeat',
+      type: IsarType.bool,
+    ),
+    r'categoryId': PropertySchema(
+      id: 1,
       name: r'categoryId',
       type: IsarType.long,
     ),
     r'createdAt': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
     r'exceededNotified': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'exceededNotified',
       type: IsarType.bool,
     ),
-    r'month': PropertySchema(id: 3, name: r'month', type: IsarType.long),
-    r'profileId': PropertySchema(
+    r'lastCycleStart': PropertySchema(
       id: 4,
+      name: r'lastCycleStart',
+      type: IsarType.dateTime,
+    ),
+    r'month': PropertySchema(id: 5, name: r'month', type: IsarType.long),
+    r'periodEnd': PropertySchema(
+      id: 6,
+      name: r'periodEnd',
+      type: IsarType.dateTime,
+    ),
+    r'periodStart': PropertySchema(
+      id: 7,
+      name: r'periodStart',
+      type: IsarType.dateTime,
+    ),
+    r'periodType': PropertySchema(
+      id: 8,
+      name: r'periodType',
+      type: IsarType.string,
+    ),
+    r'profileId': PropertySchema(
+      id: 9,
       name: r'profileId',
       type: IsarType.long,
     ),
     r'targetAmount': PropertySchema(
-      id: 5,
+      id: 10,
       name: r'targetAmount',
       type: IsarType.double,
     ),
     r'updatedAt': PropertySchema(
-      id: 6,
+      id: 11,
       name: r'updatedAt',
       type: IsarType.dateTime,
     ),
     r'warningNotified': PropertySchema(
-      id: 7,
+      id: 12,
       name: r'warningNotified',
       type: IsarType.bool,
     ),
     r'warningThreshold': PropertySchema(
-      id: 8,
+      id: 13,
       name: r'warningThreshold',
       type: IsarType.double,
     ),
-    r'year': PropertySchema(id: 9, name: r'year', type: IsarType.long),
+    r'year': PropertySchema(id: 14, name: r'year', type: IsarType.long),
   },
 
   estimateSize: _budgetEstimateSize,
@@ -135,6 +160,7 @@ int _budgetEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.periodType.length * 3;
   return bytesCount;
 }
 
@@ -144,16 +170,21 @@ void _budgetSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLong(offsets[0], object.categoryId);
-  writer.writeDateTime(offsets[1], object.createdAt);
-  writer.writeBool(offsets[2], object.exceededNotified);
-  writer.writeLong(offsets[3], object.month);
-  writer.writeLong(offsets[4], object.profileId);
-  writer.writeDouble(offsets[5], object.targetAmount);
-  writer.writeDateTime(offsets[6], object.updatedAt);
-  writer.writeBool(offsets[7], object.warningNotified);
-  writer.writeDouble(offsets[8], object.warningThreshold);
-  writer.writeLong(offsets[9], object.year);
+  writer.writeBool(offsets[0], object.autoRepeat);
+  writer.writeLong(offsets[1], object.categoryId);
+  writer.writeDateTime(offsets[2], object.createdAt);
+  writer.writeBool(offsets[3], object.exceededNotified);
+  writer.writeDateTime(offsets[4], object.lastCycleStart);
+  writer.writeLong(offsets[5], object.month);
+  writer.writeDateTime(offsets[6], object.periodEnd);
+  writer.writeDateTime(offsets[7], object.periodStart);
+  writer.writeString(offsets[8], object.periodType);
+  writer.writeLong(offsets[9], object.profileId);
+  writer.writeDouble(offsets[10], object.targetAmount);
+  writer.writeDateTime(offsets[11], object.updatedAt);
+  writer.writeBool(offsets[12], object.warningNotified);
+  writer.writeDouble(offsets[13], object.warningThreshold);
+  writer.writeLong(offsets[14], object.year);
 }
 
 Budget _budgetDeserialize(
@@ -163,17 +194,22 @@ Budget _budgetDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Budget();
-  object.categoryId = reader.readLong(offsets[0]);
-  object.createdAt = reader.readDateTime(offsets[1]);
-  object.exceededNotified = reader.readBool(offsets[2]);
+  object.autoRepeat = reader.readBool(offsets[0]);
+  object.categoryId = reader.readLong(offsets[1]);
+  object.createdAt = reader.readDateTime(offsets[2]);
+  object.exceededNotified = reader.readBool(offsets[3]);
   object.id = id;
-  object.month = reader.readLong(offsets[3]);
-  object.profileId = reader.readLong(offsets[4]);
-  object.targetAmount = reader.readDouble(offsets[5]);
-  object.updatedAt = reader.readDateTime(offsets[6]);
-  object.warningNotified = reader.readBool(offsets[7]);
-  object.warningThreshold = reader.readDouble(offsets[8]);
-  object.year = reader.readLong(offsets[9]);
+  object.lastCycleStart = reader.readDateTimeOrNull(offsets[4]);
+  object.month = reader.readLong(offsets[5]);
+  object.periodEnd = reader.readDateTime(offsets[6]);
+  object.periodStart = reader.readDateTime(offsets[7]);
+  object.periodType = reader.readString(offsets[8]);
+  object.profileId = reader.readLong(offsets[9]);
+  object.targetAmount = reader.readDouble(offsets[10]);
+  object.updatedAt = reader.readDateTime(offsets[11]);
+  object.warningNotified = reader.readBool(offsets[12]);
+  object.warningThreshold = reader.readDouble(offsets[13]);
+  object.year = reader.readLong(offsets[14]);
   return object;
 }
 
@@ -185,24 +221,34 @@ P _budgetDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLong(offset)) as P;
-    case 1:
-      return (reader.readDateTime(offset)) as P;
-    case 2:
       return (reader.readBool(offset)) as P;
+    case 1:
+      return (reader.readLong(offset)) as P;
+    case 2:
+      return (reader.readDateTime(offset)) as P;
     case 3:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 4:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 5:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 6:
       return (reader.readDateTime(offset)) as P;
     case 7:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 8:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 9:
+      return (reader.readLong(offset)) as P;
+    case 10:
+      return (reader.readDouble(offset)) as P;
+    case 11:
+      return (reader.readDateTime(offset)) as P;
+    case 12:
+      return (reader.readBool(offset)) as P;
+    case 13:
+      return (reader.readDouble(offset)) as P;
+    case 14:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -744,6 +790,16 @@ extension BudgetQueryWhere on QueryBuilder<Budget, Budget, QWhereClause> {
 }
 
 extension BudgetQueryFilter on QueryBuilder<Budget, Budget, QFilterCondition> {
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> autoRepeatEqualTo(
+    bool value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'autoRepeat', value: value),
+      );
+    });
+  }
+
   QueryBuilder<Budget, Budget, QAfterFilterCondition> categoryIdEqualTo(
     int value,
   ) {
@@ -929,6 +985,82 @@ extension BudgetQueryFilter on QueryBuilder<Budget, Budget, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> lastCycleStartIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lastCycleStart'),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition>
+  lastCycleStartIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lastCycleStart'),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> lastCycleStartEqualTo(
+    DateTime? value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'lastCycleStart', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> lastCycleStartGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastCycleStart',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> lastCycleStartLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastCycleStart',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> lastCycleStartBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastCycleStart',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
   QueryBuilder<Budget, Budget, QAfterFilterCondition> monthEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -982,6 +1114,270 @@ extension BudgetQueryFilter on QueryBuilder<Budget, Budget, QFilterCondition> {
           upper: upper,
           includeUpper: includeUpper,
         ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodEndEqualTo(
+    DateTime value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'periodEnd', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodEndGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'periodEnd',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodEndLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'periodEnd',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodEndBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'periodEnd',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodStartEqualTo(
+    DateTime value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'periodStart', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodStartGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'periodStart',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodStartLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'periodStart',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodStartBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'periodStart',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodTypeEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'periodType',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodTypeGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'periodType',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodTypeLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'periodType',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodTypeBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'periodType',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodTypeStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'periodType',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodTypeEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'periodType',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodTypeContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'periodType',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodTypeMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'periodType',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodTypeIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'periodType', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> periodTypeIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'periodType', value: ''),
       );
     });
   }
@@ -1326,6 +1722,18 @@ extension BudgetQueryObject on QueryBuilder<Budget, Budget, QFilterCondition> {}
 extension BudgetQueryLinks on QueryBuilder<Budget, Budget, QFilterCondition> {}
 
 extension BudgetQuerySortBy on QueryBuilder<Budget, Budget, QSortBy> {
+  QueryBuilder<Budget, Budget, QAfterSortBy> sortByAutoRepeat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'autoRepeat', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> sortByAutoRepeatDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'autoRepeat', Sort.desc);
+    });
+  }
+
   QueryBuilder<Budget, Budget, QAfterSortBy> sortByCategoryId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'categoryId', Sort.asc);
@@ -1362,6 +1770,18 @@ extension BudgetQuerySortBy on QueryBuilder<Budget, Budget, QSortBy> {
     });
   }
 
+  QueryBuilder<Budget, Budget, QAfterSortBy> sortByLastCycleStart() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastCycleStart', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> sortByLastCycleStartDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastCycleStart', Sort.desc);
+    });
+  }
+
   QueryBuilder<Budget, Budget, QAfterSortBy> sortByMonth() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'month', Sort.asc);
@@ -1371,6 +1791,42 @@ extension BudgetQuerySortBy on QueryBuilder<Budget, Budget, QSortBy> {
   QueryBuilder<Budget, Budget, QAfterSortBy> sortByMonthDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'month', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> sortByPeriodEnd() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'periodEnd', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> sortByPeriodEndDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'periodEnd', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> sortByPeriodStart() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'periodStart', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> sortByPeriodStartDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'periodStart', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> sortByPeriodType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'periodType', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> sortByPeriodTypeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'periodType', Sort.desc);
     });
   }
 
@@ -1448,6 +1904,18 @@ extension BudgetQuerySortBy on QueryBuilder<Budget, Budget, QSortBy> {
 }
 
 extension BudgetQuerySortThenBy on QueryBuilder<Budget, Budget, QSortThenBy> {
+  QueryBuilder<Budget, Budget, QAfterSortBy> thenByAutoRepeat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'autoRepeat', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> thenByAutoRepeatDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'autoRepeat', Sort.desc);
+    });
+  }
+
   QueryBuilder<Budget, Budget, QAfterSortBy> thenByCategoryId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'categoryId', Sort.asc);
@@ -1496,6 +1964,18 @@ extension BudgetQuerySortThenBy on QueryBuilder<Budget, Budget, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Budget, Budget, QAfterSortBy> thenByLastCycleStart() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastCycleStart', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> thenByLastCycleStartDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastCycleStart', Sort.desc);
+    });
+  }
+
   QueryBuilder<Budget, Budget, QAfterSortBy> thenByMonth() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'month', Sort.asc);
@@ -1505,6 +1985,42 @@ extension BudgetQuerySortThenBy on QueryBuilder<Budget, Budget, QSortThenBy> {
   QueryBuilder<Budget, Budget, QAfterSortBy> thenByMonthDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'month', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> thenByPeriodEnd() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'periodEnd', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> thenByPeriodEndDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'periodEnd', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> thenByPeriodStart() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'periodStart', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> thenByPeriodStartDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'periodStart', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> thenByPeriodType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'periodType', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QAfterSortBy> thenByPeriodTypeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'periodType', Sort.desc);
     });
   }
 
@@ -1582,6 +2098,12 @@ extension BudgetQuerySortThenBy on QueryBuilder<Budget, Budget, QSortThenBy> {
 }
 
 extension BudgetQueryWhereDistinct on QueryBuilder<Budget, Budget, QDistinct> {
+  QueryBuilder<Budget, Budget, QDistinct> distinctByAutoRepeat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'autoRepeat');
+    });
+  }
+
   QueryBuilder<Budget, Budget, QDistinct> distinctByCategoryId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'categoryId');
@@ -1600,9 +2122,35 @@ extension BudgetQueryWhereDistinct on QueryBuilder<Budget, Budget, QDistinct> {
     });
   }
 
+  QueryBuilder<Budget, Budget, QDistinct> distinctByLastCycleStart() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastCycleStart');
+    });
+  }
+
   QueryBuilder<Budget, Budget, QDistinct> distinctByMonth() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'month');
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QDistinct> distinctByPeriodEnd() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'periodEnd');
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QDistinct> distinctByPeriodStart() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'periodStart');
+    });
+  }
+
+  QueryBuilder<Budget, Budget, QDistinct> distinctByPeriodType({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'periodType', caseSensitive: caseSensitive);
     });
   }
 
@@ -1650,6 +2198,12 @@ extension BudgetQueryProperty on QueryBuilder<Budget, Budget, QQueryProperty> {
     });
   }
 
+  QueryBuilder<Budget, bool, QQueryOperations> autoRepeatProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'autoRepeat');
+    });
+  }
+
   QueryBuilder<Budget, int, QQueryOperations> categoryIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'categoryId');
@@ -1668,9 +2222,33 @@ extension BudgetQueryProperty on QueryBuilder<Budget, Budget, QQueryProperty> {
     });
   }
 
+  QueryBuilder<Budget, DateTime?, QQueryOperations> lastCycleStartProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastCycleStart');
+    });
+  }
+
   QueryBuilder<Budget, int, QQueryOperations> monthProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'month');
+    });
+  }
+
+  QueryBuilder<Budget, DateTime, QQueryOperations> periodEndProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'periodEnd');
+    });
+  }
+
+  QueryBuilder<Budget, DateTime, QQueryOperations> periodStartProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'periodStart');
+    });
+  }
+
+  QueryBuilder<Budget, String, QQueryOperations> periodTypeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'periodType');
     });
   }
 

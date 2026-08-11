@@ -8,6 +8,7 @@ import '../../../core/base/base_controller.dart';
 import '../../../core/constants/settings_constants.dart';
 import '../../../core/errors/error_handler.dart';
 import '../../../services/profile/profile_service.dart';
+import '../../../services/reminder/reminder_service.dart';
 import '../../../services/security/app_lock_service.dart';
 import '../../../services/settings/data_transfer_service.dart';
 import '../../../services/settings/settings_service.dart';
@@ -91,14 +92,23 @@ class SettingsController extends BaseController {
   Future<void> setAutoUpdateCheck(bool enabled) =>
       _settings.setAutoUpdateCheckEnabled(enabled);
 
-  Future<void> setNotifications(bool enabled) =>
-      _settings.setNotificationsEnabled(enabled);
+  Future<void> setNotifications(bool enabled) async {
+    await _settings.setNotificationsEnabled(enabled);
+    await _applyReminderAlertPreference();
+  }
 
   Future<void> setBudgetAlerts(bool enabled) =>
       _settings.setBudgetAlertsEnabled(enabled);
 
-  Future<void> setReminderAlerts(bool enabled) =>
-      _settings.setReminderAlertsEnabled(enabled);
+  Future<void> setReminderAlerts(bool enabled) async {
+    await _settings.setReminderAlertsEnabled(enabled);
+    await _applyReminderAlertPreference();
+  }
+
+  Future<void> _applyReminderAlertPreference() async {
+    if (!Get.isRegistered<ReminderService>()) return;
+    await Get.find<ReminderService>().applyAlertPreference();
+  }
 
   Future<void> setAppLock(bool enabled) async {
     if (enabled) {

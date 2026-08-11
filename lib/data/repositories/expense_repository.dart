@@ -181,12 +181,26 @@ class ExpenseRepository extends IsarBaseRepository<Expense> {
     required int categoryId,
     required int year,
     required int month,
+  }) {
+    final start = DateTime(year, month);
+    final end = DateTime(year, month + 1).subtract(
+      const Duration(milliseconds: 1),
+    );
+    return sumActiveByCategoryInRange(
+      profileId: profileId,
+      categoryId: categoryId,
+      start: start,
+      end: end,
+    );
+  }
+
+  Future<double> sumActiveByCategoryInRange({
+    required int profileId,
+    required int categoryId,
+    required DateTime start,
+    required DateTime end,
   }) =>
       runRead(() async {
-        final start = DateTime(year, month);
-        final end = DateTime(year, month + 1).subtract(
-          const Duration(milliseconds: 1),
-        );
         final expenses = await collection
             .filter()
             .profileIdEqualTo(profileId)
