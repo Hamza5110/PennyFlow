@@ -38,7 +38,7 @@ enum RecurringFrequency { daily, weekly, monthly, yearly }
 /// Budget tracking window (FR-079+).
 ///
 /// Persisted as [Budget.periodType] string via `.name`.
-enum BudgetPeriodType { monthly, days7, days15, custom }
+enum BudgetPeriodType { monthly, days7, days15, months3, custom }
 
 enum ReminderType {
   billDue,

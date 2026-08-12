@@ -129,7 +129,7 @@ At a high level the product performs the following functions, each elaborated fu
 | 1 | Transaction Management | Create/edit/delete/duplicate/search/filter expenses and income, with receipts, tags, and locations |
 | 2 | Friend Money Tracking | Track money given/received per friend with partial repayment and pending balance calculation |
 | 3 | Categorization & Accounts | Custom categories and multiple payment accounts, each with running balances |
-| 4 | Budgeting | Monthly per-category budgets with progress and threshold notifications |
+| 4 | Budgeting | Category budgets and period envelopes (total + funding split) with progress and threshold notifications |
 | 5 | Statistics & Reporting | Interactive charts and PDF/Excel/CSV export |
 | 6 | Recurring Transactions & Reminders | Auto-generate scheduled transactions and notify on due dates |
 | 7 | Backup & Restore | Manual/automatic Google Drive backup of DB, images, and settings; full restore after reinstall |
@@ -210,7 +210,7 @@ Requirements are grouped by module. Priority: M = Must-have (MVP blocker), S = S
 | FR-003 | The dashboard shall display today's spending and this month's spending. | M |
 | FR-004 | The dashboard shall list the most recent transactions (default 5–10, configurable) with quick navigation to details. | M |
 | FR-005 | The dashboard shall render a monthly spending chart (fl_chart) summarizing the last 6–12 months. | M |
-| FR-006 | The dashboard shall show budget progress bars for active budgets, color-coded (normal / warning / exceeded). | M |
+| FR-006 | The dashboard shall show budget progress bars for active envelopes and category budgets, color-coded (normal / warning / exceeded), with envelopes listed first. | M |
 | FR-007 | The dashboard shall provide a floating Quick Add button to create an expense in under 3 taps. | M |
 | FR-008 | The dashboard shall recompute all summary figures immediately after any transaction is added, edited, or deleted (no manual refresh). | M |
 | FR-009 | The dashboard shall allow the user to switch the summary period (Today / This Week / This Month / Custom). | S |
@@ -282,12 +282,16 @@ Requirements are grouped by module. Priority: M = Must-have (MVP blocker), S = S
 
 | ID | Requirement | Priority |
 | --- | --- | --- |
-| FR-079 | The system shall allow creating a monthly budget scoped to a specific category with a target amount. | M |
+| FR-079 | The system shall allow creating a category budget scoped to a specific category with a target amount and selectable period (monthly, 7 days, 15 days, 3 months, or custom). | M |
 | FR-080 | The system shall compute spent and remaining amounts for each active budget in real time as matching expenses are added, edited, or deleted. | M |
 | FR-081 | The system shall send a local notification when spending reaches a configurable warning threshold (default 80%) of a budget. | M |
 | FR-082 | The system shall send a local notification when a budget is exceeded (100%+). | M |
-| FR-083 | Budgets shall automatically reset/roll over at the start of each new month. | M |
+| FR-083 | Auto-repeating budgets shall roll into the next period when the current cycle ends. | M |
 | FR-084 | The system shall allow editing or deleting a budget without affecting historical expense data. | S |
+| FR-085 | The system shall allow creating a budget envelope with a total amount for a selectable period (7 days, 15 days, monthly, 3 months, or custom range). Expenses in that period count toward the envelope total; category is chosen per expense and is not pre-allocated on the envelope. | M |
+| FR-086 | The system shall allow splitting envelope funding across payment accounts (e.g. Cash, Bank, JazzCash) that sum exactly to the total, and optionally post matching income entries when the envelope (or a new auto-repeat cycle) starts. | M |
+| FR-087 | The system shall compute envelope spent/remaining (total and per funding account) in real time and send warning/exceeded notifications like category budgets. | M |
+| FR-088 | Category budgets and envelopes shall coexist; the dashboard shall show active envelopes before category budget progress. | S |
 
 ## 13.8 Statistics (FR-089 – FR-098)
 
@@ -544,6 +548,7 @@ Requirements are grouped by module. Priority: M = Must-have (MVP blocker), S = S
 | US-03 | user | see how much a friend still owes me | I can follow up without checking WhatsApp chats |
 | US-04 | user | record a partial repayment from a friend | the remaining balance stays accurate |
 | US-05 | user | set a monthly food budget | I get warned before I overspend |
+| US-05b | user | set a weekly envelope of 3000 funded as Cash + JazzCash | I can spend freely by category while staying within my total and wallet split |
 | US-06 | user | see a chart of spending by category | I understand where my money goes |
 | US-07 | user | export my monthly report as PDF | I can share or archive it outside the app |
 | US-08 | user | back up my data to Google Drive | I don't lose everything if I get a new phone |
@@ -670,6 +675,7 @@ participant "ExpenseController (GetX)" as Ctrl
 participant "ExpenseService" as Svc
 participant "Isar DB" as DB
 participant "BudgetService" as Budget
+participant "BudgetEnvelopeService" as Envelope
  
 User -> UI: Fill form + tap Save
 UI -> Ctrl: submitExpense(data)
@@ -678,9 +684,11 @@ Ctrl -> Svc: createExpense(data)
 Svc -> Svc: compressImages(data.images)
 Svc -> DB: put(Expense)
 DB --> Svc: id
-Svc -> Budget: recalculate(category, month)
-Budget --> Svc: budgetStatus
-Svc --> Ctrl: Expense saved + budgetStatus
+Svc -> Budget: onExpenseChanged(category, date)
+Budget --> Svc: category budget alerts
+Svc -> Envelope: onExpenseChanged(date)
+Envelope --> Svc: envelope alerts
+Svc --> Ctrl: Expense saved
 Ctrl --> UI: success, navigate back
 Ctrl -> Ctrl: refresh dashboard reactive state
 @enduml
@@ -873,8 +881,30 @@ class Budget {
   late int categoryId;
   late double targetAmount;
   late int year;
-  late int month; // 1-12
+  late int month; // 1-12 (kept in sync with periodStart for monthly)
+  String periodType = 'monthly'; // monthly | days7 | days15 | months3 | custom
+  late DateTime periodStart;
+  late DateTime periodEnd;
+  bool autoRepeat = true;
   double warningThreshold = 0.8;
+  late int profileId;
+}
+
+## 20.9b BudgetEnvelope
+
+@Collection()
+class BudgetEnvelope {
+  Id id = Isar.autoIncrement;
+  late double totalAmount;
+  String periodType = 'days7'; // monthly | days7 | days15 | months3 | custom
+  late DateTime periodStart;
+  late DateTime periodEnd;
+  bool autoRepeat = true;
+  double warningThreshold = 0.8;
+  // Funding: list of { accountId, amount } summing to totalAmount
+  List<EnvelopeFundingSplit> fundingSplits = [];
+  // Legacy unused field kept empty for schema compatibility
+  List<EnvelopeCategoryAllocation> categoryAllocations = [];
   late int profileId;
 }
 
@@ -945,7 +975,8 @@ entity Income { * id / amount / date / source / accountId }
 entity Friend { * id / name / phone }
 entity FriendTransaction { * id / friendId / type / amount / status }
 entity Repayment { * id / friendTransactionId / amount / date }
-entity Budget { * id / categoryId / targetAmount / month / year }
+entity Budget { * id / categoryId / targetAmount / periodType / periodStart }
+entity BudgetEnvelope { * id / totalAmount / periodType / periodStart / fundingSplits }
 entity RecurringTemplate { * id / transactionType / frequency }
 entity Reminder { * id / type / scheduledAt }
 entity Favorite { * id / label / categoryId / accountId }
@@ -956,11 +987,13 @@ Profile ||--o{ Expense : owns
 Profile ||--o{ Income : owns
 Profile ||--o{ Friend : owns
 Profile ||--o{ Budget : owns
+Profile ||--o{ BudgetEnvelope : owns
  
 Category ||--o{ Expense : categorizes
 PaymentAccount ||--o{ Expense : funds
 PaymentAccount ||--o{ Income : receives
 Category ||--o{ Budget : scopes
+PaymentAccount ||--o{ BudgetEnvelope : "funds (split)"
  
 Friend ||--o{ FriendTransaction : has
 FriendTransaction ||--o{ Repayment : "paid down by"
@@ -971,7 +1004,7 @@ Category ||--o{ Favorite : templates
 PaymentAccount ||--o{ Favorite : templates
 @enduml
 
-Cardinality summary: one Profile has many Categories, Accounts, Expenses, Income records, Friends, and Budgets. One Friend has many FriendTransactions; one FriendTransaction has many Repayments (supporting partial repayment). One RecurringTemplate generates many Expense or Income instances over time. All foreign keys (categoryId, accountId, friendId, profileId, etc.) are plain integer links resolved at the service layer, consistent with Isar's non-relational, embedded-link model.
+Cardinality summary: one Profile has many Categories, Accounts, Expenses, Income records, Friends, Budgets, and BudgetEnvelopes. One Friend has many FriendTransactions; one FriendTransaction has many Repayments (supporting partial repayment). One RecurringTemplate generates many Expense or Income instances over time. All foreign keys (categoryId, accountId, friendId, profileId, etc.) are plain integer links resolved at the service layer, consistent with Isar's non-relational, embedded-link model.
 
 # 22. State Diagrams
 
@@ -1063,7 +1096,9 @@ Statistics
 More
   -> Categories -> Add/Edit Category
   -> Accounts -> Add/Edit Account
-  -> Budgets -> Add/Edit Budget
+  -> Budgets -> Add Envelope / Add Category Budget
+  -> Budgets -> Edit Envelope (total, period, funding split)
+  -> Budgets -> Edit Category Budget
   -> Recurring Transactions -> Add/Edit Template
   -> Reminders -> Add/Edit Reminder
   -> Favorites -> Manage Favorites
@@ -1095,7 +1130,9 @@ More
 | 12 | Add Repayment | Record a partial or full repayment |
 | 13 | Categories | List/add/edit/delete categories |
 | 14 | Payment Accounts | List/add/edit/archive accounts with balances |
-| 15 | Budgets | List/add/edit budgets with progress bars |
+| 15 | Budgets | List envelopes and category budgets; add/edit each with progress |
+| 15a | Add/Edit Envelope | Total, period, funding split (Cash/Bank/JazzCash), optional income posting |
+| 15b | Add/Edit Category Budget | Category, target, period, warning threshold |
 | 16 | Statistics | Tabs for daily/weekly/monthly/category/trend charts |
 | 17 | Reports | Configure and export PDF/Excel/CSV reports |
 | 18 | Recurring Transactions | List/add/edit/pause recurring templates |
@@ -1132,6 +1169,7 @@ lib/
       income_service.dart
       friend_service.dart
       budget_service.dart
+      budget_envelope_service.dart
       recurring_service.dart
       reminder_service.dart
       report_service.dart
@@ -1142,6 +1180,7 @@ lib/
     repositories/
       isar_repository.dart (generic CRUD base)
       expense_repository.dart ...
+      budget_envelope_repository.dart
     data/
       models/ (Isar collections, Section 20)
     core/
@@ -1295,7 +1334,9 @@ GitHub Releases is used as the update source. Each release publishes: a semantic
 | Friend name | Required; 1–60 characters. |
 | Notes/Tags | Optional; notes capped at 500 characters; tags capped at 20 characters each, max 10 tags per transaction. |
 | Images | Max file size after compression target (e.g., 500 KB per image); max 5 images per transaction in the MVP; accepted formats JPEG/PNG. |
-| Budget target amount | Required; > 0; one active budget per category per month (editing replaces, does not duplicate). |
+| Budget target amount | Required; > 0; one overlapping/auto-repeat category budget per category (editing replaces, does not duplicate). |
+| Envelope total | Required; > 0; funding split amounts must sum exactly to the total; one overlapping/auto-repeat envelope per profile. |
+| Envelope funding split | At least one account; each account once; amounts > 0. |
 | PIN | Exactly 4 or 6 digits (configurable), numeric only, stored hashed, never logged. |
 | Recurring frequency/start date | Start date required; frequency required; nextRunDate must always be computed as strictly after startDate/lastRunDate. |
 
@@ -1314,7 +1355,9 @@ The MVP is considered acceptable for release when the following are demonstrably
 
 - A friend transaction correctly transitions Pending → Partially Paid → Completed as repayments are recorded, and the dashboard pending totals reflect this without manual refresh (UC-02, Section 22.1).
 
-- A budget shows correct spent/remaining amounts and fires a warning notification at the configured threshold and an exceeded notification at 100%+ (FR-081, FR-082).
+- A category budget shows correct spent/remaining amounts and fires a warning notification at the configured threshold and an exceeded notification at 100%+ (FR-081, FR-082).
+
+- A budget envelope tracks all expenses in its period against the total, shows funding-account progress, and can post funding as income on create / auto-repeat cycle (FR-085–FR-087).
 
 - PDF, Excel, and CSV reports generate successfully for a selected date range and open correctly in a standard viewer/spreadsheet app (FR-111–FR-114).
 

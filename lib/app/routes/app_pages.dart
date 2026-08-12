@@ -12,6 +12,7 @@ import '../../modules/backup/views/backup_view.dart';
 import '../../modules/budgets/bindings/budgets_binding.dart';
 import '../../modules/budgets/views/budget_form_view.dart';
 import '../../modules/budgets/views/budgets_list_view.dart';
+import '../../modules/budgets/views/envelope_form_view.dart';
 import '../../modules/categories/bindings/categories_binding.dart';
 import '../../modules/categories/views/categories_list_view.dart';
 import '../../modules/categories/views/category_form_view.dart';
@@ -206,6 +207,12 @@ abstract final class AppPages {
     GetPage(
       name: AppRoutes.budgetForm,
       page: BudgetFormView.new,
+      binding: BudgetsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.envelopeForm,
+      page: EnvelopeFormView.new,
       binding: BudgetsBinding(),
       transition: Transition.rightToLeft,
     ),

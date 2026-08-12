@@ -13,6 +13,7 @@ import '../../data/models/expense/expense_input.dart';
 import '../../data/models/expense/expense_list_item.dart';
 import '../../data/repositories/expense_repository.dart';
 import '../budget/budget_service.dart';
+import '../budget_envelope/budget_envelope_service.dart';
 import '../cache/profile_lookup_cache_service.dart';
 import '../category/category_service.dart';
 import '../image/image_service.dart';
@@ -412,7 +413,11 @@ class ExpenseService extends GetxService with BaseService {
   }
 
   Future<void> _notifyBudgetChange(int categoryId, DateTime date) async {
-    if (!Get.isRegistered<BudgetService>()) return;
-    await Get.find<BudgetService>().onExpenseChanged(categoryId, date);
+    if (Get.isRegistered<BudgetService>()) {
+      await Get.find<BudgetService>().onExpenseChanged(categoryId, date);
+    }
+    if (Get.isRegistered<BudgetEnvelopeService>()) {
+      await Get.find<BudgetEnvelopeService>().onExpenseChanged(date);
+    }
   }
 }

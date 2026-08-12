@@ -98,6 +98,15 @@ class _BudgetRow extends StatelessWidget {
                 ),
               ),
             ),
+            if (budget.isEnvelope)
+              Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: Icon(
+                  Icons.wallet_outlined,
+                  size: 16,
+                  color: accent,
+                ),
+              ),
             Text(
               AppFormatters.percent(budget.ratio, decimals: 0),
               style: theme.textTheme.labelMedium?.copyWith(

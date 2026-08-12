@@ -2,6 +2,7 @@ import 'package:isar_community/isar.dart';
 
 import '../../data/local/database/isar_database.dart';
 import '../../data/models/budget.dart';
+import '../../data/models/budget_envelope.dart';
 import '../../data/models/category.dart';
 import '../../data/models/expense.dart';
 import '../../data/models/friend.dart';
@@ -53,6 +54,10 @@ class BackupSnapshotCodec {
         .toList();
     final budgets =
         await _isar.budgets.filter().profileIdEqualTo(profileId).findAll();
+    final envelopes = await _isar.budgetEnvelopes
+        .filter()
+        .profileIdEqualTo(profileId)
+        .findAll();
     final recurring = await _isar.recurringTemplates
         .filter()
         .profileIdEqualTo(profileId)
@@ -70,6 +75,7 @@ class BackupSnapshotCodec {
       'friendTransactions': transactions.map(_friendTransactionToMap).toList(),
       'repayments': profileRepayments.map(_repaymentToMap).toList(),
       'budgets': budgets.map(_budgetToMap).toList(),
+      'budgetEnvelopes': envelopes.map(_budgetEnvelopeToMap).toList(),
       'recurringTemplates': recurring.map(_recurringTemplateToMap).toList(),
       'reminders': reminders.map(_reminderToMap).toList(),
     };
@@ -115,6 +121,11 @@ class BackupSnapshotCodec {
       }
       for (final raw in data['budgets'] as List<dynamic>) {
         await _isar.budgets.put(_budgetFromMap(raw as Map<String, dynamic>));
+      }
+      for (final raw
+          in data['budgetEnvelopes'] as List<dynamic>? ?? const []) {
+        await _isar.budgetEnvelopes
+            .put(_budgetEnvelopeFromMap(raw as Map<String, dynamic>));
       }
       for (final raw in data['recurringTemplates'] as List<dynamic>) {
         await _isar.recurringTemplates
@@ -165,6 +176,14 @@ class BackupSnapshotCodec {
           await _isar.budgets.filter().profileIdEqualTo(profileId).findAll();
       for (final budget in budgets) {
         await _isar.budgets.delete(budget.id);
+      }
+
+      final envelopes = await _isar.budgetEnvelopes
+          .filter()
+          .profileIdEqualTo(profileId)
+          .findAll();
+      for (final envelope in envelopes) {
+        await _isar.budgetEnvelopes.delete(envelope.id);
       }
 
       final recurring = await _isar.recurringTemplates
@@ -458,6 +477,84 @@ class BackupSnapshotCodec {
       ..warningThreshold = (map['warningThreshold'] as num?)?.toDouble() ?? 0.8
       ..warningNotified = map['warningNotified'] as bool? ?? false
       ..exceededNotified = map['exceededNotified'] as bool? ?? false
+      ..profileId = map['profileId'] as int
+      ..createdAt = DateTime.parse(map['createdAt'] as String)
+      ..updatedAt = DateTime.parse(map['updatedAt'] as String);
+  }
+
+  Map<String, dynamic> _budgetEnvelopeToMap(BudgetEnvelope envelope) => {
+        'id': envelope.id,
+        'totalAmount': envelope.totalAmount,
+        'periodType': envelope.periodType,
+        'periodStart': envelope.periodStart.toIso8601String(),
+        'periodEnd': envelope.periodEnd.toIso8601String(),
+        'autoRepeat': envelope.autoRepeat,
+        'warningThreshold': envelope.warningThreshold,
+        'warningNotified': envelope.warningNotified,
+        'exceededNotified': envelope.exceededNotified,
+        'lastCycleStart': envelope.lastCycleStart?.toIso8601String(),
+        'lastFundingCycleStart':
+            envelope.lastFundingCycleStart?.toIso8601String(),
+        'categoryAllocations': envelope.categoryAllocations
+            .map(
+              (a) => {
+                'categoryId': a.categoryId,
+                'amount': a.amount,
+              },
+            )
+            .toList(),
+        'fundingSplits': envelope.fundingSplits
+            .map(
+              (s) => {
+                'accountId': s.accountId,
+                'amount': s.amount,
+              },
+            )
+            .toList(),
+        'profileId': envelope.profileId,
+        'createdAt': envelope.createdAt.toIso8601String(),
+        'updatedAt': envelope.updatedAt.toIso8601String(),
+      };
+
+  BudgetEnvelope _budgetEnvelopeFromMap(Map<String, dynamic> map) {
+    final allocations = <EnvelopeCategoryAllocation>[];
+    for (final raw
+        in map['categoryAllocations'] as List<dynamic>? ?? const []) {
+      final item = raw as Map<String, dynamic>;
+      allocations.add(
+        EnvelopeCategoryAllocation()
+          ..categoryId = item['categoryId'] as int
+          ..amount = (item['amount'] as num).toDouble(),
+      );
+    }
+    final splits = <EnvelopeFundingSplit>[];
+    for (final raw in map['fundingSplits'] as List<dynamic>? ?? const []) {
+      final item = raw as Map<String, dynamic>;
+      splits.add(
+        EnvelopeFundingSplit()
+          ..accountId = item['accountId'] as int
+          ..amount = (item['amount'] as num).toDouble(),
+      );
+    }
+
+    return BudgetEnvelope()
+      ..id = map['id'] as int
+      ..totalAmount = (map['totalAmount'] as num).toDouble()
+      ..periodType = map['periodType'] as String? ?? 'days7'
+      ..periodStart = DateTime.parse(map['periodStart'] as String)
+      ..periodEnd = DateTime.parse(map['periodEnd'] as String)
+      ..autoRepeat = map['autoRepeat'] as bool? ?? true
+      ..warningThreshold = (map['warningThreshold'] as num?)?.toDouble() ?? 0.8
+      ..warningNotified = map['warningNotified'] as bool? ?? false
+      ..exceededNotified = map['exceededNotified'] as bool? ?? false
+      ..lastCycleStart = map['lastCycleStart'] != null
+          ? DateTime.parse(map['lastCycleStart'] as String)
+          : null
+      ..lastFundingCycleStart = map['lastFundingCycleStart'] != null
+          ? DateTime.parse(map['lastFundingCycleStart'] as String)
+          : null
+      ..categoryAllocations = allocations
+      ..fundingSplits = splits
       ..profileId = map['profileId'] as int
       ..createdAt = DateTime.parse(map['createdAt'] as String)
       ..updatedAt = DateTime.parse(map['updatedAt'] as String);

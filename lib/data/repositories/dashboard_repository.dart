@@ -5,6 +5,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/constants/income_sources.dart';
 import '../../core/utils/app_date_utils.dart';
 import '../../services/budget/budget_service.dart';
+import '../../services/budget_envelope/budget_envelope_service.dart';
 import '../../services/friend/friend_service.dart';
 import '../models/dashboard/budget_progress.dart';
 import '../models/dashboard/dashboard_period.dart';
@@ -25,6 +26,7 @@ class DashboardRepository extends BaseRepository {
     this._accounts,
     this._friends,
     this._budgets,
+    this._envelopes,
   );
 
   final ExpenseRepository _expenses;
@@ -33,6 +35,7 @@ class DashboardRepository extends BaseRepository {
   final PaymentAccountRepository _accounts;
   final FriendService _friends;
   final BudgetService _budgets;
+  final BudgetEnvelopeService _envelopes;
 
   Future<DashboardSummary> getSummary(
     int profileId,
@@ -178,7 +181,11 @@ class DashboardRepository extends BaseRepository {
     return points;
   }
 
-  Future<List<BudgetProgress>> getBudgetProgress() => _budgets.getDashboardProgress();
+  Future<List<BudgetProgress>> getBudgetProgress() async {
+    final envelopes = await _envelopes.getDashboardProgress();
+    final budgets = await _budgets.getDashboardProgress();
+    return [...envelopes, ...budgets];
+  }
 
   DateTime _earliest(List<DateTime> values) =>
       values.reduce((a, b) => a.isBefore(b) ? a : b);

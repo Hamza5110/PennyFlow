@@ -56,6 +56,7 @@ class BudgetFormView extends GetView<BudgetFormController> {
                   BudgetPeriodType.monthly => 'budgets_period_monthly'.tr,
                   BudgetPeriodType.days7 => 'budgets_period_days7'.tr,
                   BudgetPeriodType.days15 => 'budgets_period_days15'.tr,
+                  BudgetPeriodType.months3 => 'budgets_period_months3'.tr,
                   BudgetPeriodType.custom => 'budgets_period_custom'.tr,
                 },
                 value: controller.periodType.value,

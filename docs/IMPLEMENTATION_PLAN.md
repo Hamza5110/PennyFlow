@@ -390,19 +390,17 @@ Entire application searchable.
 
 Tasks
 
-Monthly Budgets
+Category budgets (per category, flexible period)
 
-Warnings
+Budget envelopes (period total + funding split; no category pre-allocation)
 
-Progress
+Warnings / progress / remaining
 
-Remaining Budget
-
-Budget Dashboard
+Budget dashboard (envelopes first, then category budgets)
 
 Deliverables
 
-Budget module complete.
+Budget module complete (category budgets + envelopes).
 
 ---
 

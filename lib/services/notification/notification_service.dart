@@ -384,6 +384,36 @@ class NotificationService extends GetxService with BaseService {
     );
   }
 
+  Future<void> showEnvelopeWarning({
+    required int envelopeId,
+    required double spent,
+    required double target,
+  }) async {
+    await _show(
+      id: 500000 + envelopeId * 10 + 1,
+      title: 'envelope_alert_warning_title'.tr,
+      body: 'envelope_alert_warning_body'.trParams({
+        'spent': spent.toStringAsFixed(0),
+        'target': target.toStringAsFixed(0),
+      }),
+    );
+  }
+
+  Future<void> showEnvelopeExceeded({
+    required int envelopeId,
+    required double spent,
+    required double target,
+  }) async {
+    await _show(
+      id: 500000 + envelopeId * 10 + 2,
+      title: 'envelope_alert_exceeded_title'.tr,
+      body: 'envelope_alert_exceeded_body'.trParams({
+        'spent': spent.toStringAsFixed(0),
+        'target': target.toStringAsFixed(0),
+      }),
+    );
+  }
+
   Future<void> showRecurringGenerated({required int count}) async {
     await _show(
       id: 9000 + count,

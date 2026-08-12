@@ -7,7 +7,7 @@ Offline-first personal finance app for Android, built with Flutter. PennyFlow ke
 ## Features
 
 - Expense and income tracking with categories, accounts, receipts, and trash
-- Dashboard, statistics, budgets, recurring transactions, and reminders
+- Dashboard, statistics, category budgets, **budget envelopes** (total + funding split), recurring transactions, and reminders
 - Friends ledger with repayments and balance tracking
 - Reports (PDF, CSV, Excel) and global search
 - Google Drive AppData backup and restore

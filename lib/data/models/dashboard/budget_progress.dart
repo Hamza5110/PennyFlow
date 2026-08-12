@@ -9,6 +9,7 @@ class BudgetProgress extends Equatable {
     required this.spent,
     required this.target,
     this.warningThreshold = 0.8,
+    this.isEnvelope = false,
   });
 
   final int budgetId;
@@ -17,12 +18,20 @@ class BudgetProgress extends Equatable {
   final double spent;
   final double target;
   final double warningThreshold;
+  final bool isEnvelope;
 
   double get ratio => target <= 0 ? 0 : spent / target;
 
   double get remaining => (target - spent).clamp(0, double.infinity);
 
   @override
-  List<Object?> get props =>
-      [budgetId, categoryName, colorHex, spent, target, warningThreshold];
+  List<Object?> get props => [
+        budgetId,
+        categoryName,
+        colorHex,
+        spent,
+        target,
+        warningThreshold,
+        isEnvelope,
+      ];
 }

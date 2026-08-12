@@ -5,6 +5,14 @@ All notable changes to PennyFlow are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Budget envelopes**: period total (e.g. weekly 3000) with Cash / Bank / JazzCash funding split; all expenses in the period count toward the total (no category pre-allocation)
+- Envelope periods: 7 days, 15 days, monthly, 3 months, or custom range, with optional auto-repeat and funding posted as income
+- Budgets screen: separate Add envelope / Add category budget actions (no bottom sheet); dashboard shows envelopes before category budgets
+
 ## [1.1.0] - 2026-08-11
 
 ### Added

@@ -134,7 +134,7 @@ lib/services/<feature>/<feature>_service.dart
 - Use `BaseService` mixin.
 - Own validation, orchestration, and cross-repo workflows.
 - Return `ServiceResult<T>` for expected outcomes (SRS §26.1).
-- May call other services (e.g. ExpenseService → BudgetService).
+- May call other services (e.g. ExpenseService → BudgetService / BudgetEnvelopeService).
 - Must not import widgets or depend on controllers.
 
 ### Repositories
@@ -198,8 +198,10 @@ lib/services/<feature>/<feature>_service.dart
 2. `dart run build_runner build`
 3. Add `*Schema` to `IsarSchemas.all`
 4. Bump `databaseSchemaVersion` and implement migration if needed
-5. Create repository + register in feature binding
+5. Create repository + register in feature binding / `AppInitializer`
 6. Never access the collection from a controller
+
+Registered business collections include (among others): `Budget`, `BudgetEnvelope`, expenses, incomes, categories, payment accounts, friends ledger, recurring templates, reminders.
 
 ---
 
@@ -284,7 +286,7 @@ Features must not write SharedPreferences keys directly — add methods on `Sett
 | Files | `snake_case.dart` | `expense_service.dart` |
 | Classes | `PascalCase` | `ExpenseService` |
 | Controllers | `*Controller` | `DashboardController` |
-| Services | `*Service` | `BudgetService` |
+| Services | `*Service` | `BudgetService`, `BudgetEnvelopeService` |
 | Repositories | `*Repository` | `ExpenseRepository` |
 | Bindings | `*Binding` | `ExpensesBinding` |
 | Views | `*View` | `SplashView` |
@@ -318,7 +320,7 @@ When implementing a feature from the SRS (expenses, friends, budgets, backup, up
 5. **Controller + Binding + View** under `modules/<feature>/`.
 6. **Register routes** in `AppRoutes` / `AppPages`.
 7. **Add localization keys**.
-8. **Wire side effects** (budget recalc, notifications) via services — not from the view.
+8. **Wire side effects** (category budget + envelope recalc, notifications) via services — not from the view.
 9. **Do not** put business logic in widgets or controllers.
 10. **Do not** bypass repositories for Isar access.
 11. **Keep splash/bootstrap** as the only place for cold-start routing decisions (profile / lock / restore).
@@ -330,7 +332,7 @@ When implementing a feature from the SRS (expenses, friends, budgets, backup, up
 3. Expenses + Income  
 4. Dashboard shell + bottom nav  
 5. Friends + repayments  
-6. Budgets + notifications  
+6. Budgets (category) + budget envelopes + notifications
 7. Search / filters / trash  
 8. Statistics + reports  
 9. Recurring + reminders  

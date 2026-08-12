@@ -211,6 +211,38 @@ class ExpenseRepository extends IsarBaseRepository<Expense> {
         return expenses.fold<double>(0, (sum, e) => sum + e.amount);
       });
 
+  Future<double> sumActiveByAccountInRange({
+    required int profileId,
+    required int accountId,
+    required DateTime start,
+    required DateTime end,
+  }) =>
+      runRead(() async {
+        final expenses = await collection
+            .filter()
+            .profileIdEqualTo(profileId)
+            .accountIdEqualTo(accountId)
+            .isDeletedEqualTo(false)
+            .dateBetween(start, end)
+            .findAll();
+        return expenses.fold<double>(0, (sum, e) => sum + e.amount);
+      });
+
+  Future<double> sumActiveInRange({
+    required int profileId,
+    required DateTime start,
+    required DateTime end,
+  }) =>
+      runRead(() async {
+        final expenses = await collection
+            .filter()
+            .profileIdEqualTo(profileId)
+            .isDeletedEqualTo(false)
+            .dateBetween(start, end)
+            .findAll();
+        return expenses.fold<double>(0, (sum, e) => sum + e.amount);
+      });
+
   Future<void> reassignAccount({
     required int fromAccountId,
     required int toAccountId,

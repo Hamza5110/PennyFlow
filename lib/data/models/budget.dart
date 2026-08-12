@@ -20,7 +20,7 @@ class Budget {
   @Index()
   late int month;
 
-  /// [BudgetPeriodType] name: monthly | days7 | days15 | custom.
+  /// [BudgetPeriodType] name: monthly | days7 | days15 | months3 | custom.
   String periodType = 'monthly';
 
   /// User-chosen period start (anchor for auto-repeat cycles).

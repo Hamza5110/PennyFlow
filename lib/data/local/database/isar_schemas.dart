@@ -2,6 +2,7 @@ import 'package:isar_community/isar.dart';
 
 import '../../models/app_meta.dart';
 import '../../models/budget.dart';
+import '../../models/budget_envelope.dart';
 import '../../models/category.dart';
 import '../../models/expense.dart';
 import '../../models/friend.dart';
@@ -25,6 +26,7 @@ abstract final class IsarSchemas {
         FriendTransactionSchema,
         RepaymentSchema,
         BudgetSchema,
+        BudgetEnvelopeSchema,
         RecurringTemplateSchema,
         ReminderSchema,
       ];
