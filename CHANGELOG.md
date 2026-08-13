@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-08-14
+
 ### Added
 
 - **App mode**: Simple (essentials — dashboard, transactions, faster entry) or Full (budgets, friends ledger, statistics, and reports up front); chosen during profile setup and changeable in Settings. Advanced tools stay in More in both modes.
@@ -14,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Rebranded from PennyFlow to **SpendVault** (application ID `com.spendvault.app`)
+
+[1.3.0]: https://github.com/Hamza5110/PennyFlow/releases/tag/v1.3.0
 
 ## [1.2.0] - 2026-08-12
 
