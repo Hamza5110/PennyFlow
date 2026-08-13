@@ -59,9 +59,9 @@ class EnvConfig {
     current = EnvConfig._(
       environment: environment,
       appDisplayName: switch (environment) {
-        AppEnvironment.development => 'PennyFlow Dev',
-        AppEnvironment.staging => 'PennyFlow Staging',
-        AppEnvironment.production => 'PennyFlow',
+        AppEnvironment.development => 'SpendVault Dev',
+        AppEnvironment.staging => 'SpendVault Staging',
+        AppEnvironment.production => 'SpendVault',
       },
       enableLogging: environment != AppEnvironment.production || kDebugMode,
       enableCrashReporting: environment == AppEnvironment.production,

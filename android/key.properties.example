@@ -3,5 +3,5 @@
 
 storePassword=your-store-password
 keyPassword=your-key-password
-keyAlias=pennyflow
-storeFile=../keystore/pennyflow-release.jks
+keyAlias=spendvault
+storeFile=../keystore/spendvault-release.jks

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/constants/reminder_constants.dart';
+import 'package:spend_vault/core/constants/reminder_constants.dart';
 
 void main() {
   group('ReminderTypes', () {

@@ -10,8 +10,8 @@ import 'config/app_config.dart';
 import 'routes/app_pages.dart';
 import 'theme/app_theme.dart';
 
-class PennyFlowApp extends StatelessWidget {
-  const PennyFlowApp({super.key});
+class SpendVaultApp extends StatelessWidget {
+  const SpendVaultApp({super.key});
 
   @override
   Widget build(BuildContext context) {

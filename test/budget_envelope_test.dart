@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/utils/budget_period_utils.dart';
-import 'package:penny_flow/data/models/budget_envelope.dart';
-import 'package:penny_flow/data/models/budget_envelope/budget_envelope_input.dart';
-import 'package:penny_flow/data/models/budget_envelope/budget_envelope_list_item.dart';
-import 'package:penny_flow/data/models/dashboard/budget_progress.dart';
-import 'package:penny_flow/data/models/enums/app_enums.dart';
+import 'package:spend_vault/core/utils/budget_period_utils.dart';
+import 'package:spend_vault/data/models/budget_envelope.dart';
+import 'package:spend_vault/data/models/budget_envelope/budget_envelope_input.dart';
+import 'package:spend_vault/data/models/budget_envelope/budget_envelope_list_item.dart';
+import 'package:spend_vault/data/models/dashboard/budget_progress.dart';
+import 'package:spend_vault/data/models/enums/app_enums.dart';
 
 bool fundingSumsToTotal({
   required double total,

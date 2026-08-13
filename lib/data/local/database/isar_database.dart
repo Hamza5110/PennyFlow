@@ -43,7 +43,7 @@ class IsarDatabase extends GetxService {
       _isar = await Isar.open(
         IsarSchemas.all,
         directory: dir.path,
-        name: 'penny_flow',
+        name: 'spend_vault',
         inspector: true,
       );
       await _ensureMeta();

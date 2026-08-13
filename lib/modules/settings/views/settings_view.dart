@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../app/config/app_mode.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../controllers/settings_controller.dart';
 
@@ -14,6 +15,59 @@ class SettingsView extends GetView<SettingsController> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          _SectionHeader(title: 'settings_mode_section'.tr),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'settings_mode_subtitle'.tr,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.6),
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  Obx(
+                    () => SegmentedButton<AppMode>(
+                      segments: [
+                        ButtonSegment(
+                          value: AppMode.simple,
+                          label: Text(controller.appModeLabel(AppMode.simple)),
+                          icon: const Icon(Icons.bolt_rounded),
+                        ),
+                        ButtonSegment(
+                          value: AppMode.full,
+                          label: Text(controller.appModeLabel(AppMode.full)),
+                          icon: const Icon(Icons.dashboard_customize_outlined),
+                        ),
+                      ],
+                      selected: {controller.appMode.value},
+                      onSelectionChanged: (selection) =>
+                          controller.setAppMode(selection.first),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Obx(
+                    () => Text(
+                      controller.appModeDescription(controller.appMode.value),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.6),
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
           _SectionHeader(title: 'settings_appearance'.tr),
           Card(
             child: Column(

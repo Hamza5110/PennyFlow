@@ -26,6 +26,9 @@ class UpdateController extends BaseController {
         phase == UpdateDownloadPhase.paused;
   }
 
+  bool get isFailed =>
+      progress.value?.phase == UpdateDownloadPhase.failed;
+
   bool get isReadyToInstall =>
       progress.value?.phase == UpdateDownloadPhase.readyToInstall;
 

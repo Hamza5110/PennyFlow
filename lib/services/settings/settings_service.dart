@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../app/config/app_mode.dart';
 import '../../app/theme/app_theme.dart';
 import '../../app/theme/app_theme_variant.dart';
 import '../../core/base/base_service.dart';
@@ -22,6 +23,7 @@ class SettingsService extends GetxService with BaseService {
 
   final Rx<ThemeMode> themeMode = ThemeMode.system.obs;
   final Rx<AppThemeVariant> themeVariant = AppThemeVariant.teal.obs;
+  final Rx<AppMode> appMode = AppMode.simple.obs;
   final RxString localeCode = 'en'.obs;
   final RxString currencyCode = AppConstants.defaultCurrencyCode.obs;
   final RxBool autoBackupEnabled = false.obs;
@@ -40,6 +42,7 @@ class SettingsService extends GetxService with BaseService {
   Future<SettingsService> init() async {
     themeMode.value = _readThemeMode();
     themeVariant.value = _readThemeVariant();
+    appMode.value = AppMode.fromStorage(_storage.getString(StorageKeys.appMode));
     localeCode.value = _storage.getString(StorageKeys.localeCode) ?? 'en';
     currencyCode.value = _storage.getString(StorageKeys.currencyCode) ??
         AppConstants.defaultCurrencyCode;
@@ -113,6 +116,11 @@ class SettingsService extends GetxService with BaseService {
     themeVariant.value = variant;
     await _storage.setString(StorageKeys.themeVariant, variant.name);
     _applyTheme();
+  }
+
+  Future<void> setAppMode(AppMode mode) async {
+    appMode.value = mode;
+    await _storage.setString(StorageKeys.appMode, mode.name);
   }
 
   void _applyTheme() {

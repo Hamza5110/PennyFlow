@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/utils/pin_hasher.dart';
+import 'package:spend_vault/core/utils/pin_hasher.dart';
 
 void main() {
   group('PinHasher', () {

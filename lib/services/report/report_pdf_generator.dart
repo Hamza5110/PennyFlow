@@ -21,7 +21,7 @@ abstract final class ReportPdfGenerator {
         margin: const pw.EdgeInsets.all(32),
         build: (context) => [
           pw.Text(
-            'PennyFlow Report',
+            'SpendVault Report',
             style: pw.TextStyle(
               fontSize: 22,
               fontWeight: pw.FontWeight.bold,

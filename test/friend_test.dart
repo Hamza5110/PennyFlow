@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/constants/friend_constants.dart';
-import 'package:penny_flow/data/models/friend/friend_input.dart';
-import 'package:penny_flow/data/models/friend/friend_transaction_input.dart';
-import 'package:penny_flow/data/models/friend/repayment_input.dart';
+import 'package:spend_vault/core/constants/friend_constants.dart';
+import 'package:spend_vault/data/models/friend/friend_input.dart';
+import 'package:spend_vault/data/models/friend/friend_transaction_input.dart';
+import 'package:spend_vault/data/models/friend/repayment_input.dart';
 
 void main() {
   group('FriendTransactionTypes', () {

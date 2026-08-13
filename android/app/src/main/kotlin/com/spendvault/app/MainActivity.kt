@@ -1,4 +1,4 @@
-package com.pennyflow.app
+package com.spendvault.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine

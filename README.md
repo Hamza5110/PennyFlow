@@ -1,8 +1,8 @@
-# PennyFlow
+# SpendVault
 
-**Track every penny, manage every moment.**
+**Track every spend, manage every moment.**
 
-Offline-first personal finance app for Android, built with Flutter. PennyFlow keeps your expenses, income, budgets, and friend ledger on-device with optional Google Drive backup and GitHub-based in-app updates.
+Offline-first personal finance app for Android, built with Flutter. SpendVault keeps your expenses, income, budgets, and friend ledger on-device with optional Google Drive backup and GitHub-based in-app updates.
 
 ## Features
 
@@ -60,7 +60,7 @@ chmod +x scripts/build_release_apk.sh
 GOOGLE_SERVER_CLIENT_ID=your-id.apps.googleusercontent.com ./scripts/build_release_apk.sh
 ```
 
-**Version:** `1.2.0+3` · **Application ID:** `com.pennyflow.app`
+**Version:** `1.2.0+3` · **Application ID:** `com.spendvault.app`
 
 ## Project layout
 
@@ -75,4 +75,4 @@ lib/localization/
 
 ## License
 
-PennyFlow is released under the [MIT License](LICENSE). Third-party package licenses are available in **Settings → Open-source licenses**.
+SpendVault is released under the [MIT License](LICENSE). Third-party package licenses are available in **Settings → Open-source licenses**.

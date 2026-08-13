@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../../app/config/app_mode.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../app/theme/app_theme_variant.dart';
 import '../../../core/base/base_controller.dart';
@@ -37,6 +38,7 @@ class SettingsController extends BaseController {
 
   Rx<ThemeMode> get themeMode => _settings.themeMode;
   Rx<AppThemeVariant> get themeVariant => _settings.themeVariant;
+  Rx<AppMode> get appMode => _settings.appMode;
   RxString get localeCode => _settings.localeCode;
   RxString get currencyCode => _settings.currencyCode;
   RxBool get autoBackupEnabled => _settings.autoBackupEnabled;
@@ -69,6 +71,8 @@ class SettingsController extends BaseController {
 
   Future<void> setThemeVariant(AppThemeVariant variant) =>
       _settings.setThemeVariant(variant);
+
+  Future<void> setAppMode(AppMode mode) => _settings.setAppMode(mode);
 
   void openThemePicker() => Get.toNamed<void>(AppRoutes.themePicker);
 
@@ -300,6 +304,10 @@ class SettingsController extends BaseController {
   }
 
   String themeVariantLabel(AppThemeVariant variant) => variant.labelKey.tr;
+
+  String appModeLabel(AppMode mode) => mode.labelKey.tr;
+
+  String appModeDescription(AppMode mode) => mode.descriptionKey.tr;
 
   String currencyLabel(String code) {
     final option = SettingsConstants.currencyOptions.firstWhere(

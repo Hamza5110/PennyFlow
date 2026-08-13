@@ -65,6 +65,35 @@ class MoreTabView extends GetView<MainShellController> {
           ),
         ),
         const SizedBox(height: 16),
+        Obx(() {
+          if (!controller.isSimpleMode) return const SizedBox.shrink();
+          return Column(
+            children: [
+              Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.bar_chart_outlined),
+                      title: Text('nav_statistics'.tr),
+                      subtitle: Text('more_statistics_subtitle'.tr),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: controller.openStatistics,
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.people_outline_rounded),
+                      title: Text('nav_friends'.tr),
+                      subtitle: Text('more_friends_subtitle'.tr),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: controller.openFriends,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          );
+        }),
         Card(
           child: ListTile(
             leading: const Icon(Icons.search_rounded),

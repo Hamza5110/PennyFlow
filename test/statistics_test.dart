@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/extensions/date_extensions.dart';
-import 'package:penny_flow/data/models/statistics/statistics_period.dart';
+import 'package:spend_vault/core/extensions/date_extensions.dart';
+import 'package:spend_vault/data/models/statistics/statistics_period.dart';
 
 void main() {
   final reference = DateTime(2026, 3, 15, 14, 30);

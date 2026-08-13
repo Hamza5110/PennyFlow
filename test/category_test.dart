@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/utils/category_icons.dart';
-import 'package:penny_flow/data/models/category/category_input.dart';
+import 'package:spend_vault/core/utils/category_icons.dart';
+import 'package:spend_vault/data/models/category/category_input.dart';
 
 void main() {
   group('CategoryIcons', () {

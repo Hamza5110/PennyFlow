@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/constants/recurring_constants.dart';
-import 'package:penny_flow/core/utils/recurring_schedule_utils.dart';
+import 'package:spend_vault/core/constants/recurring_constants.dart';
+import 'package:spend_vault/core/utils/recurring_schedule_utils.dart';
 
 void main() {
   group('RecurringScheduleUtils', () {

@@ -8,6 +8,7 @@ class ReleaseInfo extends Equatable {
     required this.apkDownloadUrl,
     required this.apkFileName,
     required this.apkSizeBytes,
+    this.apkAssetApiUrl = '',
     this.isForced = false,
     this.publishedAt,
   });
@@ -35,7 +36,8 @@ class ReleaseInfo extends Equatable {
       version: tag,
       releaseNotes: body.trim(),
       apkDownloadUrl: apkAsset['browser_download_url'] as String? ?? '',
-      apkFileName: apkAsset['name'] as String? ?? 'pennyflow.apk',
+      apkAssetApiUrl: apkAsset['url'] as String? ?? '',
+      apkFileName: apkAsset['name'] as String? ?? 'spendvault.apk',
       apkSizeBytes: int.tryParse('${apkAsset['size']}') ?? 0,
       isForced: forcedByLabel || forcedByBody,
       publishedAt: DateTime.tryParse(json['published_at'] as String? ?? ''),
@@ -45,18 +47,32 @@ class ReleaseInfo extends Equatable {
   final String version;
   final String releaseNotes;
   final String apkDownloadUrl;
+  /// GitHub Releases API asset URL (`Accept: application/octet-stream`).
+  final String apkAssetApiUrl;
   final String apkFileName;
   final int apkSizeBytes;
   final bool isForced;
   final DateTime? publishedAt;
 
-  bool get hasApk => apkDownloadUrl.isNotEmpty;
+  bool get hasApk => downloadUrlCandidates.isNotEmpty;
+
+  /// Preferred download sources. API asset URL first — browser URLs 404 when
+  /// HTTP clients forward GitHub `Accept` headers onto the CDN redirect.
+  List<String> get downloadUrlCandidates {
+    final urls = <String>[];
+    if (apkAssetApiUrl.isNotEmpty) urls.add(apkAssetApiUrl);
+    if (apkDownloadUrl.isNotEmpty && apkDownloadUrl != apkAssetApiUrl) {
+      urls.add(apkDownloadUrl);
+    }
+    return urls;
+  }
 
   @override
   List<Object?> get props => [
         version,
         releaseNotes,
         apkDownloadUrl,
+        apkAssetApiUrl,
         apkFileName,
         apkSizeBytes,
         isForced,

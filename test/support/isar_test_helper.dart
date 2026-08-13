@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:isar_community/isar.dart';
-import 'package:penny_flow/data/local/database/isar_database.dart';
-import 'package:penny_flow/data/local/database/isar_schemas.dart';
+import 'package:spend_vault/data/local/database/isar_database.dart';
+import 'package:spend_vault/data/local/database/isar_schemas.dart';
 
 /// Opens an isolated Isar database for repository tests.
 class TestIsarHarness {
@@ -20,7 +20,7 @@ class TestIsarHarness {
       _coreInitialized = true;
     }
 
-    final directory = await Directory.systemTemp.createTemp('penny_flow_test_');
+    final directory = await Directory.systemTemp.createTemp('spend_vault_test_');
     final isar = await Isar.open(
       IsarSchemas.all,
       directory: directory.path,

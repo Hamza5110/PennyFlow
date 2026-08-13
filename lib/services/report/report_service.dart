@@ -43,7 +43,7 @@ class ReportService extends GetxService with BaseService {
   Future<ServiceResult<void>> shareReport(ReportGeneratedFile file) async {
     return guardVoid(() async {
       final xFile = XFile(file.path, name: file.fileName);
-      await Share.shareXFiles([xFile], text: 'PennyFlow report');
+      await Share.shareXFiles([xFile], text: 'SpendVault report');
     }, fallbackMessage: 'reports_share_failed'.tr);
   }
 
@@ -94,7 +94,7 @@ class ReportService extends GetxService with BaseService {
     final from = dateFmt.format(scope.from);
     final to = dateFmt.format(scope.to);
     final ext = ReportScope.extensionFor(format);
-    return 'pennyflow_report_${from}_$to.$ext';
+    return 'spendvault_report_${from}_$to.$ext';
   }
 
   Future<String> _resolveStagingPath(String fileName) async {

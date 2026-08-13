@@ -10,5 +10,5 @@ abstract final class BackupConstants {
   static const Duration autoBackupInterval = Duration(hours: 24);
 
   static String driveFileName(int profileId) =>
-      'pennyflow_profile_${profileId}_backup.zip';
+      'spendvault_profile_${profileId}_backup.zip';
 }

@@ -3,8 +3,8 @@
 /// Feature modules append their keys here (or in dedicated feature maps merged
 /// into [AppTranslations]).
 const Map<String, String> enUs = {
-  'app_name': 'PennyFlow',
-  'app_tagline': 'Track every penny, manage every moment.',
+  'app_name': 'SpendVault',
+  'app_tagline': 'Track every spend, manage every moment.',
   'common_ok': 'OK',
   'common_cancel': 'Cancel',
   'common_not_now': 'Not now',
@@ -21,7 +21,7 @@ const Map<String, String> enUs = {
   'validation_amount_invalid': 'Enter a valid amount',
   'validation_category_required': 'Select a category',
   'validation_account_required': 'Select a payment account',
-  'splash_starting': 'Starting PennyFlow…',
+  'splash_starting': 'Starting SpendVault…',
   'splash_preparing': 'Preparing workspace…',
   'splash_ready': 'Ready',
   'profile_setup_title': 'Create your profile',
@@ -30,6 +30,16 @@ const Map<String, String> enUs = {
   'profile_setup_name_label': 'Your name',
   'profile_setup_name_hint': 'e.g. Ali',
   'profile_setup_continue': 'Continue',
+  'app_mode_setup_title': 'Choose your style',
+  'app_mode_setup_subtitle': 'You can change this anytime in Settings.',
+  'app_mode_setup_hint':
+      'Advanced tools (budgets, friends ledger, reports) stay available in More either way.',
+  'app_mode_simple': 'Simple',
+  'app_mode_simple_description':
+      'Just the essentials — log expenses fast, fewer taps.',
+  'app_mode_full': 'Full',
+  'app_mode_full_description':
+      'All features up front — budgets, friends ledger, statistics, and reports.',
   'home_ready_title': 'Application ready',
   'home_ready_greeting': 'Welcome, @name!',
   'home_ready_hint': 'Dashboard and modules arrive in upcoming phases.',
@@ -65,7 +75,7 @@ const Map<String, String> enUs = {
   'auth_title': 'Google Account',
   'auth_signed_out_title': 'Sign in for backup',
   'auth_signed_out_subtitle':
-      'Connect your Google account to back up and restore your data. You can use PennyFlow fully without signing in.',
+      'Connect your Google account to back up and restore your data. You can use SpendVault fully without signing in.',
   'auth_sign_in_google': 'Sign in with Google',
   'auth_continue_without': 'Continue without signing in',
   'auth_signed_in_title': 'Signed in',
@@ -118,6 +128,9 @@ const Map<String, String> enUs = {
   'dashboard_quick_add_save': 'Save Expense',
   'dashboard_quick_add_missing': 'Select a category and account',
   'dashboard_quick_add_success': 'Expense added (mock)',
+  'quick_add_more_details': 'More details (notes, receipts, tags…)',
+  'quick_add_setup_required': 'Add a category and account first',
+  'quick_add_no_categories': 'Create a category first in More · Categories',
   'dashboard_transaction_preview': 'Preview: @title',
   'expenses_title': 'Expenses',
   'expenses_empty_title': 'No expenses yet',
@@ -335,6 +348,8 @@ const Map<String, String> enUs = {
   'search_end_date': 'End date',
   'search_all_friends': 'All friends',
   'more_search_subtitle': 'Search across all transactions',
+  'more_statistics_subtitle': 'Charts and spending breakdowns',
+  'more_friends_subtitle': 'Track money you owe or are owed',
   'budgets_title': 'Budgets',
   'budgets_add': 'Add Budget',
   'budgets_edit': 'Edit Budget',
@@ -442,8 +457,8 @@ const Map<String, String> enUs = {
   'reports_section_categories': 'Category summary',
   'reports_generate': 'Generate report',
   'reports_share': 'Share report',
-  'reports_generated': 'Report saved to Downloads/PennyFlow/Reports/@file',
-  'reports_saved_hint': 'Downloads/PennyFlow/Reports/@file',
+  'reports_generated': 'Report saved to Downloads/SpendVault/Reports/@file',
+  'reports_saved_hint': 'Downloads/SpendVault/Reports/@file',
   'reports_generate_failed': 'Could not generate report',
   'reports_share_failed': 'Could not share report',
   'reports_custom_range': 'Custom date range',
@@ -533,7 +548,7 @@ const Map<String, String> enUs = {
   'backup_status_success': 'Last backup succeeded',
   'backup_status_failed': 'Last backup failed',
   'backup_appdata_info':
-      'Backups are stored in a private Google Drive App Data folder. They are not visible in the Google Drive app or website — only PennyFlow can access them.',
+      'Backups are stored in a private Google Drive App Data folder. They are not visible in the Google Drive app or website — only SpendVault can access them.',
   'backup_delete': 'Delete cloud backup',
   'backup_delete_confirm_title': 'Delete cloud backup?',
   'backup_delete_confirm_message':
@@ -542,6 +557,9 @@ const Map<String, String> enUs = {
   'backup_not_found': 'No cloud backup found',
   'settings_title': 'Settings',
   'more_settings_subtitle': 'Theme, currency, notifications, and data',
+  'settings_mode_section': 'App style',
+  'settings_mode_subtitle':
+      'Simple Mode trims navigation and speeds up adding expenses. Full Mode keeps everything one tap away.',
   'settings_appearance': 'Appearance',
   'settings_theme': 'Theme',
   'settings_theme_system': 'System default',
@@ -631,16 +649,26 @@ const Map<String, String> enUs = {
   'update_history_empty': 'No updates installed yet',
   'update_history_installer_launched': 'Installer launched',
   'update_history_installed': 'Installed',
+  'update_notification_downloading_title': 'Downloading update',
+  'update_notification_downloading_body': 'Version @version — @percent%',
+  'update_notification_paused_title': 'Download paused',
+  'update_notification_paused_body': 'Version @version — @percent%',
+  'update_notification_ready_title': 'Update ready to install',
+  'update_notification_ready_body':
+      'Version @version has been downloaded. Tap to install.',
+  'update_notification_failed_title': 'Update download failed',
+  'update_notification_failed_body':
+      'Could not download version @version. Tap to retry.',
   'settings_about_section': 'About',
   'settings_version': 'App version',
   'settings_version_value': 'Version @version (@build)',
-  'settings_about': 'About PennyFlow',
+  'settings_about': 'About SpendVault',
   'settings_about_body':
-      'PennyFlow helps you track expenses, income, friends, budgets, and more — fully offline, with optional Google Drive backup.',
+      'SpendVault helps you track expenses, income, friends, budgets, and more — fully offline, with optional Google Drive backup.',
   'settings_privacy': 'Privacy policy',
   'settings_privacy_title': 'Your privacy matters',
   'settings_privacy_body':
-      'PennyFlow stores your financial data locally on this device. Google Sign-In is used only for optional cloud backup to your own Google Drive AppData folder. We do not operate a backend server and do not sell your data.',
+      'SpendVault stores your financial data locally on this device. Google Sign-In is used only for optional cloud backup to your own Google Drive AppData folder. We do not operate a backend server and do not sell your data.',
   'settings_licenses': 'Open-source licenses',
-  'settings_licenses_legalese': '© 2026 PennyFlow. All rights reserved.',
+  'settings_licenses_legalese': '© 2026 SpendVault. All rights reserved.',
 };

@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:penny_flow/data/models/category.dart';
-import 'package:penny_flow/data/repositories/category_repository.dart';
-import 'package:penny_flow/data/repositories/expense_repository.dart';
-import 'package:penny_flow/services/cache/profile_lookup_cache_service.dart';
-import 'package:penny_flow/services/category/category_service.dart';
-import 'package:penny_flow/services/settings/settings_service.dart';
-import 'package:penny_flow/services/storage/local_storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spend_vault/data/models/category.dart';
+import 'package:spend_vault/data/repositories/category_repository.dart';
+import 'package:spend_vault/data/repositories/expense_repository.dart';
+import 'package:spend_vault/services/cache/profile_lookup_cache_service.dart';
+import 'package:spend_vault/services/category/category_service.dart';
+import 'package:spend_vault/services/settings/settings_service.dart';
+import 'package:spend_vault/services/storage/local_storage_service.dart';
 
 import 'support/isar_test_helper.dart';
 

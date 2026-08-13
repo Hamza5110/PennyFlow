@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/data/models/friend/friend_models.dart';
-import 'package:penny_flow/data/models/report/report_data.dart';
-import 'package:penny_flow/data/models/report/report_scope.dart';
-import 'package:penny_flow/services/report/report_csv_generator.dart';
+import 'package:spend_vault/data/models/friend/friend_models.dart';
+import 'package:spend_vault/data/models/report/report_data.dart';
+import 'package:spend_vault/data/models/report/report_scope.dart';
+import 'package:spend_vault/services/report/report_csv_generator.dart';
 
 void main() {
   group('ReportScope', () {
@@ -73,7 +73,7 @@ void main() {
       );
 
       final csv = ReportCsvGenerator.generate(data);
-      expect(csv, contains('PennyFlow Report'));
+      expect(csv, contains('SpendVault Report'));
       expect(csv, contains('Food'));
       expect(csv, contains('Salary'));
       expect(csv, contains('Total Income'));

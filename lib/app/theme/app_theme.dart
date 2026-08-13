@@ -5,7 +5,7 @@ import 'app_colors.dart';
 import 'app_theme_variant.dart';
 import 'app_typography.dart';
 
-/// Material 3 themes for PennyFlow.
+/// Material 3 themes for SpendVault.
 abstract final class AppTheme {
   static ThemeData light([AppThemeVariant variant = AppThemeVariant.teal]) =>
       _build(Brightness.light, variant);

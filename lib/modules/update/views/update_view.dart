@@ -156,7 +156,8 @@ class UpdateView extends GetView<UpdateController> {
                   : 'update_download'.tr,
               onPressed: release == null
                   ? controller.checkForUpdate
-                  : controller.isDownloading || controller.isReadyToInstall
+                  : controller.isDownloading ||
+                          controller.isReadyToInstall
                       ? null
                       : controller.download,
               isLoading: controller.isLoading.value,
@@ -166,32 +167,26 @@ class UpdateView extends GetView<UpdateController> {
             ),
             if (controller.isDownloading) ...[
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: AppButton(
-                      label: progress?.phase == UpdateDownloadPhase.paused
-                          ? 'update_resume'.tr
-                          : 'update_pause'.tr,
-                      onPressed: progress?.phase == UpdateDownloadPhase.paused
-                          ? controller.resumeDownload
-                          : controller.pauseDownload,
-                      variant: AppButtonVariant.outlined,
-                      icon: progress?.phase == UpdateDownloadPhase.paused
-                          ? Icons.play_arrow_rounded
-                          : Icons.pause_rounded,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: AppButton(
-                      label: 'update_retry'.tr,
-                      onPressed: controller.retryDownload,
-                      variant: AppButtonVariant.outlined,
-                      icon: Icons.refresh_rounded,
-                    ),
-                  ),
-                ],
+              AppButton(
+                label: progress?.phase == UpdateDownloadPhase.paused
+                    ? 'update_resume'.tr
+                    : 'update_pause'.tr,
+                onPressed: progress?.phase == UpdateDownloadPhase.paused
+                    ? controller.resumeDownload
+                    : controller.pauseDownload,
+                variant: AppButtonVariant.outlined,
+                icon: progress?.phase == UpdateDownloadPhase.paused
+                    ? Icons.play_arrow_rounded
+                    : Icons.pause_rounded,
+              ),
+            ],
+            if (controller.isDownloading || controller.isFailed) ...[
+              const SizedBox(height: 12),
+              AppButton(
+                label: 'update_retry'.tr,
+                onPressed: controller.retryDownload,
+                variant: AppButtonVariant.outlined,
+                icon: Icons.refresh_rounded,
               ),
             ],
             if (controller.isReadyToInstall) ...[

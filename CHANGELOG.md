@@ -1,11 +1,19 @@
 # Changelog
 
-All notable changes to PennyFlow are documented in this file.
+All notable changes to SpendVault are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Added
+
+- **App mode**: Simple (essentials — dashboard, transactions, faster entry) or Full (budgets, friends ledger, statistics, and reports up front); chosen during profile setup and changeable in Settings. Advanced tools stay in More in both modes.
+
+### Changed
+
+- Rebranded from PennyFlow to **SpendVault** (application ID `com.spendvault.app`)
 
 ## [1.2.0] - 2026-08-12
 

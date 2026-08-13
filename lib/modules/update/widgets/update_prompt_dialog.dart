@@ -11,6 +11,8 @@ abstract final class UpdatePromptDialog {
     if (!Get.isRegistered<UpdateService>()) return;
 
     final update = Get.find<UpdateService>();
+    if (await update.handlePendingNotificationLaunch()) return;
+
     await update.maybeCheckOnLaunch();
 
     final release = update.availableUpdate.value;

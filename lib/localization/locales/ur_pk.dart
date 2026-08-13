@@ -2,7 +2,7 @@
 ///
 /// Strings can be refined by a native speaker; keys must mirror [enUs].
 const Map<String, String> urPk = {
-  'app_name': 'PennyFlow',
+  'app_name': 'SpendVault',
   'app_tagline': 'ہر پیسہ ٹریک کریں، ہر لمحہ سنبھالیں۔',
   'common_ok': 'ٹھیک ہے',
   'common_cancel': 'منسوخ',
@@ -20,7 +20,7 @@ const Map<String, String> urPk = {
   'validation_amount_invalid': 'درست رقم درج کریں',
   'validation_category_required': 'زمرہ منتخب کریں',
   'validation_account_required': 'ادائیگی کا اکاؤنٹ منتخب کریں',
-  'splash_starting': 'PennyFlow شروع ہو رہا ہے…',
+  'splash_starting': 'SpendVault شروع ہو رہا ہے…',
   'splash_preparing': 'ورکسپیس تیار ہو رہا ہے…',
   'splash_ready': 'تیار',
   'profile_setup_title': 'اپنا پروفائل بنائیں',
@@ -29,6 +29,15 @@ const Map<String, String> urPk = {
   'profile_setup_name_label': 'آپ کا نام',
   'profile_setup_name_hint': 'مثلاً علی',
   'profile_setup_continue': 'جاری رکھیں',
+  'app_mode_setup_title': 'اپنا انداز منتخب کریں',
+  'app_mode_setup_subtitle': 'آپ اسے کسی بھی وقت سیٹنگز میں تبدیل کر سکتے ہیں۔',
+  'app_mode_setup_hint':
+      'ایڈوانس ٹولز (بجٹ، دوستوں کا لیجر، رپورٹس) دونوں صورتوں میں مزید میں دستیاب رہتے ہیں۔',
+  'app_mode_simple': 'سادہ',
+  'app_mode_simple_description': 'صرف ضروری چیزیں — تیزی سے اخراجات درج کریں۔',
+  'app_mode_full': 'مکمل',
+  'app_mode_full_description':
+      'تمام فیچرز سامنے — بجٹ، دوستوں کا لیجر، شماریات، اور رپورٹس۔',
   'home_ready_title': 'ایپ تیار ہے',
   'home_ready_greeting': 'خوش آمدید، @name!',
   'home_ready_hint': 'ڈیش بورڈ اور ماڈیولز آنے والے مراحل میں شامل ہوں گے۔',
@@ -64,7 +73,7 @@ const Map<String, String> urPk = {
   'auth_title': 'Google اکاؤنٹ',
   'auth_signed_out_title': 'بیک اپ کے لیے سائن ان کریں',
   'auth_signed_out_subtitle':
-      'ڈیٹا بیک اپ اور بحالی کے لیے Google اکاؤنٹ منسلک کریں۔ سائن ان کے بغیر بھی PennyFlow مکمل استعمال ہو سکتا ہے۔',
+      'ڈیٹا بیک اپ اور بحالی کے لیے Google اکاؤنٹ منسلک کریں۔ سائن ان کے بغیر بھی SpendVault مکمل استعمال ہو سکتا ہے۔',
   'auth_sign_in_google': 'Google سے سائن ان کریں',
   'auth_continue_without': 'سائن ان کے بغیر جاری رکھیں',
   'auth_signed_in_title': 'سائن ان ہے',
@@ -117,6 +126,9 @@ const Map<String, String> urPk = {
   'dashboard_quick_add_save': 'خرچ محفوظ کریں',
   'dashboard_quick_add_missing': 'زمرہ اور اکاؤنٹ منتخب کریں',
   'dashboard_quick_add_success': 'خرچ شامل ہو گیا (ڈیمو)',
+  'quick_add_more_details': 'مزید تفصیلات (نوٹس، رسیدیں، ٹیگز…)',
+  'quick_add_setup_required': 'پہلے ایک زمرہ اور اکاؤنٹ شامل کریں',
+  'quick_add_no_categories': 'پہلے مزید · زمرے میں ایک زمرہ بنائیں',
   'dashboard_transaction_preview': 'پیش نظارہ: @title',
   'expenses_title': 'خرچ',
   'expenses_empty_title': 'ابھی کوئی خرچ نہیں',
@@ -337,6 +349,8 @@ const Map<String, String> urPk = {
   'search_end_date': 'آخری تاریخ',
   'search_all_friends': 'تمام دوست',
   'more_search_subtitle': 'تمام لین دین میں تلاش کریں',
+  'more_statistics_subtitle': 'چارٹس اور اخراجات کی تفصیل',
+  'more_friends_subtitle': 'اپنے قرض اور واجبات ٹریک کریں',
   'budgets_title': 'بجٹ',
   'budgets_add': 'بجٹ شامل کریں',
   'budgets_edit': 'بجٹ میں ترمیم',
@@ -444,8 +458,8 @@ const Map<String, String> urPk = {
   'reports_section_categories': 'زمرہ خلاصہ',
   'reports_generate': 'رپورٹ بنائیں',
   'reports_share': 'رپورٹ شیئر کریں',
-  'reports_generated': 'رپورٹ Downloads/PennyFlow/Reports میں محفوظ: @file',
-  'reports_saved_hint': 'Downloads/PennyFlow/Reports/@file',
+  'reports_generated': 'رپورٹ Downloads/SpendVault/Reports میں محفوظ: @file',
+  'reports_saved_hint': 'Downloads/SpendVault/Reports/@file',
   'reports_generate_failed': 'رپورٹ نہیں بن سکی',
   'reports_share_failed': 'رپورٹ شیئر نہیں ہو سکی',
   'reports_custom_range': 'اپنی تاریخ کی حد',
@@ -535,7 +549,7 @@ const Map<String, String> urPk = {
   'backup_status_success': 'آخری بیک اپ کامیاب',
   'backup_status_failed': 'آخری بیک اپ ناکام',
   'backup_appdata_info':
-      'بیک اپ Google Drive کے نجی App Data فولڈر میں محفوظ ہوتا ہے۔ یہ Google Drive ایپ یا ویب سائٹ میں نظر نہیں آتا — صرف PennyFlow اس تک رسائی رکھتا ہے۔',
+      'بیک اپ Google Drive کے نجی App Data فولڈر میں محفوظ ہوتا ہے۔ یہ Google Drive ایپ یا ویب سائٹ میں نظر نہیں آتا — صرف SpendVault اس تک رسائی رکھتا ہے۔',
   'backup_delete': 'کلاؤڈ بیک اپ حذف کریں',
   'backup_delete_confirm_title': 'کلاؤڈ بیک اپ حذف کریں؟',
   'backup_delete_confirm_message':
@@ -544,6 +558,9 @@ const Map<String, String> urPk = {
   'backup_not_found': 'کلاؤڈ بیک اپ نہیں ملا',
   'settings_title': 'ترتیبات',
   'more_settings_subtitle': 'تھیم، کرنسی، اطلاعات، اور ڈیٹا',
+  'settings_mode_section': 'ایپ کا انداز',
+  'settings_mode_subtitle':
+      'سادہ موڈ نیویگیشن کو مختصر کرتا ہے اور اخراجات درج کرنا تیز کرتا ہے۔ مکمل موڈ میں ہر چیز ایک ٹیپ کی دوری پر رہتی ہے۔',
   'settings_appearance': 'ظاہری شکل',
   'settings_theme': 'تھیم',
   'settings_theme_system': 'سسٹم ڈیفالٹ',
@@ -633,16 +650,26 @@ const Map<String, String> urPk = {
   'update_history_empty': 'ابھی تک کوئی اپ ڈیٹ انسٹال نہیں',
   'update_history_installer_launched': 'انسٹالر کھولا گیا',
   'update_history_installed': 'انسٹال شدہ',
+  'update_notification_downloading_title': 'اپ ڈیٹ ڈاؤن لوڈ ہو رہی ہے',
+  'update_notification_downloading_body': 'ورژن @version — @percent%',
+  'update_notification_paused_title': 'ڈاؤن لوڈ رک گیا',
+  'update_notification_paused_body': 'ورژن @version — @percent%',
+  'update_notification_ready_title': 'اپ ڈیٹ انسٹال کے لیے تیار',
+  'update_notification_ready_body':
+      'ورژن @version ڈاؤن لوڈ ہو چکا ہے۔ انسٹال کے لیے ٹیپ کریں۔',
+  'update_notification_failed_title': 'اپ ڈیٹ ڈاؤن لوڈ ناکام',
+  'update_notification_failed_body':
+      'ورژن @version ڈاؤن لوڈ نہیں ہو سکا۔ دوبارہ کوشش کے لیے ٹیپ کریں۔',
   'settings_about_section': 'تعارف',
   'settings_version': 'ایپ ورژن',
   'settings_version_value': 'ورژن @version (@build)',
-  'settings_about': 'PennyFlow کے بارے میں',
+  'settings_about': 'SpendVault کے بارے میں',
   'settings_about_body':
-      'PennyFlow آپ کو خرچ، آمدنی، دوست، بجٹ وغیرہ ٹریک کرنے میں مدد دیتا ہے — مکمل آف لائن، اختیاری Google Drive بیک اپ کے ساتھ۔',
+      'SpendVault آپ کو خرچ، آمدنی، دوست، بجٹ وغیرہ ٹریک کرنے میں مدد دیتا ہے — مکمل آف لائن، اختیاری Google Drive بیک اپ کے ساتھ۔',
   'settings_privacy': 'رازداری کی پالیسی',
   'settings_privacy_title': 'آپ کی رازداری اہم ہے',
   'settings_privacy_body':
-      'PennyFlow آپ کے مالی ڈیٹا کو اس ڈیوائس پر مقامی طور پر محفوظ رکھتا ہے۔ Google Sign-In صرف آپ کے Google Drive AppData فولڈر میں اختیاری کلاؤڈ بیک اپ کے لیے استعمال ہوتا ہے۔ ہمارا کوئی بیک اینڈ سرور نہیں اور ہم آپ کا ڈیٹا نہیں بیچتے۔',
+      'SpendVault آپ کے مالی ڈیٹا کو اس ڈیوائس پر مقامی طور پر محفوظ رکھتا ہے۔ Google Sign-In صرف آپ کے Google Drive AppData فولڈر میں اختیاری کلاؤڈ بیک اپ کے لیے استعمال ہوتا ہے۔ ہمارا کوئی بیک اینڈ سرور نہیں اور ہم آپ کا ڈیٹا نہیں بیچتے۔',
   'settings_licenses': 'اوپن سورس لائسنسز',
-  'settings_licenses_legalese': '© 2026 PennyFlow. جملہ حقوق محفوظ ہیں۔',
+  'settings_licenses_legalese': '© 2026 SpendVault. جملہ حقوق محفوظ ہیں۔',
 };

@@ -1,4 +1,4 @@
-# PennyFlow Architecture
+# SpendVault Architecture
 
 **Status:** Foundation (no business features yet)  
 **Stack:** Flutter · GetX · Isar Community · Material 3  
@@ -26,7 +26,7 @@ Every future feature **must** follow this document. If a change conflicts with t
 lib/
 ├── main.dart                          # Entry — calls AppInitializer then runApp
 ├── app/
-│   ├── penny_flow_app.dart            # GetMaterialApp shell
+│   ├── spend_vault_app.dart            # GetMaterialApp shell
 │   ├── app_initializer.dart           # Ordered bootstrap (env, storage, DB, settings)
 │   ├── bindings/
 │   │   └── initial_binding.dart       # App-wide DI assertions / sync deps
@@ -184,7 +184,7 @@ lib/services/<feature>/<feature>_service.dart
 ## 6. Database Strategy
 
 - **Engine:** [isar_community](https://pub.dev/packages/isar_community) (maintained Isar 3 fork). Import: `package:isar_community/isar.dart`.
-- **Owner:** `IsarDatabase` (single instance, name `penny_flow`).
+- **Owner:** `IsarDatabase` (single instance, name `spend_vault`).
 - **Schema registry:** `IsarSchemas.all` — every new `@collection` must be registered here.
 - **Versioning:** `AppMeta.schemaVersion` ↔ `AppConstants.databaseSchemaVersion`. Migrations run in `IsarDatabase._migrate`.
 - **Transactions:** All multi-step writes go through `isar.writeTxn` (via repository `runWrite` / `db.writeTxn`).
@@ -256,7 +256,7 @@ Build with dart-defines:
 flutter run --dart-define=ENV=development
 flutter build apk --dart-define=ENV=production \
   --dart-define=GITHUB_OWNER=your-org \
-  --dart-define=GITHUB_REPO=penny_flow
+  --dart-define=GITHUB_REPO=PennyFlow
 ```
 
 `EnvConfig` exposes environment, logging flags, and the GitHub Releases URL used by the future update service.
@@ -369,4 +369,4 @@ Dependencies for those features are already declared in `pubspec.yaml` so later 
 
 ---
 
-*PennyFlow foundation — August 2026. All subsequent PRs should cite this architecture when introducing modules.*
+*SpendVault foundation — August 2026. All subsequent PRs should cite this architecture when introducing modules.*

@@ -17,18 +17,31 @@ class NotificationService extends GetxService with BaseService {
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
-  static const String _budgetChannelId = 'penny_flow_budget_alerts_v2';
+  static const String _budgetChannelId = 'spend_vault_budget_alerts_v2';
   static const String _budgetChannelName = 'Budget Alerts';
-  static const String _recurringChannelId = 'penny_flow_recurring_v2';
+  static const String _recurringChannelId = 'spend_vault_recurring_v2';
   static const String _recurringChannelName = 'Recurring Transactions';
-  static const String _reminderChannelId = 'penny_flow_reminders_v3';
+  static const String _reminderChannelId = 'spend_vault_reminders_v3';
   static const String _reminderChannelName = 'Reminders';
+  static const String _updateProgressChannelId = 'spend_vault_updates_progress';
+  static const String _updateProgressChannelName = 'App updates';
+  static const String _updateCompleteChannelId = 'spend_vault_updates_ready';
+  static const String _updateCompleteChannelName = 'Update ready';
+
+  static const int updateNotificationId = 9101;
+  static const String updateInstallPayload = 'update_install';
+  static const String updateOpenPayload = 'update_open';
 
   /// delay, vibrate, pause, vibrate (ms) — noticeable even in silent/vibrate mode.
   static final Int64List _vibrationPattern =
       Int64List.fromList(<int>[0, 500, 200, 500]);
 
   static int _reminderNotificationId(int reminderId) => 10000 + reminderId;
+
+  /// Invoked when the user taps a notification (install / open update).
+  void Function(String? payload)? onNotificationTapped;
+
+  String? _pendingLaunchPayload;
 
   Future<NotificationService> init() async {
     await _configureLocalTimeZone();
@@ -45,7 +58,15 @@ class NotificationService extends GetxService with BaseService {
       macOS: darwin,
     );
 
-    await _plugin.initialize(initSettings);
+    await _plugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: _onNotificationResponse,
+    );
+
+    final launch = await _plugin.getNotificationAppLaunchDetails();
+    if (launch?.didNotificationLaunchApp == true) {
+      _pendingLaunchPayload = launch?.notificationResponse?.payload;
+    }
 
     await _createChannel(
       _budgetChannelId,
@@ -65,10 +86,37 @@ class NotificationService extends GetxService with BaseService {
       'Bill, subscription, and payment reminders',
       Importance.max,
     );
+    await _createChannel(
+      _updateProgressChannelId,
+      _updateProgressChannelName,
+      'APK download progress',
+      Importance.low,
+      playSound: false,
+      enableVibration: false,
+    );
+    await _createChannel(
+      _updateCompleteChannelId,
+      _updateCompleteChannelName,
+      'Update downloaded and ready to install',
+      Importance.high,
+    );
 
     // Do not request notification/alarm permissions here — ask only when the
-    // user opts into reminders (create/enable), so startup stays quiet.
+    // user opts into reminders (create/enable) or starts an update download.
     return this;
+  }
+
+  void _onNotificationResponse(NotificationResponse response) {
+    final payload = response.payload;
+    if (payload == null || payload.isEmpty) return;
+    onNotificationTapped?.call(payload);
+  }
+
+  /// Delivers a tap that launched the process, once a handler is registered.
+  String? takePendingLaunchPayload() {
+    final payload = _pendingLaunchPayload;
+    _pendingLaunchPayload = null;
+    return payload;
   }
 
   Future<void> _configureLocalTimeZone() async {
@@ -192,16 +240,18 @@ class NotificationService extends GetxService with BaseService {
     String id,
     String name,
     String description,
-    Importance importance,
-  ) async {
+    Importance importance, {
+    bool playSound = true,
+    bool enableVibration = true,
+  }) async {
     final channel = AndroidNotificationChannel(
       id,
       name,
       description: description,
       importance: importance,
-      playSound: true,
-      enableVibration: true,
-      vibrationPattern: _vibrationPattern,
+      playSound: playSound,
+      enableVibration: enableVibration,
+      vibrationPattern: enableVibration ? _vibrationPattern : null,
     );
     await _plugin
         .resolvePlatformSpecificImplementation<
@@ -422,6 +472,154 @@ class NotificationService extends GetxService with BaseService {
       channelId: _recurringChannelId,
       channelName: _recurringChannelName,
     );
+  }
+
+  Future<void> showUpdateDownloadProgress({
+    required String version,
+    required int progress,
+    required int maxProgress,
+    bool paused = false,
+    bool indeterminate = false,
+  }) async {
+    final clamped = progress.clamp(0, maxProgress <= 0 ? 100 : maxProgress);
+    final title = paused
+        ? 'update_notification_paused_title'.tr
+        : 'update_notification_downloading_title'.tr;
+    final body = (paused
+            ? 'update_notification_paused_body'
+            : 'update_notification_downloading_body')
+        .trParams({
+      'version': version,
+      'percent': '$clamped',
+    });
+
+    try {
+      await _plugin.show(
+        updateNotificationId,
+        title,
+        body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            _updateProgressChannelId,
+            _updateProgressChannelName,
+            channelDescription: 'APK download progress',
+            importance: Importance.low,
+            priority: Priority.low,
+            category: AndroidNotificationCategory.progress,
+            showProgress: true,
+            maxProgress: maxProgress <= 0 ? 100 : maxProgress,
+            progress: clamped,
+            indeterminate: indeterminate || maxProgress <= 0,
+            ongoing: true,
+            autoCancel: false,
+            onlyAlertOnce: true,
+            playSound: false,
+            enableVibration: false,
+            silent: true,
+            icon: '@mipmap/ic_launcher',
+          ),
+          iOS: const DarwinNotificationDetails(
+            presentAlert: false,
+            presentBadge: false,
+            presentSound: false,
+          ),
+        ),
+        payload: updateOpenPayload,
+      );
+    } catch (error, stackTrace) {
+      AppLogger.instance.w(
+        'Update progress notification failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> showUpdateReadyToInstall({required String version}) async {
+    try {
+      await _plugin.show(
+        updateNotificationId,
+        'update_notification_ready_title'.tr,
+        'update_notification_ready_body'.trParams({'version': version}),
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            _updateCompleteChannelId,
+            _updateCompleteChannelName,
+            channelDescription: 'Update downloaded and ready to install',
+            importance: Importance.high,
+            priority: Priority.high,
+            category: AndroidNotificationCategory.status,
+            ongoing: false,
+            autoCancel: true,
+            playSound: true,
+            enableVibration: true,
+            vibrationPattern: _vibrationPattern,
+            icon: '@mipmap/ic_launcher',
+          ),
+          iOS: const DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ),
+        payload: updateInstallPayload,
+      );
+    } catch (error, stackTrace) {
+      AppLogger.instance.w(
+        'Update ready notification failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> showUpdateDownloadFailed({required String version}) async {
+    try {
+      await _plugin.show(
+        updateNotificationId,
+        'update_notification_failed_title'.tr,
+        'update_notification_failed_body'.trParams({'version': version}),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            _updateCompleteChannelId,
+            _updateCompleteChannelName,
+            channelDescription: 'Update downloaded and ready to install',
+            importance: Importance.defaultImportance,
+            priority: Priority.defaultPriority,
+            category: AndroidNotificationCategory.error,
+            ongoing: false,
+            autoCancel: true,
+            playSound: false,
+            enableVibration: false,
+            icon: '@mipmap/ic_launcher',
+          ),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: false,
+            presentSound: false,
+          ),
+        ),
+        payload: updateOpenPayload,
+      );
+    } catch (error, stackTrace) {
+      AppLogger.instance.w(
+        'Update failed notification failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> cancelUpdateDownload() async {
+    try {
+      await _plugin.cancel(updateNotificationId);
+    } catch (error, stackTrace) {
+      AppLogger.instance.w(
+        'Update notification cancel failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   Future<void> _show({

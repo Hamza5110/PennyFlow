@@ -1,12 +1,12 @@
-# PennyFlow - Master Implementation Roadmap
+# SpendVault - Master Implementation Roadmap
 
 Version: 1.0
 
-Project: PennyFlow
+Project: SpendVault
 
 Purpose:
 
-This document defines the official implementation roadmap for PennyFlow.
+This document defines the official implementation roadmap for SpendVault.
 
 All development must strictly follow the phases defined below.
 

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../../services/auth/auth_service.dart';
 import '../../../services/profile/profile_service.dart';
+import '../../../services/settings/settings_service.dart';
 import '../../dashboard/bindings/dashboard_binding.dart';
 import '../../expenses/bindings/expenses_binding.dart';
 import '../../friends/bindings/friends_binding.dart';
@@ -21,6 +22,7 @@ class MainShellBinding extends Bindings {
       () => MainShellController(
         Get.find<ProfileService>(),
         Get.find<AuthService>(),
+        Get.find<SettingsService>(),
       ),
     );
   }

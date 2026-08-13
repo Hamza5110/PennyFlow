@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/utils/pin_hasher.dart';
-import 'package:penny_flow/core/utils/version_utils.dart';
-import 'package:penny_flow/data/models/update/release_info.dart';
+import 'package:spend_vault/core/utils/pin_hasher.dart';
+import 'package:spend_vault/core/utils/version_utils.dart';
+import 'package:spend_vault/data/models/update/release_info.dart';
 
 /// Critical-path smoke checks for release confidence.
 void main() {
@@ -26,7 +26,7 @@ void main() {
         'body': 'Release notes',
         'assets': [
           {
-            'name': 'pennyflow.apk',
+            'name': 'spendvault.apk',
             'browser_download_url': 'https://example.com/app.apk',
             'size': 100,
           },

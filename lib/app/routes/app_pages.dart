@@ -26,6 +26,7 @@ import '../../modules/friends/views/friend_form_view.dart';
 import '../../modules/friends/views/friend_transaction_detail_view.dart';
 import '../../modules/friends/views/friend_transaction_form_view.dart';
 import '../../modules/friends/views/friend_trash_view.dart';
+import '../../modules/friends/views/friends_view.dart';
 import '../../modules/friends/views/repayment_form_view.dart';
 import '../../modules/income/bindings/income_binding.dart';
 import '../../modules/income/views/income_detail_view.dart';
@@ -56,6 +57,8 @@ import '../../modules/settings/views/settings_view.dart';
 import '../../modules/settings/views/theme_picker_view.dart';
 import '../../modules/splash/bindings/splash_binding.dart';
 import '../../modules/splash/views/splash_view.dart';
+import '../../modules/statistics/bindings/statistics_binding.dart';
+import '../../modules/statistics/views/statistics_view.dart';
 import '../../modules/update/bindings/update_binding.dart';
 import '../../modules/update/views/update_history_view.dart';
 import '../../modules/update/views/update_view.dart';
@@ -196,6 +199,18 @@ abstract final class AppPages {
       name: AppRoutes.search,
       page: SearchView.new,
       binding: SearchBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.statistics,
+      page: StatisticsView.new,
+      binding: StatisticsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.friends,
+      page: FriendsView.new,
+      binding: FriendsBinding(),
       transition: Transition.rightToLeft,
     ),
     GetPage(

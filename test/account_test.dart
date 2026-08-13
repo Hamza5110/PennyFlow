@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/constants/payment_account_types.dart';
-import 'package:penny_flow/core/utils/account_icons.dart';
-import 'package:penny_flow/data/models/payment_account/payment_account_input.dart';
+import 'package:spend_vault/core/constants/payment_account_types.dart';
+import 'package:spend_vault/core/utils/account_icons.dart';
+import 'package:spend_vault/data/models/payment_account/payment_account_input.dart';
 
 void main() {
   group('PaymentAccountTypes', () {

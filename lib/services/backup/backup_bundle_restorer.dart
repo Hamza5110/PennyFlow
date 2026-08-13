@@ -228,7 +228,7 @@ class BackupBundleRestorer {
     final entries = await _readZipEntries(bundleFile);
     final supportDir = await getApplicationSupportDirectory();
     final targetDir = Directory(
-      p.join(supportDir.path, 'pennyflow_restore_${_uuid.v4()}'),
+      p.join(supportDir.path, 'spendvault_restore_${_uuid.v4()}'),
     );
     await targetDir.create(recursive: true);
 

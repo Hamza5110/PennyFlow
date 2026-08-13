@@ -46,4 +46,7 @@ abstract final class StorageKeys {
   static const String hasCompletedOnboarding = 'has_completed_onboarding';
   static const String databaseInitialized = 'database_initialized';
   static const String lastBackgroundAt = 'last_background_at';
+
+  // ── App mode (Simple / Full) ────────────────────────────────────────────
+  static const String appMode = 'app_mode';
 }

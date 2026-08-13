@@ -1,4 +1,4 @@
-package com.pennyflow.app
+package com.spendvault.app
 
 import android.content.ContentValues
 import android.os.Build
@@ -11,8 +11,8 @@ import java.io.File
 
 class ReportStorageHandler(private val activity: MainActivity) {
     companion object {
-        const val CHANNEL = "com.pennyflow.app/report_storage"
-        private const val RELATIVE_DIR = "PennyFlow/Reports"
+        const val CHANNEL = "com.spendvault.app/report_storage"
+        private const val RELATIVE_DIR = "SpendVault/Reports"
     }
 
     fun register(flutterEngine: FlutterEngine) {

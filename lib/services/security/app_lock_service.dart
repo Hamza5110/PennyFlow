@@ -118,7 +118,7 @@ class AppLockService extends GetxService with BaseService {
       }
 
       final authenticated = await _localAuth.authenticate(
-        localizedReason: 'Unlock PennyFlow',
+        localizedReason: 'Unlock SpendVault',
         options: const AuthenticationOptions(
           stickyAuth: true,
           biometricOnly: true,

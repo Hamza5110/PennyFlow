@@ -1,4 +1,4 @@
-# PennyFlow Release Guide
+# SpendVault Release Guide
 
 This document describes how to produce a signed release APK for distribution outside the Play Store (SRS §28).
 
@@ -10,8 +10,8 @@ This document describes how to produce a signed release APK for distribution out
 
 ```bash
 keytool -genkey -v \
-  -keystore android/keystore/pennyflow-release.jks \
-  -alias pennyflow \
+  -keystore android/keystore/spendvault-release.jks \
+  -alias spendvault \
   -keyalg RSA -keysize 2048 -validity 10000
 ```
 
@@ -21,7 +21,11 @@ keytool -genkey -v \
 2. Fill in keystore paths and passwords
 3. **Never commit** `key.properties` or `*.jks` files
 
+If you already have a keystore (for example `pennyflow-release.jks`), keep using it — point `key.properties` at that file. Only generate a new keystore if you do not already have one.
+
 Release builds use the release keystore when `android/key.properties` exists; otherwise they fall back to the debug keystore (local testing only).
+
+The application ID is now `com.spendvault.app`. Register a new **Android** OAuth client with that package name (the previous `com.pennyflow.app` client will not match).
 
 ## Google Sign-In (required for release)
 
@@ -38,8 +42,8 @@ keytool -list -v \
 
 # Release keystore
 keytool -list -v \
-  -keystore android/keystore/pennyflow-release.jks \
-  -alias pennyflow
+  -keystore android/keystore/spendvault-release.jks \
+  -alias spendvault
 
 # Or from a built/published APK
 apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
@@ -48,7 +52,7 @@ apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
 2. In [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials):
    - Keep your existing **Web** client ID (used as `GOOGLE_SERVER_CLIENT_ID`)
    - Create/update an **Android** OAuth client:
-     - Package name: `com.pennyflow.app`
+     - Package name: `com.spendvault.app`
      - Add **both** debug and release SHA-1 fingerprints
 3. Wait a few minutes after saving, then reinstall the release APK and retry sign-in
 
@@ -61,7 +65,7 @@ Symptom of a missing release SHA-1: `ApiException: 10` / `DEVELOPER_ERROR` (work
 | `ENV` | Yes | `production` for release builds |
 | `GOOGLE_SERVER_CLIENT_ID` | For backup | OAuth 2.0 Web client ID |
 | `GITHUB_OWNER` | For updates | GitHub org/user hosting releases |
-| `GITHUB_REPO` | For updates | Repository name (default: `PennyFlow`) |
+| `GITHUB_REPO` | For updates | GitHub repository name (currently `PennyFlow` until the repo is renamed) |
 
 ## Build steps
 
@@ -102,7 +106,7 @@ Output: `build/app/outputs/flutter-apk/app-release.apk`
 
 - **versionName** (`1.0.0`) — user-visible semver in Settings → About
 - **versionCode** (`+1` in pubspec) — monotonic integer for Android updates
-- **Application ID** — `com.pennyflow.app` (do not change after first public release)
+- **Application ID** — `com.spendvault.app` (do not change after first public release)
 
 ## QA before shipping
 

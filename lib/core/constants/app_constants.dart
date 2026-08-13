@@ -1,11 +1,11 @@
-/// Global app-level constants for PennyFlow.
+/// Global app-level constants for SpendVault.
 ///
 /// Keep feature-specific magic numbers in their own modules;
 /// only cross-cutting values belong here.
 abstract final class AppConstants {
-  static const String appName = 'PennyFlow';
-  static const String appTagline = 'Track every penny, manage every moment.';
-  static const String packageName = 'com.pennyflow.app';
+  static const String appName = 'SpendVault';
+  static const String appTagline = 'Track every spend, manage every moment.';
+  static const String packageName = 'com.spendvault.app';
 
   /// Schema version persisted in [AppMeta] for migrations.
   static const int databaseSchemaVersion = 11;
@@ -55,8 +55,8 @@ abstract final class AppConstants {
   static const int thumbnailMaxDimension = 256;
   static const int thumbnailQuality = 60;
 
-  /// Public Downloads subfolder for exported reports (Downloads/PennyFlow/Reports).
-  static const String reportsFolderName = 'PennyFlow';
+  /// Public Downloads subfolder for exported reports (Downloads/SpendVault/Reports).
+  static const String reportsFolderName = 'SpendVault';
   static const String reportsSubfolderName = 'Reports';
-  static const String reportsDownloadsPath = 'PennyFlow/Reports';
+  static const String reportsDownloadsPath = 'SpendVault/Reports';
 }

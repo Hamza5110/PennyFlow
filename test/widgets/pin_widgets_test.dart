@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/widgets/pin_dots.dart';
-import 'package:penny_flow/core/widgets/pin_pad.dart';
+import 'package:spend_vault/core/widgets/pin_dots.dart';
+import 'package:spend_vault/core/widgets/pin_pad.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

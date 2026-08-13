@@ -195,7 +195,7 @@ class BackupService extends GetxService with BaseService {
       downloaded = File(
         p.join(
           (await getTemporaryDirectory()).path,
-          'pennyflow_restore_${_uuid.v4()}.zip',
+          'spendvault_restore_${_uuid.v4()}.zip',
         ),
       );
       await _drive.downloadBackup(meta: remote, targetFile: downloaded);

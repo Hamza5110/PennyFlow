@@ -1,17 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:penny_flow/data/models/category.dart';
-import 'package:penny_flow/data/models/expense.dart';
-import 'package:penny_flow/data/models/statistics/statistics_period.dart';
-import 'package:penny_flow/data/repositories/category_repository.dart';
-import 'package:penny_flow/data/repositories/expense_repository.dart';
-import 'package:penny_flow/data/repositories/income_repository.dart';
-import 'package:penny_flow/data/repositories/statistics_repository.dart';
-import 'package:penny_flow/modules/statistics/controllers/statistics_controller.dart';
-import 'package:penny_flow/services/settings/settings_service.dart';
-import 'package:penny_flow/services/statistics/statistics_service.dart';
-import 'package:penny_flow/services/storage/local_storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spend_vault/data/models/category.dart';
+import 'package:spend_vault/data/models/expense.dart';
+import 'package:spend_vault/data/models/statistics/statistics_period.dart';
+import 'package:spend_vault/data/repositories/category_repository.dart';
+import 'package:spend_vault/data/repositories/expense_repository.dart';
+import 'package:spend_vault/data/repositories/income_repository.dart';
+import 'package:spend_vault/data/repositories/statistics_repository.dart';
+import 'package:spend_vault/modules/statistics/controllers/statistics_controller.dart';
+import 'package:spend_vault/services/settings/settings_service.dart';
+import 'package:spend_vault/services/statistics/statistics_service.dart';
+import 'package:spend_vault/services/storage/local_storage_service.dart';
 
 import '../support/isar_test_helper.dart';
 

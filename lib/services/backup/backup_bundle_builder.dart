@@ -87,7 +87,7 @@ class BackupBundleBuilder {
       final bundleFile = File(
         p.join(
           (await getTemporaryDirectory()).path,
-          'pennyflow_backup_${profileId}_${_uuid.v4()}.zip',
+          'spendvault_backup_${profileId}_${_uuid.v4()}.zip',
         ),
       );
 
@@ -118,7 +118,7 @@ class BackupBundleBuilder {
     final dir = Directory(
       p.join(
         (await getTemporaryDirectory()).path,
-        'pennyflow_backup_build_${_uuid.v4()}',
+        'spendvault_backup_build_${_uuid.v4()}',
       ),
     );
     await dir.create(recursive: true);

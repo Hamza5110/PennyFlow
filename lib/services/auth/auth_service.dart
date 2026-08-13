@@ -110,7 +110,7 @@ class AuthService extends GetxService with BaseService {
       final details = '${error.code} ${error.message ?? ''}'.toLowerCase();
       if (details.contains('10') || details.contains('developer_error')) {
         return 'Google Sign-In is not configured for this app build. '
-            'Add an Android OAuth client with package com.pennyflow.app '
+            'Add an Android OAuth client with package com.spendvault.app '
             'and your debug/release SHA-1 in Google Cloud Console.';
       }
       if (details.contains('12500') || details.contains('sign_in_failed')) {

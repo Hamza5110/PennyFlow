@@ -13,7 +13,7 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"/>
     <application
-        android:label="PennyFlow"
+        android:label="SpendVault"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -80,5 +80,14 @@
         </intent>
         <!-- Required for Google Sign-In on Android 11+ -->
         <package android:name="com.google.android.gms"/>
+        <!-- Required so the system package installer can be resolved -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:mimeType="application/vnd.android.package-archive"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.INSTALL_PACKAGE"/>
+            <data android:mimeType="application/vnd.android.package-archive"/>
+        </intent>
     </queries>
 </manifest>

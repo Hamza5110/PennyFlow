@@ -45,6 +45,7 @@ class ExpenseFormController extends BaseController {
   final RxList<String> imagePaths = <String>[].obs;
 
   int? _expenseId;
+  double? _prefillAmount;
   bool get isEditing => _expenseId != null;
 
   String get currencyCode => _settings.currencyCode.value;
@@ -55,6 +56,7 @@ class ExpenseFormController extends BaseController {
     final args = Get.arguments;
     if (args is ExpenseFormArgs) {
       _expenseId = args.expenseId;
+      _prefillAmount = args.prefillAmount;
     }
     _bootstrap();
   }
@@ -81,8 +83,13 @@ class ExpenseFormController extends BaseController {
           return;
         }
         _populate(expense);
-      } else if (categories.isNotEmpty && selectedCategoryId.value == null) {
-        selectedCategoryId.value = categories.first.id;
+      } else {
+        if (categories.isNotEmpty && selectedCategoryId.value == null) {
+          selectedCategoryId.value = categories.first.id;
+        }
+        if (_prefillAmount != null) {
+          amountController.text = _prefillAmount!.toStringAsFixed(2);
+        }
       }
       if (accounts.isNotEmpty && selectedAccountId.value == null) {
         selectedAccountId.value = accounts.first.id;

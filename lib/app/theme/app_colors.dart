@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Brand + semantic color tokens for PennyFlow (Material 3).
+/// Brand + semantic color tokens for SpendVault (Material 3).
 ///
 /// Direction: calm teal-green finance palette — trustworthy, not generic
 /// purple or cream/terracotta. Light and dark schemes share the same seeds.

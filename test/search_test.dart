@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/utils/search_match_utils.dart';
-import 'package:penny_flow/data/models/search/global_search_filter.dart';
+import 'package:spend_vault/core/utils/search_match_utils.dart';
+import 'package:spend_vault/data/models/search/global_search_filter.dart';
 
 void main() {
   group('SearchMatchUtils', () {

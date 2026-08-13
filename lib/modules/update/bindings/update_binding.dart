@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../../../data/repositories/update_repository.dart';
+import '../../../services/notification/notification_service.dart';
 import '../../../services/settings/settings_service.dart';
 import '../../../services/storage/local_storage_service.dart';
 import '../../../services/update/apk_download_manager.dart';
@@ -33,6 +34,7 @@ class UpdateBinding extends Bindings {
           Get.find<GitHubReleaseClient>(),
           Get.find<ApkDownloadManager>(),
           Get.find<UpdateRepository>(),
+          Get.find<NotificationService>(),
         ).init(),
         permanent: true,
       );

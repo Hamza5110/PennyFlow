@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// Describes a PennyFlow backup bundle (SRS §27.1).
+/// Describes a SpendVault backup bundle (SRS §27.1).
 class BackupManifest extends Equatable {
   const BackupManifest({
     required this.formatVersion,

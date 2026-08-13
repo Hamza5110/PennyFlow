@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/constants/storage_keys.dart';
-import 'package:penny_flow/data/models/update/release_info.dart';
-import 'package:penny_flow/services/settings/settings_service.dart';
-import 'package:penny_flow/services/storage/local_storage_service.dart';
+import 'package:spend_vault/core/constants/storage_keys.dart';
+import 'package:spend_vault/data/models/update/release_info.dart';
+import 'package:spend_vault/services/settings/settings_service.dart';
+import 'package:spend_vault/services/storage/local_storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -14,7 +14,9 @@ void main() {
         'published_at': '2026-03-15T10:00:00Z',
         'assets': [
           {
-            'name': 'pennyflow.apk',
+            'name': 'spendvault.apk',
+            'url':
+                'https://api.github.com/repos/example/app/releases/assets/1',
             'browser_download_url': 'https://example.com/app.apk',
             'size': 1234567,
           },
@@ -23,9 +25,14 @@ void main() {
 
       expect(release.version, '1.2.0');
       expect(release.hasApk, isTrue);
-      expect(release.apkFileName, 'pennyflow.apk');
+      expect(release.apkFileName, 'spendvault.apk');
       expect(release.apkSizeBytes, 1234567);
       expect(release.isForced, isFalse);
+      expect(release.apkAssetApiUrl, contains('/releases/assets/1'));
+      expect(release.downloadUrlCandidates, [
+        'https://api.github.com/repos/example/app/releases/assets/1',
+        'https://example.com/app.apk',
+      ]);
     });
 
     test('detects forced update from body marker', () {

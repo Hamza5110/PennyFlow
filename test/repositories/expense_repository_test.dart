@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/data/models/expense.dart';
-import 'package:penny_flow/data/repositories/expense_repository.dart';
+import 'package:spend_vault/data/models/expense.dart';
+import 'package:spend_vault/data/repositories/expense_repository.dart';
 
 import '../support/isar_test_helper.dart';
 

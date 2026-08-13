@@ -8,7 +8,7 @@ cd "$ROOT_DIR"
 : "${GITHUB_OWNER:=Hamza5110}"
 : "${GITHUB_REPO:=PennyFlow}"
 
-echo "==> PennyFlow release build (ENV=$ENV)"
+echo "==> SpendVault release build (ENV=$ENV)"
 
 flutter pub get
 dart run flutter_launcher_icons

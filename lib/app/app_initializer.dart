@@ -62,7 +62,7 @@ abstract final class AppInitializer {
     EnvConfig.init();
     AppLogger.instance.configure(isDebug: EnvConfig.current.enableLogging);
     AppLogger.instance.i(
-      'Bootstrapping PennyFlow (${EnvConfig.current.environment.name})',
+      'Bootstrapping SpendVault (${EnvConfig.current.environment.name})',
     );
 
     ErrorHandler.installGlobalHandlers();
@@ -328,6 +328,7 @@ abstract final class AppInitializer {
         Get.find<GitHubReleaseClient>(),
         Get.find<ApkDownloadManager>(),
         Get.find<UpdateRepository>(),
+        Get.find<NotificationService>(),
       ).init(),
       permanent: true,
     );

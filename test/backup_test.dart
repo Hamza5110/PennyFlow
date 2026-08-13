@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:penny_flow/core/utils/backup_checksum_utils.dart';
-import 'package:penny_flow/data/models/backup/backup_manifest.dart';
+import 'package:spend_vault/core/utils/backup_checksum_utils.dart';
+import 'package:spend_vault/data/models/backup/backup_manifest.dart';
 
 void main() {
   group('BackupChecksumUtils', () {

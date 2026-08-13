@@ -44,7 +44,7 @@ abstract final class ReportExcelGenerator {
     DateFormat dateFmt,
   ) {
     final sheet = excel['Summary'];
-    _row(sheet, 0, ['PennyFlow Report']);
+    _row(sheet, 0, ['SpendVault Report']);
     _row(sheet, 1, ['Profile', data.profileName]);
     _row(sheet, 2, [
       'Period',

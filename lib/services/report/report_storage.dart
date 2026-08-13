@@ -9,7 +9,7 @@ class ReportStorage {
   ReportStorage._();
 
   static const MethodChannel _channel =
-      MethodChannel('com.pennyflow.app/report_storage');
+      MethodChannel('com.spendvault.app/report_storage');
 
   static Future<String> saveToDownloads({
     required String sourcePath,

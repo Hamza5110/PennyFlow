@@ -3,7 +3,7 @@ import 'package:logger/logger.dart';
 
 import '../logging/app_logger.dart';
 
-/// Base typed exception for PennyFlow.
+/// Base typed exception for SpendVault.
 ///
 /// Prefer throwing subclasses so callers can branch on type rather than
 /// string-matching messages.

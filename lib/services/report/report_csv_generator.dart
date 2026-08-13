@@ -11,7 +11,7 @@ abstract final class ReportCsvGenerator {
     final dateFmt = DateFormat('dd MMM yyyy');
     final rows = <List<dynamic>>[];
 
-    rows.add(['PennyFlow Report']);
+    rows.add(['SpendVault Report']);
     rows.add(['Profile', data.profileName]);
     rows.add([
       'Period',

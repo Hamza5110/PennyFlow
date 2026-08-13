@@ -45,7 +45,7 @@ class DataTransferService extends GetxService with BaseService {
       final target = File(
         p.join(
           exportDir.path,
-          'pennyflow_export_${profileId}_${_uuid.v4()}.zip',
+          'spendvault_export_${profileId}_${_uuid.v4()}.zip',
         ),
       );
       await built.bundle.copy(target.path);
@@ -60,7 +60,7 @@ class DataTransferService extends GetxService with BaseService {
     return guardVoid(() async {
       await Share.shareXFiles(
         [XFile(file.path)],
-        subject: 'PennyFlow data export',
+        subject: 'SpendVault data export',
       );
     });
   }

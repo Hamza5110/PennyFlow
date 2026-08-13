@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:penny_flow/app/routes/app_routes.dart';
-import 'package:penny_flow/core/constants/app_constants.dart';
-import 'package:penny_flow/data/models/auth_user.dart';
-import 'package:penny_flow/data/models/dashboard/dashboard_period.dart';
-import 'package:penny_flow/data/repositories/mock_dashboard_repository.dart';
-import 'package:penny_flow/services/startup/startup_route_resolver.dart';
+import 'package:spend_vault/app/routes/app_routes.dart';
+import 'package:spend_vault/core/constants/app_constants.dart';
+import 'package:spend_vault/data/models/auth_user.dart';
+import 'package:spend_vault/data/models/dashboard/dashboard_period.dart';
+import 'package:spend_vault/data/repositories/mock_dashboard_repository.dart';
+import 'package:spend_vault/services/startup/startup_route_resolver.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +13,7 @@ void main() {
   tearDown(Get.reset);
 
   test('AppConstants expose product identity', () {
-    expect(AppConstants.appName, 'PennyFlow');
+    expect(AppConstants.appName, 'SpendVault');
     expect(AppConstants.databaseSchemaVersion, greaterThan(0));
   });
 

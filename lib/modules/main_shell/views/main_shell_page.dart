@@ -12,7 +12,9 @@ import 'main_shell_view.dart';
 class MainShellPage extends GetView<MainShellController> {
   const MainShellPage({super.key});
 
-  static const _tabs = <_ShellTab>[
+  /// Metadata for every [ShellTabIndex], regardless of app mode. The bottom
+  /// nav bar only renders the subset in [MainShellController.visibleTabIndices].
+  static const _allTabs = <_ShellTab>[
     _ShellTab(
       labelKey: 'nav_dashboard',
       icon: Icons.dashboard_outlined,
@@ -44,8 +46,11 @@ class MainShellPage extends GetView<MainShellController> {
   Widget build(BuildContext context) {
     return Obx(() {
       final index = controller.selectedIndex.value;
-      final tab = _tabs[index];
+      final tab = _allTabs[index];
+      final visibleIndices = controller.visibleTabIndices;
       final theme = Theme.of(context);
+
+      final selectedPosition = visibleIndices.indexOf(index);
 
       return Scaffold(
         appBar: AppBar(
@@ -60,7 +65,7 @@ class MainShellPage extends GetView<MainShellController> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              if (index == 0)
+              if (index == ShellTabIndex.dashboard)
                 Obx(
                   () => Text(
                     controller.profileName.value,
@@ -71,7 +76,7 @@ class MainShellPage extends GetView<MainShellController> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              if (index == 4)
+              if (index == ShellTabIndex.more)
                 Obx(
                   () => Text(
                     'more_greeting'.trParams({
@@ -87,13 +92,13 @@ class MainShellPage extends GetView<MainShellController> {
             ],
           ),
           actions: [
-            if (index == 0)
+            if (index == ShellTabIndex.dashboard)
               IconButton(
                 icon: const Icon(Icons.settings_outlined),
                 tooltip: 'settings_title'.tr,
                 onPressed: controller.openSettings,
               ),
-            if (index == 4)
+            if (index == ShellTabIndex.more)
               IconButton(
                 icon: const Icon(Icons.search_rounded),
                 tooltip: 'search_title'.tr,
@@ -128,14 +133,15 @@ class MainShellPage extends GetView<MainShellController> {
               )
             : null,
         bottomNavigationBar: AppBottomNavBar(
-          selectedIndex: index,
-          onSelected: controller.onTabSelected,
+          selectedIndex: selectedPosition,
+          onSelected: (position) =>
+              controller.onTabSelected(visibleIndices[position]),
           items: [
-            for (final t in _tabs)
+            for (final viewIndex in visibleIndices)
               AppBottomNavItem(
-                label: t.labelKey.tr,
-                icon: t.icon,
-                selectedIcon: t.selectedIcon,
+                label: _allTabs[viewIndex].labelKey.tr,
+                icon: _allTabs[viewIndex].icon,
+                selectedIcon: _allTabs[viewIndex].selectedIcon,
               ),
           ],
         ),
